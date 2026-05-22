@@ -10,7 +10,8 @@
 namespace E2R {
 
 struct McParticle {
-    void AddToModel(ROOT::RNTupleModel *model) {
+
+    McParticle(ROOT::RNTupleModel *model) {
         PdgCode = model->MakeField<std::vector<int>>("MC_PdgCode");
         Charge = model->MakeField<std::vector<char>>("MC_Charge");
         Mother_McEntry = model->MakeField<std::vector<int>>("MC_Mother_McEntry");

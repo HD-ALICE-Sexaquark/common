@@ -8,7 +8,8 @@
 namespace E2R {
 
 struct Lambda {
-    void AddToModel(ROOT::RNTupleModel *model, bool is_mc) {
+
+    Lambda(ROOT::RNTupleModel *model, bool is_mc) {
         EsdEntry = model->MakeField<std::vector<unsigned int>>("Lambda_EsdEntry");
         Decay_X = model->MakeField<std::vector<float>>("Lambda_Decay_X");
         Decay_Y = model->MakeField<std::vector<float>>("Lambda_Decay_Y");

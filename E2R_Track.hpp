@@ -10,7 +10,8 @@
 namespace E2R {
 
 struct Track {
-    void AddToModel(ROOT::RNTupleModel *model, bool is_mc) {
+
+    Track(ROOT::RNTupleModel *model, bool is_mc) {
         EsdEntry = model->MakeField<std::vector<unsigned int>>("Track_EsdEntry");
         X = model->MakeField<std::vector<float>>("Track_X");
         Y = model->MakeField<std::vector<float>>("Track_Y");

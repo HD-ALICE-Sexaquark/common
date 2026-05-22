@@ -7,7 +7,8 @@
 namespace E2R {
 
 struct Event {
-    void AddToModel(ROOT::RNTupleModel *model, bool is_mc) {
+
+    Event(ROOT::RNTupleModel *model, bool is_mc) {
         RunNumber = model->MakeField<unsigned int>("RunNumber");
         DirNumber = model->MakeField<unsigned int>("DirNumber");
         if (!is_mc) DirNumberB = model->MakeField<unsigned int>("DirNumberB");
