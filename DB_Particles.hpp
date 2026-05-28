@@ -15,6 +15,9 @@ inline constexpr std::array DecayProducts_AntiLambda = std::to_array<int>({-2212
 inline constexpr std::array DecayProducts_Lambda = std::to_array<int>({2212, -211});
 inline constexpr std::array DecayProducts_XiPlus = std::to_array<int>({-3122, 211});  // Xi+ -> AntiLambda Pi+
 
+inline constexpr std::array DecayProducts_Hdibaryon = std::to_array<int>({3122, 3122});
+inline constexpr std::array DecayProducts_AntiHdibaryon = std::to_array<int>({-3122, -3122});
+
 struct Definition {
     std::string_view name;               // canonical name
     std::string_view acronym;            // short name
@@ -49,6 +52,9 @@ inline constexpr std::array DB = std::to_array<Definition>({
     {"Lambda", "L", 3122, 0, 1.1156830, 7.89, DecayProducts_Lambda},
     //
     {"XiPlus", "XP", -3312, +1, 1.3217100, 4.91, DecayProducts_XiPlus},
+    //
+    {"AntiHdibaryon", "AH", -999, 0, 2.234, 999., DecayProducts_AntiHdibaryon},  // PENDING: update with real values
+    {"Hdibaryon", "H", 999, 0, 2.234, 999., DecayProducts_Hdibaryon},            // PENDING: update with real values
     //
     {"Unknown", "00", Common::DummyNNN, Common::DummyNNN, Common::DummyFloat, Common::DummyFloat},
 });

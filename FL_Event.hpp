@@ -4,11 +4,14 @@
 
 #include <ROOT/RNTupleModel.hxx>
 
-namespace E2R {
+namespace Flat {
 
 struct Event {
 
-    Event(ROOT::RNTupleModel *model, bool is_mc) {
+    Event() = default;
+    Event(ROOT::RNTupleModel *model, bool is_mc) { AddFieldsTo(model, is_mc); }
+
+    void AddFieldsTo(ROOT::RNTupleModel *model, bool is_mc) {
         RunNumber = model->MakeField<unsigned int>("RunNumber");
         DirNumber = model->MakeField<unsigned int>("DirNumber");
         if (!is_mc) DirNumberB = model->MakeField<unsigned int>("DirNumberB");
@@ -42,9 +45,9 @@ struct Event {
     // member variables //
     std::shared_ptr<unsigned int> RunNumber;
     std::shared_ptr<unsigned int> DirNumber;
-    std::shared_ptr<unsigned int> DirNumberB;   // (real data only) component after-the-dot of data directories
-    std::shared_ptr<unsigned int> EventNumber;  // event number in file
-    std::shared_ptr<float> Centrality;          // centrality percentile
+    std::shared_ptr<unsigned int> DirNumberB;  // (rd only)
+    std::shared_ptr<unsigned int> EventNumber;
+    std::shared_ptr<float> Centrality;
     std::shared_ptr<float> MagneticField;
     std::shared_ptr<int> PV_NContributors;
     std::shared_ptr<float> PV_Dispersion;
@@ -69,4 +72,4 @@ struct Event {
     std::shared_ptr<bool> MC_IsSBCPileup;
 };
 
-}  // namespace E2R
+}  // namespace Flat
