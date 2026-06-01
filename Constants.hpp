@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <string_view>
 
 #define E2R_VERBOSE 1
@@ -8,23 +9,28 @@
 #define E2R_TPC_EXTRA 1
 
 namespace E2R {
-static constexpr int ReactionID_Offset = 600;
-static constexpr int NEventsInDedicatedMC = 10;  // number of events per file from dedicated MC
-static constexpr int NReactionsPerEvent = 20;    // number of injected reactions per event in dedicated MC
+static constexpr unsigned int ReactionID_Offset = 600;   // (anti)sexaquark-nucleon reactions
+static constexpr unsigned int InjectionID_Offset = 400;  // h-dibaryon injections
+
+// Number of events per file from dedicated MC, by construction
+static constexpr unsigned int NEventsInDedicatedMC = 10;
+
+// Number of injected (anti)sexaquark-nucleon reactions per event in dedicated MC, by construction
+static constexpr unsigned int NSexaReactionsPerEvent = 20;
+
 static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
 static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
 
 // (sexaquark-dedicated MC only)
-enum EGenerator { kHijing, kInjectedAntiNeutron, kInjectedAntiSexaquarkReaction };
+enum EGenerator : std::uint8_t { kHijing, kInjectedAntiNeutron, kInjectedAntiSexaquarkReaction };
 
 static constexpr std::string_view Name_OutputRNT = "Events";
 }  // namespace E2R
 
 namespace R2DS {
 static constexpr const char* Name_PackedRNT = "PackedEvents";
-static constexpr const char* Name_InjectedSexaRNT = "InjectedSexa";
-static constexpr const char* Name_LambdaPairRNT = "LambdaPair";
-static constexpr const char* Name_InjectedHdibRNT = "InjectedHdib";
+static constexpr const char* Name_FoundSexaRNT = "FoundSexa";
+static constexpr const char* Name_FoundHdibRNT = "FoundHdib";
 
 }  // namespace R2DS
 

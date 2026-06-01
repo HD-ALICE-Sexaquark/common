@@ -4,9 +4,10 @@
 #include <tuple>
 #include <utility>
 
+#include <Math/GenVector/VectorUtil.h>
 #include <Math/Point3D.h>
 #include <Math/Vector3D.h>
-#include <Math/VectorUtil.h>
+#include <Math/Vector4D.h>
 
 #include "Constants.hpp"
 
@@ -133,22 +134,25 @@ inline ROOT::Math::XYZPoint FastPCA_HelixVertex(const ROOT::Math::XYZVector& mom
 }
 
 // Calculate the middle-point between two points in 3D space.
-// PENDING: might delete
 inline ROOT::Math::XYZPoint MiddlePoint(const ROOT::Math::XYZPoint& p1, const ROOT::Math::XYZPoint& p2) {
     return {(p1.X() + p2.X()) / 2., (p1.Y() + p2.Y()) / 2., (p1.Z() + p2.Z()) / 2.};
 }
 
 // Calculate square of the distance between two points in 3D space.
-// PENDING: might delete
 inline double SquaredDistance(const ROOT::Math::XYZPoint& p1, const ROOT::Math::XYZPoint& p2) { return (p1 - p2).Mag2(); }
 
 // Calculate square of the distance between two points in 3D space.
-// PENDING: might delete
 inline double SquaredDistance(const std::array<double, 3>& xyz1, const std::array<double, 3>& xyz2) {
     double dx = xyz2[0] - xyz1[0];
     double dy = xyz2[1] - xyz1[1];
     double dz = xyz2[2] - xyz1[2];
     return dx * dx + dy * dy + dz * dz;
 }
+
+inline ROOT::Math::PxPyPzEVector CreateLorentzVector(double px, double py, double pz, double mass) {
+    return {px, py, pz, std::sqrt(px * px + py * py + pz * pz + mass * mass)};
+}
+
+inline double Hypot4(double a, double b, double c, double d) { return std::sqrt(a * a + b * b + c * c + d * d); }
 
 }  // namespace Common::Math

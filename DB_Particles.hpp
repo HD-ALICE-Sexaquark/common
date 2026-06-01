@@ -26,6 +26,8 @@ struct Definition {
     double mass;                         // (GeV/c^2)
     double ctau;                         // (cm)
     std::span<const int> daughters_pdg;  // NOTE: only detectable charged modes
+    std::size_t idx_neg_dau;
+    std::size_t idx_pos_dau;
 };
 
 inline constexpr std::array DB = std::to_array<Definition>({
@@ -40,7 +42,7 @@ inline constexpr std::array DB = std::to_array<Definition>({
     //
     {"NegKaon", "NK", -321, -1, 0.49367700, 371.1},
     {"PosKaon", "PK", 321, +1, 0.49367700, 371.1},
-    {"KaonZeroShort", "K0S", 310, 0, 0.49761100, 2.6844, DecayProducts_KaonZeroShort},
+    {"KaonZeroShort", "K0S", 310, 0, 0.49761100, 2.6844, DecayProducts_KaonZeroShort, 0, 1},
     //
     {"AntiProton", "AP", -2212, -1, 0.93827210, 1e20},
     {"Proton", "P", 2212, +1, 0.93827210, 1e20},
@@ -48,13 +50,13 @@ inline constexpr std::array DB = std::to_array<Definition>({
     {"AntiNeutron", "AN", -2112, 0, 0.93956540, 1e20},
     {"Neutron", "N", 2112, 0, 0.93956540, 1e20},
     //
-    {"AntiLambda", "AL", -3122, 0, 1.1156830, 7.89, DecayProducts_AntiLambda},
-    {"Lambda", "L", 3122, 0, 1.1156830, 7.89, DecayProducts_Lambda},
+    {"AntiLambda", "AL", -3122, 0, 1.1156830, 7.89, DecayProducts_AntiLambda, 0, 1},
+    {"Lambda", "L", 3122, 0, 1.1156830, 7.89, DecayProducts_Lambda, 1, 0},
     //
     {"XiPlus", "XP", -3312, +1, 1.3217100, 4.91, DecayProducts_XiPlus},
     //
-    {"AntiHdibaryon", "AH", -999, 0, 2.234, 999., DecayProducts_AntiHdibaryon},  // PENDING: update with real values
-    {"Hdibaryon", "H", 999, 0, 2.234, 999., DecayProducts_Hdibaryon},            // PENDING: update with real values
+    {"AntiHdibaryon", "AH", -1020000020, 0, 2.234, 9.866349e-12, DecayProducts_AntiHdibaryon},  // NOTE: ctau obtained from Gamma=0.002
+    {"Hdibaryon", "H", 1020000020, 0, 2.234, 9.866349e-12, DecayProducts_Hdibaryon},            // NOTE: ctau obtained from Gamma=0.002
     //
     {"Unknown", "00", Common::DummyNNN, Common::DummyNNN, Common::DummyFloat, Common::DummyFloat},
 });
