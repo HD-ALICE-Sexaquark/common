@@ -1,8 +1,8 @@
 #pragma once
 
+#include <array>
+
 #include "Constants.hpp"
-#include "POD_McParticle.hpp"
-#include "POD_Track.hpp"
 
 namespace POD {
 
@@ -18,7 +18,6 @@ struct V0 {
     std::array<float, Common::NCovMatrixComponents_State7> CovMatrix;
     float Chi2NDF;
     // -- negative daughter
-    POD::Track Neg;
     float Neg_PCAwrtV0_X;
     float Neg_PCAwrtV0_Y;
     float Neg_PCAwrtV0_Z;
@@ -26,15 +25,12 @@ struct V0 {
     float Neg_PCAwrtV0_Py;
     float Neg_PCAwrtV0_Pz;
     // -- positive daughter
-    POD::Track Pos;
     float Pos_PCAwrtV0_X;
     float Pos_PCAwrtV0_Y;
     float Pos_PCAwrtV0_Z;
     float Pos_PCAwrtV0_Px;
     float Pos_PCAwrtV0_Py;
     float Pos_PCAwrtV0_Pz;
-    // -- mc info
-    std::optional<POD::McParticle> MC;
 };
 
 }  // namespace POD

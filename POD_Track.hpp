@@ -1,10 +1,8 @@
 #pragma once
 
 #include <array>
-#include <optional>
 
 #include "Constants.hpp"
-#include "POD_McParticle.hpp"
 
 namespace POD {
 
@@ -52,9 +50,6 @@ struct Track {
     float TPC_PointsMaxDens;
     int TPC_FirstRow;
 #endif
-    // -- mc info
-    std::optional<unsigned int> McEntry;
-    std::optional<POD::McParticle> MC;
 };
 
 }  // namespace POD

@@ -1,10 +1,9 @@
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
 #include <string_view>
 
-#define E2R_VERBOSE 1
+#define E2R_VERBOSE 0
 #define E2R_MC_EXTRA 1
 #define E2R_TPC_EXTRA 1
 
@@ -29,8 +28,7 @@ static constexpr std::string_view Name_OutputRNT = "Events";
 
 namespace R2DS {
 static constexpr const char* Name_PackedRNT = "PackedEvents";
-static constexpr const char* Name_FoundSexaRNT = "FoundSexa";
-static constexpr const char* Name_FoundHdibRNT = "FoundHdib";
+static constexpr const char* Name_FoundHdibaryonRNT = "FoundHdibaryon";
 
 }  // namespace R2DS
 
@@ -56,7 +54,7 @@ static constexpr double Convert_eV2GeV = 1.E-9;
 static constexpr double Convert_nm2cm = 1.E-7;
 
 // clang-format off
-enum ESigma : std::size_t {
+enum ESigma : std::uint8_t {
     X2,
     XY,  Y2,
     XZ,  YZ,  Z2,

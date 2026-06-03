@@ -7,20 +7,21 @@
 #include <ROOT/REntry.hxx>
 #include <ROOT/RFieldToken.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <ROOT/RNTupleReadOptions.hxx>
 #include <ROOT/RNTupleReader.hxx>
+#include <ROOT/RNTupleWriteOptions.hxx>
 #include <ROOT/RNTupleWriter.hxx>
 #include <ROOT/RRawPtrWriteEntry.hxx>
+#include <ROOT/RVersion.hxx>
 
 namespace Framework {
 
 struct Model {
-    Model() : fRNT_Model{ROOT::RNTupleModel::CreateBare()} {}
-
     template <typename K>
-    void RegisterField(void *address, std::string_view name) {
+    void RegisterField(K *address, std::string_view name) {
         fRNT_Model->MakeField<K>(std::string(name));
         fTokens.push_back(fRNT_Model->GetToken(name));
-        fDataAddresses.push_back(address);
+        fDataAddresses.push_back(static_cast<void *>(address));
     }
 
     template <typename Entry>
@@ -28,38 +29,40 @@ struct Model {
         for (std::size_t i = 0; i < fTokens.size(); ++i) entry->BindRawPtr(fTokens[i], fDataAddresses[i]);
     }
 
-    std::unique_ptr<ROOT::RNTupleModel> fRNT_Model;
+    std::unique_ptr<ROOT::RNTupleModel> fRNT_Model{ROOT::RNTupleModel::CreateBare()};
     std::vector<ROOT::RFieldToken> fTokens;
     std::vector<void *> fDataAddresses;
 };
 
-template <typename T>
 struct Writer {
 
-    Writer(std::string_view rnt_name, TFile &output_file)  //
-        : fModel{fPOD.CreateModel()} {
-        fRNT_Writer = ROOT::RNTupleWriter::Append(std::move(fModel.fRNT_Model), rnt_name, output_file);
+    Writer(Framework::Model model, std::string_view rnt_name, TFile &output_file,
+           const ROOT::RNTupleWriteOptions &options = ROOT::RNTupleWriteOptions())  //
+        : fModel{std::move(model)} {
+        fRNT_Writer = ROOT::RNTupleWriter::Append(std::move(fModel.fRNT_Model), rnt_name, output_file, options);
         fEntry = fRNT_Writer->GetModel().CreateRawPtrWriteEntry();
         fModel.BindAll(fEntry.get());
     }
 
     void Fill() { fRNT_Writer->Fill(*fEntry); }
 
-    T &Data() { return fPOD; }
-    const T &Data() const { return fPOD; }
-
-    T fPOD{};
     Framework::Model fModel;
     std::unique_ptr<ROOT::RNTupleWriter> fRNT_Writer;
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
+    // "[ntuple] Move RRawPtrWriteEntry out of Experimental"
+    // Commit: https://github.com/root-project/root/commit/1ba8730dcffbb1ed2e1419f0796188a7daf4947c
     std::unique_ptr<ROOT::Detail::RRawPtrWriteEntry> fEntry;
+#else
+    std::unique_ptr<ROOT::Experimental::Detail::RRawPtrWriteEntry> fEntry;
+#endif
 };
 
-template <typename T>
 struct Reader {
 
-    Reader(std::string_view rnt_name, TFile &input_file)  //
-        : fModel{fPOD.CreateModel()} {
-        fRNT_Reader = ROOT::RNTupleReader::Open(std::move(fModel.fRNT_Model), rnt_name, input_file.GetName());
+    Reader(Framework::Model model, std::string_view rnt_name, TFile &input_file,
+           const ROOT::RNTupleReadOptions &options = ROOT::RNTupleReadOptions())  //
+        : fModel{std::move(model)} {
+        fRNT_Reader = ROOT::RNTupleReader::Open(std::move(fModel.fRNT_Model), rnt_name, input_file.GetName(), options);
         fEntry = fRNT_Reader->GetModel().CreateBareEntry();
         fModel.BindAll(fEntry.get());
     }
@@ -67,10 +70,6 @@ struct Reader {
     void Load(ROOT::NTupleSize_t entryId) { fRNT_Reader->LoadEntry(entryId, *fEntry); }
     ROOT::RNTupleReader *Iter() { return fRNT_Reader.get(); }
 
-    T &Data() { return fPOD; }
-    const T &Data() const { return fPOD; }
-
-    T fPOD{};
     Framework::Model fModel;
     std::unique_ptr<ROOT::RNTupleReader> fRNT_Reader;
     std::unique_ptr<ROOT::REntry> fEntry;

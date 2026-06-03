@@ -1,9 +1,5 @@
 #pragma once
 
-#include <optional>
-
-#include "POD_McParticle.hpp"
-
 namespace POD {
 
 struct OnTheFlyLambda {
@@ -36,12 +32,14 @@ struct OnTheFlyLambda {
     float Pos_NSigmaProton;
     float Pos_NSigmaKaon;
     float Pos_NSigmaPion;
-    // -- linked mc
-    std::optional<unsigned int> Neg_McEntry;  // (mc only)
-    std::optional<unsigned int> Pos_McEntry;  // (mc only)
-    std::optional<POD::McParticle> MC;
-    std::optional<POD::McParticle> Neg_MC;
-    std::optional<POD::McParticle> Pos_MC;
 };
+
+namespace Extended {
+
+struct OnTheFlyLambda : POD::OnTheFlyLambda {
+    float Energy;
+};
+
+}  // namespace Extended
 
 }  // namespace POD

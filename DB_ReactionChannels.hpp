@@ -2,8 +2,9 @@
 
 #include <array>
 #include <cstddef>
-#include <optional>
 #include <span>
+
+#include "Constants.hpp"
 
 namespace DB::ReactionChannels {
 
@@ -31,30 +32,31 @@ inline constexpr std::array DB = std::to_array<Definition>({
     {'F', 2212, kFirstGen_F},
     {'G', 2112, kFirstGen_G},
     {'H', 2212, kFirstGen_H},
+    {'0', Common::DummyInt, {}},
 });
 
 consteval std::size_t Index(char c) {
     for (std::size_t rr = 0; rr < DB.size(); ++rr)
         if (DB[rr].name == c) return rr;
-    throw "unknown reaction channel";
+    return DB.size() - 1;
 }
 
 consteval Definition ReactionChannel(char c) {
     for (const auto& r : DB)
         if (r.name == c) return r;
-    throw "unknown reaction channel";
+    return DB.back();
 }
 
-constexpr std::optional<std::size_t> FindIndex(char c) {
+constexpr std::size_t FindIndex(char c) {
     for (std::size_t rr = 0; rr < DB.size(); ++rr)
         if (DB[rr].name == c) return rr;
-    return std::nullopt;
+    return DB.size() - 1;
 }
 
-constexpr std::optional<Definition> FindReactionChannel(char c) {
+constexpr Definition FindReactionChannel(char c) {
     for (const auto& r : DB)
         if (r.name == c) return r;
-    return std::nullopt;
+    return DB.back();
 }
 
 }  // namespace DB::ReactionChannels

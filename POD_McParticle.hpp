@@ -1,48 +1,53 @@
 #pragma once
 
 #include <cstdint>
-#include <optional>
 
 #include "Constants.hpp"
 
 namespace POD {
 
 struct McParticle {
-    int PdgCode;
-    int Charge;
-    std::optional<unsigned int> Mother_McEntry;
-    unsigned int N_Daughters;
-    std::optional<unsigned int> FirstDau_McEntry;
-    std::optional<unsigned int> LastDau_McEntry;
-    float Origin_X;
-    float Origin_Y;
-    float Origin_Z;
-    float Px;
-    float Py;
-    float Pz;
-    float Energy;
-    unsigned int Status;
-    std::uint8_t Generator;
-    bool IsPhysPrimary;  // is physical primary according to the ALICE definition
-    bool IsSecFromMat;
-    bool IsSecFromWeak;
+    int PdgCode{Common::DummyInt};
+    int Charge{Common::DummyInt};
+    int Mother_McEntry{Common::DummyInt};
+    unsigned int N_Daughters{0};
+    int FirstDau_McEntry{Common::DummyInt};
+    int LastDau_McEntry{Common::DummyInt};
+    float Origin_X{Common::DummyFloat};
+    float Origin_Y{Common::DummyFloat};
+    float Origin_Z{Common::DummyFloat};
+    float Px{Common::DummyFloat};
+    float Py{Common::DummyFloat};
+    float Pz{Common::DummyFloat};
+    float Energy{Common::DummyFloat};
+    unsigned int StatusCode{0};
+    std::uint8_t Generator{0};
+    bool IsPhysPrimary{false};  // is physical primary according to the ALICE definition
+    bool IsSecFromMat{false};
+    bool IsSecFromWeak{false};
 #if E2R_MC_EXTRA
-    bool IsOOBPileup;
+    bool IsOOBPileup{false};
 #endif
-    // filled at `R2DS`
-    std::optional<float> Decay_X;            // (v0 only)
-    std::optional<float> Decay_Y;            // (v0 only)
-    std::optional<float> Decay_Z;            // (v0 only)
-    std::optional<bool> IsTrue;              //
-    std::optional<bool> IsGen1Signal;        //
-    std::optional<bool> IsGen2Signal;        //
-    std::optional<bool> IsTrueSignal;        //
-    std::optional<bool> IsSecondary;         //
-    std::optional<bool> IsHybrid;            // (v0 only)
-    std::optional<unsigned int> SignalID;    // (= "ReactionID" / "InjectionID"
-    std::optional<int> Mother_PdgCode;       //
-    std::optional<unsigned int> GM_McEntry;  // (track only)
-    std::optional<int> GM_PdgCode;           // (track only)
 };
+
+namespace Extended {
+
+struct McParticle : POD::McParticle {
+    float Decay_X{Common::DummyFloat};     // (v0 only)
+    float Decay_Y{Common::DummyFloat};     // (v0 only)
+    float Decay_Z{Common::DummyFloat};     // (v0 only)
+    int SignalID{Common::DummyInt};        // = "ReactionID" / "InjectionID"
+    int Mother_PdgCode{Common::DummyInt};  //
+    int GM_McEntry{Common::DummyInt};      // (track only)
+    int GM_PdgCode{Common::DummyInt};      // (track only)
+    bool IsTrue{false};
+    bool IsGen1Signal{false};
+    bool IsGen2Signal{false};
+    bool IsTrueSignal{false};
+    bool IsSecondary{false};
+    bool IsHybrid{false};  // (composite only, e.g. secondary v0s + on-the-fly lambdas)
+};
+
+}  // namespace Extended
 
 }  // namespace POD
