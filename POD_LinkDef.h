@@ -13,8 +13,8 @@
 #pragma link C++ struct POD::LambdaPair+;
 #pragma link C++ struct POD::McParticle+;
 #pragma link C++ struct POD::Extended::McParticle+;
-#pragma link C++ struct POD::OnTheFlyLambda+;
-#pragma link C++ struct POD::Extended::OnTheFlyLambda+;
+#pragma link C++ struct POD::PreFoundLambda+;
+#pragma link C++ struct POD::Extended::PreFoundLambda+;
 #pragma link C++ struct POD::Sexaquark+;
 #pragma link C++ struct POD::Track+;
 #pragma link C++ struct POD::V0+;

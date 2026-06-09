@@ -33,6 +33,7 @@ static constexpr const char* Name_FoundHdibaryonRNT = "FoundHdibaryon";
 }  // namespace R2DS
 
 namespace Common {
+static constexpr int NCovMatrixComponents_State3 = 6;
 static constexpr int NCovMatrixComponents_State6 = 21;
 static constexpr int NCovMatrixComponents_State7 = 28;
 static constexpr int NCovMatrixComponents_State8 = 36;

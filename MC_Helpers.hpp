@@ -4,11 +4,11 @@
 #include <tuple>
 #include <vector>
 
-#include "common/Constants.hpp"
-#include "common/DB_Particles.hpp"
-#include "common/DB_ReactionChannels.hpp"
-#include "common/HD_Library.hpp"
-#include "common/POD_McParticle.hpp"
+#include "Constants.hpp"
+#include "DB_Particles.hpp"
+#include "DB_ReactionChannels.hpp"
+#include "HD_Library.hpp"
+#include "POD_McParticle.hpp"
 
 namespace MC {
 

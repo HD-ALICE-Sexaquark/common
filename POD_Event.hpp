@@ -33,11 +33,11 @@ struct Event : POD::Event {
 
 namespace MC {
 struct Event {
-    float MC_PV_X;
-    float MC_PV_Y;
-    float MC_PV_Z;
-    bool MC_IsGenPileup;
-    bool MC_IsSBCPileup;
+    float PV_X;
+    float PV_Y;
+    float PV_Z;
+    bool IsGenPileup;
+    bool IsSBCPileup;
 };
 }  // namespace MC
 

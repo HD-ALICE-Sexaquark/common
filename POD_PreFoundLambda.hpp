@@ -1,19 +1,23 @@
 #pragma once
 
+#include <array>
+
+#include "Constants.hpp"
+
 namespace POD {
 
-struct OnTheFlyLambda {
+struct PreFoundLambda {
     // -- (anti)lambda info
-    unsigned int OnTheFlyEntry;
+    unsigned int PreFoundEntry;
     float Decay_X;
     float Decay_Y;
     float Decay_Z;
-    float Px;
-    float Py;
-    float Pz;
     float DcaV0Daughters;
+    float Chi2;
     // -- negative daughter
     unsigned int Neg_EsdEntry;
+    std::array<float, 6> Neg_State;
+    std::array<float, Common::NCovMatrixComponents_State6> Neg_CovMatrix;
     float Neg_PCAwrtV0_Px;
     float Neg_PCAwrtV0_Py;
     float Neg_PCAwrtV0_Pz;
@@ -24,6 +28,8 @@ struct OnTheFlyLambda {
     float Neg_NSigmaPion;
     // -- positive daughter
     unsigned int Pos_EsdEntry;
+    std::array<float, 6> Pos_State;
+    std::array<float, Common::NCovMatrixComponents_State6> Pos_CovMatrix;
     float Pos_PCAwrtV0_Px;
     float Pos_PCAwrtV0_Py;
     float Pos_PCAwrtV0_Pz;
@@ -36,8 +42,17 @@ struct OnTheFlyLambda {
 
 namespace Extended {
 
-struct OnTheFlyLambda : POD::OnTheFlyLambda {
+struct PreFoundLambda : POD::PreFoundLambda {
+    // kinematics
+    float Px;
+    float Py;
+    float Pz;
     float Energy;
+    std::array<float, Common::NCovMatrixComponents_State7> CovMatrix;
+    // negative daughter
+    float Neg_Energy;
+    // positive daughter
+    float Pos_Energy;
 };
 
 }  // namespace Extended

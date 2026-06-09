@@ -6,15 +6,15 @@
 #include "POD_Event.hpp"
 #include "POD_LambdaPair.hpp"
 #include "POD_McParticle.hpp"
-#include "POD_OnTheFlyLambda.hpp"
+#include "POD_PreFoundLambda.hpp"
 
 namespace Schema {
 
 struct FoundHdibaryon {
     POD::Event Event;
     std::vector<POD::LambdaPair> Hdibaryon;
-    std::vector<POD::Extended::OnTheFlyLambda> Lambda1;
-    std::vector<POD::Extended::OnTheFlyLambda> Lambda2;
+    std::vector<POD::Extended::PreFoundLambda> Lambda1;
+    std::vector<POD::Extended::PreFoundLambda> Lambda2;
     // mc only
     POD::MC::Event MC_Event;
     std::vector<POD::Extended::McParticle> Injected;      // total injected signal, useful for efficiency studies
@@ -30,8 +30,8 @@ struct FoundHdibaryon {
         Framework::Model model;
         model.RegisterField<POD::Event>(&Event, "Event");
         model.RegisterField<std::vector<POD::LambdaPair>>(&Hdibaryon, "Hdibaryon");
-        model.RegisterField<std::vector<POD::Extended::OnTheFlyLambda>>(&Lambda1, "Lambda1");
-        model.RegisterField<std::vector<POD::Extended::OnTheFlyLambda>>(&Lambda2, "Lambda2");
+        model.RegisterField<std::vector<POD::Extended::PreFoundLambda>>(&Lambda1, "Lambda1");
+        model.RegisterField<std::vector<POD::Extended::PreFoundLambda>>(&Lambda2, "Lambda2");
         if (is_mc) {
             model.RegisterField<POD::MC::Event>(&MC_Event, "MC_Event");
             model.RegisterField<std::vector<POD::Extended::McParticle>>(&Injected, "Injected");
