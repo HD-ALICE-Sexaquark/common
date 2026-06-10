@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include <Math/GenVector/Boost.h>
 #include <Math/Vector3D.h>
 #include <Math/Vector4Dfwd.h>
@@ -28,8 +30,8 @@ inline constexpr DecayTree Channel = {
 inline constexpr DecayTree AntiChannel = {
     DB::Particles::Particle("AntiHdibaryon"),
     DB::Particles::Particle("AntiLambda"),
-    DB::Particles::Particle("PiPlus"),
     DB::Particles::Particle("AntiProton"),
+    DB::Particles::Particle("PiPlus"),
 };
 
 constexpr const DecayTree& GetDecayTree(bool anti_channel) noexcept { return anti_channel ? AntiChannel : Channel; }

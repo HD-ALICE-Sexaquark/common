@@ -2,10 +2,8 @@
 
 #include <cmath>
 
-#include <Math/Point3D.h>
 #include <Math/Point3Dfwd.h>
-#include <Math/Vector3D.h>
-#include <Math/Vector4D.h>
+#include <Math/Vector4Dfwd.h>
 
 #include "HD_Library.hpp"
 #include "Math.hpp"
@@ -14,17 +12,17 @@
 
 namespace Cached {
 
-struct Hdibaryon : POD::LambdaPair {
+struct LambdaPair : POD::LambdaPair {
 
-    Hdibaryon(const POD::LambdaPair& hdib, const POD::Extended::PreFoundLambda& l1, const POD::Extended::PreFoundLambda& l2,
-              const ROOT::Math::XYZPoint& ref)
+    LambdaPair(const POD::LambdaPair& hdib, const POD::Extended::PreFoundLambda& l1, const POD::Extended::PreFoundLambda& l2,
+               const ROOT::Math::XYZPoint& ref)
         : POD::LambdaPair(hdib),  //
           lv{hdib.Px, hdib.Py, hdib.Pz, hdib.Energy},
-          dv{hdib.Decay_X, hdib.Decay_Y, hdib.Decay_Z},  // PENDING: is half, isn't it?
+          dv{hdib.Decay_X, hdib.Decay_Y, hdib.Decay_Z},
           pv{ref} {
         pca_wrt_pv = Common::Math::FastPCA_LineVertex(lv.Vect(), dv, pv);
-        dca_btw_lambdas = std::sqrt(Common::Math::Distance(ROOT::Math::XYZPoint{Lambda1_PCAwrtDV_X, Lambda1_PCAwrtDV_Y, Lambda1_PCAwrtDV_Z},
-                                                           ROOT::Math::XYZPoint{Lambda2_PCAwrtDV_X, Lambda2_PCAwrtDV_Y, Lambda2_PCAwrtDV_Z}));
+        dca_btw_lambdas = Common::Math::Distance(ROOT::Math::XYZPoint{Lambda1_PCAwrtDV_X, Lambda1_PCAwrtDV_Y, Lambda1_PCAwrtDV_Z},
+                                                 ROOT::Math::XYZPoint{Lambda2_PCAwrtDV_X, Lambda2_PCAwrtDV_Y, Lambda2_PCAwrtDV_Z});
         cpa_wrt_pv = Common::Math::CosinePointingAngle(lv.Vect(), dv, pv);
         // correlations
         ROOT::Math::PxPyPzEVector lv_l1(l1.Px, l1.Py, l1.Pz, l1.Energy);

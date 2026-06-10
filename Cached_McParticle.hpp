@@ -16,7 +16,7 @@ struct McParticle : POD::Extended::McParticle {
 
     McParticle(const POD::Extended::McParticle& e_mc, const ROOT::Math::XYZPoint& ref, double bz)  //
         : POD::Extended::McParticle(e_mc),
-          lv{e_mc.Px, e_mc.Py, e_mc.Pz, Common::Math::Hypot4(e_mc.Px, e_mc.Py, e_mc.Pz, e_mc.Energy)},
+          lv{e_mc.Px, e_mc.Py, e_mc.Pz, e_mc.Energy},
           origin{e_mc.Origin_X, e_mc.Origin_Y, e_mc.Origin_Z},
           decay{e_mc.Decay_X, e_mc.Decay_Y, e_mc.Decay_Z},
           pv{ref} {

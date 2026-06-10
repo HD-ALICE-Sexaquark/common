@@ -13,7 +13,7 @@ struct Sexaquark {
     float Energy;
     float Chi2NDF;
     float E_MinusNucleon;
-    bool AntiChannel;
+    bool IsBkgChannel;
     // -- daughter 1
     float Dau1_PCAwrtSV_X;
     float Dau1_PCAwrtSV_Y;

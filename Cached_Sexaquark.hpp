@@ -44,8 +44,11 @@ struct Sexaquark : POD::Sexaquark {
     }
 
     // geometry
+    [[nodiscard]] double SV_SquaredRadius2D() const { return sv.Perp2(); }
+    [[nodiscard]] double SV_SquaredRadius3D() const { return sv.Mag2(); }
     [[nodiscard]] double SV_Radius2D() const { return sv.Rho(); }
     [[nodiscard]] double SV_Radius3D() const { return sv.R(); }
+    [[nodiscard]] double SquaredDCA_btw_Daughters() const { return (dau1_pca_wrt_sv - dau2_pca_wrt_sv).Mag2(); }
     [[nodiscard]] double DCA_btw_Daughters() const { return (dau1_pca_wrt_sv - dau2_pca_wrt_sv).R(); }
     // kinematics
     [[nodiscard]] double Mass() const { return lv.M(); }
@@ -54,6 +57,7 @@ struct Sexaquark : POD::Sexaquark {
     [[nodiscard]] double Pt() const { return lv.Pt(); }
     [[nodiscard]] double P() const { return lv.P(); }
     // kinematics+geometry
+    [[nodiscard]] double SquaredDCA_wrt_PV() const { return (pca_wrt_pv - pv).Mag2(); }
     [[nodiscard]] double DCA_wrt_PV() const { return (pca_wrt_pv - pv).R(); }
     [[nodiscard]] double CPA_wrt_PV() const { return cpa_wrt_pv; }
     // kinematics
@@ -66,6 +70,7 @@ struct Sexaquark : POD::Sexaquark {
     [[nodiscard]] double Dau1_P() const { return dau1_mom.R(); }
     [[nodiscard]] double Dau1_Eta() const { return dau1_mom.Eta(); }
     // -- related to anti-sexaquark
+    [[nodiscard]] double Dau1_SquaredDCA_wrt_SV() const { return (dau1_pca_wrt_sv - sv).Mag2(); }
     [[nodiscard]] double Dau1_DCA_wrt_SV() const { return (dau1_pca_wrt_sv - sv).R(); }
     [[nodiscard]] double Dau1_CPA_wrt_SV() const { return dau1_cpa_wrt_sv.value_or(Common::DummyDouble); }
     [[nodiscard]] double Dau1_DecayLength() const { return dau1_dv.has_value() ? (dau1_dv.value() - sv).R() : Common::DummyDouble; }
@@ -76,6 +81,7 @@ struct Sexaquark : POD::Sexaquark {
     [[nodiscard]] double Dau2_P() const { return dau2_mom.R(); }
     [[nodiscard]] double Dau2_Eta() const { return dau2_mom.Eta(); }
     // -- related to anti-sexaquark
+    [[nodiscard]] double Dau2_SquaredDCA_wrt_SV() const { return (dau2_pca_wrt_sv - sv).Mag2(); }
     [[nodiscard]] double Dau2_DCA_wrt_SV() const { return (dau2_pca_wrt_sv - sv).R(); }
     [[nodiscard]] double Dau2_CPA_wrt_SV() const { return dau2_cpa_wrt_sv.value_or(Common::DummyDouble); }
     [[nodiscard]] double Dau2_DecayLength() const { return dau2_dv.has_value() ? (dau2_dv.value() - sv).R() : Common::DummyDouble; }

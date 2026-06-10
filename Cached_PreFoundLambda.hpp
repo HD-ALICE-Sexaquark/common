@@ -2,6 +2,7 @@
 
 #include <cmath>
 
+#include <Math/GenVector/Boost.h>
 #include <Math/Point3D.h>
 #include <Math/Vector3D.h>
 #include <Math/Vector4D.h>
@@ -12,21 +13,39 @@
 
 namespace Cached {
 
-struct PreFoundLambda : POD::PreFoundLambda {
+constexpr POD::Extended::PreFoundLambda TriviallyExtendPreFoundLambda(const POD::PreFoundLambda& non_ext_lambda, double mass_neg, double mass_pos) {
+    double energy_neg =
+        Common::Math::Hypot4(non_ext_lambda.Neg_PCAwrtV0_Px, non_ext_lambda.Neg_PCAwrtV0_Py, non_ext_lambda.Neg_PCAwrtV0_Pz, mass_neg);
+    double energy_pos =
+        Common::Math::Hypot4(non_ext_lambda.Pos_PCAwrtV0_Px, non_ext_lambda.Pos_PCAwrtV0_Py, non_ext_lambda.Pos_PCAwrtV0_Pz, mass_pos);
+    return {non_ext_lambda,
+            non_ext_lambda.Neg_PCAwrtV0_Px + non_ext_lambda.Pos_PCAwrtV0_Px,
+            non_ext_lambda.Neg_PCAwrtV0_Py + non_ext_lambda.Pos_PCAwrtV0_Py,
+            non_ext_lambda.Neg_PCAwrtV0_Pz + non_ext_lambda.Pos_PCAwrtV0_Pz,
+            static_cast<float>(energy_neg + energy_pos),
+            {},  // empty cov. matrix
+            Common::DummyFloat,
+            static_cast<float>(energy_neg),
+            static_cast<float>(energy_pos)};
+}
 
-    PreFoundLambda(const POD::PreFoundLambda& lambda, double mass_neg, double mass_pos, const ROOT::Math::XYZPoint& ref)  //
-        : POD::PreFoundLambda(lambda),
-          lv_neg{Neg_PCAwrtV0_Px, Neg_PCAwrtV0_Py, Neg_PCAwrtV0_Pz,
+struct PreFoundLambda : POD::Extended::PreFoundLambda {
+
+    PreFoundLambda(const POD::Extended::PreFoundLambda& lambda, double mass_neg, double mass_pos, const ROOT::Math::XYZPoint& ref)
+        : POD::Extended::PreFoundLambda(lambda),
+          lv_neg{lambda.Neg_PCAwrtV0_Px, lambda.Neg_PCAwrtV0_Py, lambda.Neg_PCAwrtV0_Pz,
                  Common::Math::Hypot4(lambda.Neg_PCAwrtV0_Px, lambda.Neg_PCAwrtV0_Py, lambda.Neg_PCAwrtV0_Pz, mass_neg)},
-          lv_pos{Pos_PCAwrtV0_Px, Pos_PCAwrtV0_Py, Pos_PCAwrtV0_Pz,
-                 Common::Math::Hypot4(Pos_PCAwrtV0_Px, Pos_PCAwrtV0_Py, Pos_PCAwrtV0_Pz, mass_pos)},
-          lv{lv_neg + lv_pos},
+          lv_pos{lambda.Pos_PCAwrtV0_Px, lambda.Pos_PCAwrtV0_Py, lambda.Pos_PCAwrtV0_Pz,
+                 Common::Math::Hypot4(lambda.Pos_PCAwrtV0_Px, lambda.Pos_PCAwrtV0_Py, lambda.Pos_PCAwrtV0_Pz, mass_pos)},
+          lv{lambda.Px, lambda.Py, lambda.Pz, lambda.Energy},
           dv{lambda.Decay_X, lambda.Decay_Y, lambda.Decay_Z},
           pv{ref},
           pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv.Vect(), dv, pv)},
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)},
           arm_alpha{Common::Math::ArmenterosAlpha(lv.Vect(), lv_neg.Vect(), lv_pos.Vect()).value_or(Common::DummyFloat)},
           arm_qt{Common::Math::ArmenterosQt(lv.Vect(), lv_neg.Vect())} {}
+    PreFoundLambda(const POD::PreFoundLambda& non_ext_lambda, double mass_neg, double mass_pos, const ROOT::Math::XYZPoint& ref)
+        : Cached::PreFoundLambda{TriviallyExtendPreFoundLambda(non_ext_lambda, mass_neg, mass_pos), mass_neg, mass_pos, ref} {}
 
     // kinematics
     [[nodiscard]] double Px() const { return lv.Px(); }

@@ -11,6 +11,7 @@ struct LambdaPair {
     float Py;
     float Pz;
     float Energy;
+    float Chi2NDF;
     bool AntiChannel;
     // -- lambda1
     float Lambda1_PCAwrtDV_X;

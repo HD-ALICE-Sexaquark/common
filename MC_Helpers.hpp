@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <tuple>
 #include <vector>
@@ -129,20 +131,23 @@ inline Cache ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD
     c.IsGen1Signal = false;
     c.IsGen2Signal = false;
 
+    // -- check if it's first-gen decay product
     if (mc.Mother_McEntry > Common::DummyInt) {
         const auto &mother = mc_collection[static_cast<std::size_t>(mc.Mother_McEntry)];
         c.Mother_PdgCode = mother.PdgCode;
-        c.IsGen1Signal = c.Mother_PdgCode == decay_pid.hdibaryon.pdg_code && mc.PdgCode == decay_pid.lambda.pdg_code;
+        c.IsGen1Signal = mother.PdgCode == decay_pid.hdibaryon.pdg_code;
+        if (c.IsGen1Signal) c.SignalID = static_cast<int>(mother.StatusCode);
+        // -- check if it's second-gen decay product
         if (mother.Mother_McEntry > Common::DummyInt) {
+            const auto &gm = mc_collection[static_cast<std::size_t>(mother.Mother_McEntry)];
             c.GM_McEntry = mother.Mother_McEntry;
-            c.GM_PdgCode = mc_collection[static_cast<std::size_t>(mother.Mother_McEntry)].PdgCode;
-            c.IsGen2Signal =
-                c.GM_PdgCode == decay_pid.hdibaryon.pdg_code && (mc.PdgCode == decay_pid.neg.pdg_code || mc.PdgCode == decay_pid.pos.pdg_code);
+            c.GM_PdgCode = gm.PdgCode;
+            c.IsGen2Signal = gm.PdgCode == decay_pid.hdibaryon.pdg_code;
+            if (c.IsGen2Signal) c.SignalID = static_cast<int>(gm.StatusCode);
         }
     }
 
     c.IsTrueSignal = (c.IsGen1Signal || c.IsGen2Signal) && c.IsTrue;
-    if (c.IsGen1Signal || c.IsGen2Signal) c.SignalID = static_cast<int>(mc.StatusCode);
     c.IsSecondary = mc.IsSecFromMat || mc.IsSecFromWeak || c.IsGen1Signal || c.IsGen2Signal;
 
     if (include_dv && mc.FirstDau_McEntry > Common::DummyInt) {
