@@ -63,6 +63,18 @@ GetDecayVertex(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc
 }
 // clang-format on
 
+// Find first daughter with an specific PdgCode and return its McEntry.
+inline std::optional<std::size_t> FindDaughterMcEntry(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
+                                                      int target_pdg_code) {
+    if (mc.N_Daughters == 0) return std::nullopt;
+    if (mc.FirstDau_McEntry < 0) return std::nullopt;
+    for (int entry_dau = mc.FirstDau_McEntry; entry_dau <= mc.LastDau_McEntry; ++entry_dau) {
+        const auto &mc_dau = mc_collection[static_cast<std::size_t>(entry_dau)];
+        if (mc_dau.PdgCode == target_pdg_code) return static_cast<std::size_t>(entry_dau);
+    }
+    return std::nullopt;
+}
+
 namespace SexaquarkRules {
 
 // NOTE: no true hypothesis here.

@@ -7,7 +7,7 @@
 namespace POD {
 
 struct PreFoundLambda {
-    // -- (anti)lambda info
+    // (anti)lambda info
     unsigned int PreFoundEntry;
     float Decay_X;         // (updated after fit)
     float Decay_Y;         // (updated after fit)
@@ -15,8 +15,8 @@ struct PreFoundLambda {
     float DcaV0Daughters;  // (updated after fit)
     // negative daughter
     unsigned int Neg_EsdEntry;
-    std::array<float, 6> Neg_State;
-    std::array<float, Common::NCovMatrixComponents_State6> Neg_CovMatrix;
+    std::array<float, 6> Neg_State;                                        // from parametrization from AliESDv0
+    std::array<float, Common::NCovMatrixComponents_State6> Neg_CovMatrix;  // from parametrization from AliESDv0
     float Neg_PreDCAxy;
     float Neg_PreDCAz;
     float Neg_NSigmaProton;
@@ -28,8 +28,8 @@ struct PreFoundLambda {
     float Neg_PCAwrtV0_Pz;  // (updated after fit)
     // positive daughter
     unsigned int Pos_EsdEntry;
-    std::array<float, 6> Pos_State;
-    std::array<float, Common::NCovMatrixComponents_State6> Pos_CovMatrix;
+    std::array<float, 6> Pos_State;                                        // from parametrization from AliESDv0
+    std::array<float, Common::NCovMatrixComponents_State6> Pos_CovMatrix;  // from parametrization from AliESDv0
     float Pos_PreDCAxy;
     float Pos_PreDCAz;
     float Pos_NSigmaProton;

@@ -7,6 +7,7 @@
 #pragma link C++ struct POD::Event+;
 #pragma link C++ struct POD::Extended::Event+;
 #pragma link C++ struct POD::MC::Event+;
+#pragma link C++ struct POD::InjectedHdib+;
 #pragma link C++ struct POD::InjectedSexa+;
 #pragma link C++ struct POD::Extended::InjectedSexa+;
 #pragma link C++ struct POD::Linked::InjectedSexa+;

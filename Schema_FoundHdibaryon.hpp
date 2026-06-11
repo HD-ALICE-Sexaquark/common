@@ -4,6 +4,7 @@
 
 #include "Framework.hpp"
 #include "POD_Event.hpp"
+#include "POD_InjectedHdib.hpp"
 #include "POD_LambdaPair.hpp"
 #include "POD_McParticle.hpp"
 #include "POD_PreFoundLambda.hpp"
@@ -17,7 +18,7 @@ struct FoundHdibaryon {
     std::vector<POD::Extended::PreFoundLambda> Lambda2;
     // mc only
     POD::MC::Event MC_Event;
-    std::vector<POD::Extended::McParticle> Injected;      // total injected signal, useful for efficiency studies
+    std::vector<POD::InjectedHdib> Injected;              // total injected signal, useful for efficiency studies
     std::vector<POD::Extended::McParticle> MC_Hdibaryon;  // linked mc
     std::vector<POD::Extended::McParticle> MC_Lambda1;
     std::vector<POD::Extended::McParticle> MC_Lambda1_Neg;
@@ -34,7 +35,7 @@ struct FoundHdibaryon {
         model.RegisterField<std::vector<POD::Extended::PreFoundLambda>>(&Lambda2, "Lambda2");
         if (is_mc) {
             model.RegisterField<POD::MC::Event>(&MC_Event, "MC_Event");
-            model.RegisterField<std::vector<POD::Extended::McParticle>>(&Injected, "Injected");
+            model.RegisterField<std::vector<POD::InjectedHdib>>(&Injected, "Injected");
             model.RegisterField<std::vector<POD::Extended::McParticle>>(&MC_Hdibaryon, "MC_Hdibaryon");
             model.RegisterField<std::vector<POD::Extended::McParticle>>(&MC_Lambda1, "MC_Lambda1");
             model.RegisterField<std::vector<POD::Extended::McParticle>>(&MC_Lambda1_Neg, "MC_Lambda1_Neg");

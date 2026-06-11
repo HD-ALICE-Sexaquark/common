@@ -11,10 +11,10 @@ namespace E2R {
 static constexpr unsigned int ReactionID_Offset = 600;   // (anti)sexaquark-nucleon reactions
 static constexpr unsigned int InjectionID_Offset = 400;  // h-dibaryon injections
 
-// Number of events per file from dedicated MC, by construction
+// number of events per file from dedicated MC, by construction
 static constexpr unsigned int NEventsInDedicatedMC = 10;
 
-// Number of injected (anti)sexaquark-nucleon reactions per event in dedicated MC, by construction
+// number of injected (anti)sexaquark-nucleon reactions per event in dedicated MC, by construction
 static constexpr unsigned int NSexaReactionsPerEvent = 20;
 
 static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";

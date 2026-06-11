@@ -58,7 +58,10 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
     [[nodiscard]] double Energy() const { return lv.E(); }
     [[nodiscard]] double Mass() const { return lv.M(); }
     [[nodiscard]] double Rapidity() const { return lv.Rapidity(); }
-    // -- correlations
+    // -- armenteros-podolanski
+    [[nodiscard]] double ArmAlpha() const { return arm_alpha; }
+    [[nodiscard]] double ArmQt() const { return arm_qt; }
+    // correlations
     [[nodiscard]] double Proton_CosThetaStar() const {
         // angle between proton and their respective lambdas in the lambda r.f.
         auto boost_to_l1_rf = ROOT::Math::Boost(lv.BoostToCM());
@@ -67,15 +70,12 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
         auto u_p1 = p1_in_l1_rf.Vect().Unit();
         return u_p1.Dot(u_l1);
     }
-    // -- negative daughter
+    // negative daughter
     [[nodiscard]] double Neg_Pt() const { return lv_neg.Pt(); }
     [[nodiscard]] double Neg_P() const { return lv_neg.P(); }
-    // -- positive daughter
+    // positive daughter
     [[nodiscard]] double Pos_Pt() const { return lv_pos.Pt(); }
     [[nodiscard]] double Pos_P() const { return lv_pos.P(); }
-    // -- armenteros-podolanski
-    [[nodiscard]] double ArmAlpha() const { return arm_alpha; }
-    [[nodiscard]] double ArmQt() const { return arm_qt; }
     // geometry
     [[nodiscard]] double Decay_Radius2D() const { return dv.Rho(); }
     [[nodiscard]] double Decay_Radius3D() const { return dv.R(); }

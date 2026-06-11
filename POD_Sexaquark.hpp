@@ -3,7 +3,7 @@
 namespace POD {
 
 struct Sexaquark {
-    // -- candidate info
+    // candidate info
     float SV_X;
     float SV_Y;
     float SV_Z;
@@ -14,14 +14,14 @@ struct Sexaquark {
     float Chi2NDF;
     float E_MinusNucleon;
     bool IsBkgChannel;
-    // -- daughter 1
+    // daughter 1
     float Dau1_PCAwrtSV_X;
     float Dau1_PCAwrtSV_Y;
     float Dau1_PCAwrtSV_Z;
     float Dau1_PCAwrtSV_Px;
     float Dau1_PCAwrtSV_Py;
     float Dau1_PCAwrtSV_Pz;
-    // -- daughter 2
+    // daughter 2
     float Dau2_PCAwrtSV_X;
     float Dau2_PCAwrtSV_Y;
     float Dau2_PCAwrtSV_Z;

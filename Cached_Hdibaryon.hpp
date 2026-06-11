@@ -12,10 +12,10 @@
 
 namespace Cached {
 
-struct LambdaPair : POD::LambdaPair {
+struct Hdibaryon : POD::LambdaPair {
 
-    LambdaPair(const POD::LambdaPair& hdib, const POD::Extended::PreFoundLambda& l1, const POD::Extended::PreFoundLambda& l2,
-               const ROOT::Math::XYZPoint& ref)
+    Hdibaryon(const POD::LambdaPair& hdib, const POD::Extended::PreFoundLambda& l1, const POD::Extended::PreFoundLambda& l2,
+              const ROOT::Math::XYZPoint& ref)
         : POD::LambdaPair(hdib),  //
           lv{hdib.Px, hdib.Py, hdib.Pz, hdib.Energy},
           dv{hdib.Decay_X, hdib.Decay_Y, hdib.Decay_Z},
