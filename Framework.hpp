@@ -53,13 +53,7 @@ struct Writer {
 
     Framework::Model fModel;
     std::unique_ptr<ROOT::RNTupleWriter> fRNT_Writer;
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
-    // "[ntuple] Move RRawPtrWriteEntry out of Experimental"
-    // Commit: https://github.com/root-project/root/commit/1ba8730dcffbb1ed2e1419f0796188a7daf4947c
     std::unique_ptr<ROOT::Detail::RRawPtrWriteEntry> fEntry;
-#else
-    std::unique_ptr<ROOT::Experimental::Detail::RRawPtrWriteEntry> fEntry;
-#endif
 };
 
 struct Reader {

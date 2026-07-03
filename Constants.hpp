@@ -23,7 +23,7 @@ static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReac
 // (sexaquark-dedicated MC only)
 enum EGenerator : std::uint8_t { kHijing, kInjectedAntiNeutron, kInjectedAntiSexaquarkReaction };
 
-static constexpr std::string_view Name_OutputRNT = "Events";
+static constexpr std::string_view Name_OutputTree = "Events";
 }  // namespace E2R
 
 namespace R2DS {

@@ -2,7 +2,13 @@
 
 #include <vector>
 
+#include <ROOT/RVersion.hxx>
+
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
 #include "Framework.hpp"
+#else
+#include "Framework_TeeTree.hpp"
+#endif
 #include "POD_Event.hpp"
 #include "POD_InjectedSexa.hpp"
 #include "POD_McParticle.hpp"
@@ -12,7 +18,7 @@
 namespace Schema {
 
 struct Events {
-    POD::Extended::Event Event;
+    POD::Event Event;
     std::vector<POD::Track> Track;
     std::vector<POD::PreFoundLambda> PreFoundLambda;
     // mc only //
@@ -23,9 +29,10 @@ struct Events {
     std::vector<unsigned int> PreFoundLambda_Neg_McEntry;
     std::vector<unsigned int> PreFoundLambda_Pos_McEntry;
 
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
     Framework::Model CreateModel(bool is_mc, bool sexa_mc) {
         Framework::Model model;
-        model.RegisterField<POD::Extended::Event>(&Event, "Event");
+        model.RegisterField<POD::Event>(&Event, "Event");
         model.RegisterField<std::vector<POD::Track>>(&Track, "Track");
         model.RegisterField<std::vector<POD::PreFoundLambda>>(&PreFoundLambda, "PreFoundLambda");
         if (is_mc) {
@@ -35,6 +42,23 @@ struct Events {
             model.RegisterField<std::vector<unsigned int>>(&Track_McEntry, "Track_McEntry");
             model.RegisterField<std::vector<unsigned int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
             model.RegisterField<std::vector<unsigned int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
+        }
+        return model;
+    }
+#endif
+
+    Framework::TeeTree::Model CreateModel_TeeTree(bool is_mc, bool sexa_mc) {
+        Framework::TeeTree::Model model;
+        model.RegisterBranch<POD::Event>(&Event, "Event");
+        model.RegisterBranch<std::vector<POD::Track>>(&Track, "Track");
+        model.RegisterBranch<std::vector<POD::PreFoundLambda>>(&PreFoundLambda, "PreFoundLambda");
+        if (is_mc) {
+            model.RegisterBranch<POD::MC::Event>(&MC_Event, "MC_Event");
+            if (sexa_mc) model.RegisterBranch<std::vector<POD::InjectedSexa>>(&InjectedSexa, "InjectedSexa");
+            model.RegisterBranch<std::vector<POD::McParticle>>(&McParticle, "McParticle");
+            model.RegisterBranch<std::vector<unsigned int>>(&Track_McEntry, "Track_McEntry");
+            model.RegisterBranch<std::vector<unsigned int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
+            model.RegisterBranch<std::vector<unsigned int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
         }
         return model;
     }
