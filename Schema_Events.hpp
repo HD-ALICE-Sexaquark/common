@@ -6,9 +6,8 @@
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
 #include "Framework.hpp"
-#else
-#include "Framework_TeeTree.hpp"
 #endif
+#include "Framework_TeeTree.hpp"
 #include "POD_Event.hpp"
 #include "POD_InjectedSexa.hpp"
 #include "POD_McParticle.hpp"

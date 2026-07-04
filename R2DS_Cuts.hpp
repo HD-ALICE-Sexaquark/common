@@ -3,16 +3,16 @@
 namespace R2DS::Cuts {
 
 namespace Proton {
-constexpr double AbsMax_NSigmaProton = 3.;
+constexpr double AbsMax_NSigmasProton = 3.;
 // constexpr double AbsMin_DCAxy = 30.;  // PENDING
 }  // namespace Proton
 
 namespace Kaon {
-constexpr double AbsMax_NSigmaKaon = 3.;
+constexpr double AbsMax_NSigmasKaon = 3.;
 }  // namespace Kaon
 
 namespace Pion {
-constexpr double AbsMax_NSigmaPion = 3.;
+constexpr double AbsMax_NSigmasPion = 3.;
 // constexpr double AbsMin_DCAxy = 30.;  // PENDING
 }  // namespace Pion
 

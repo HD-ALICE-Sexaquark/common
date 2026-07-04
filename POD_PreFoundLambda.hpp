@@ -19,9 +19,9 @@ struct PreFoundLambda {
     std::array<float, Common::NCovMatrixComponents_State6> Neg_CovMatrix;  // from parametrization from AliESDv0
     float Neg_PreDCAxy;
     float Neg_PreDCAz;
-    float Neg_NSigmaProton;
-    float Neg_NSigmaKaon;
-    float Neg_NSigmaPion;
+    float Neg_NSigmasProton;
+    float Neg_NSigmasKaon;
+    float Neg_NSigmasPion;
     // -- related to (anti)lambda
     float Neg_PCAwrtV0_Px;  // (updated after fit)
     float Neg_PCAwrtV0_Py;  // (updated after fit)
@@ -32,9 +32,9 @@ struct PreFoundLambda {
     std::array<float, Common::NCovMatrixComponents_State6> Pos_CovMatrix;  // from parametrization from AliESDv0
     float Pos_PreDCAxy;
     float Pos_PreDCAz;
-    float Pos_NSigmaProton;
-    float Pos_NSigmaKaon;
-    float Pos_NSigmaPion;
+    float Pos_NSigmasProton;
+    float Pos_NSigmasKaon;
+    float Pos_NSigmasPion;
     // -- related to (anti)lambda
     float Pos_PCAwrtV0_Px;  // (updated after fit)
     float Pos_PCAwrtV0_Py;  // (updated after fit)

@@ -84,7 +84,7 @@ struct Writer {
     // will create a new `TTree` wherever `gDirectory` currently points
     Writer(Model model, std::string_view tree_name, TDirectory* dir = gDirectory)  //
         : fModel{std::move(model)} {
-        if (!dir) throw std::runtime_error("Writer: null directory");
+        if (dir == nullptr) throw std::runtime_error("Writer: null directory");
         dir->cd();
         fTree = new TTree(std::string(tree_name).c_str(), "");
         fTree->SetAutoSave(0);
@@ -96,9 +96,9 @@ struct Writer {
 
     // if output `TFile` is owned, this must be called explicitly
     void Write() {
-        if (!fTree) return;
+        if (fTree == nullptr) return;
         auto* dir = fTree->GetDirectory();
-        if (!dir) return;
+        if (dir == nullptr) return;
         dir->cd();
         fTree->Write("", TObject::kOverwrite);
     }
@@ -112,7 +112,7 @@ struct Reader {
     Reader(Model model, std::string_view tree_name, TFile& input_file)  //
         : fModel{std::move(model)} {
         fTree = input_file.Get<TTree>(std::string(tree_name).c_str());
-        if (!fTree) throw std::runtime_error("Reader: tree not found");
+        if (fTree == nullptr) throw std::runtime_error("Reader: tree not found");
         for (auto& e : fModel.fEntries) e.setAddress(*fTree, e);
     }
 
