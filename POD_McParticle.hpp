@@ -25,7 +25,7 @@ struct McParticle {
     bool IsPhysPrimary{false};  // is physical primary according to the ALICE definition
     bool IsSecFromMat{false};
     bool IsSecFromWeak{false};
-#if E2R_MC_EXTRA
+#if E2T_MC_EXTRA
     bool IsOOBPileup{false};
 #endif
 };

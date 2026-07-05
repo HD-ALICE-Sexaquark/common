@@ -23,7 +23,7 @@ struct Track {
     float NSigmasProton;
     std::array<float, Common::NCovMatrixComponents_State6> CovMatrix;
     int TPC_FirstRow;  // in the cluster map
-#if E2R_TPC_EXTRA
+#if E2T_TPC_EXTRA
     float TPC_Chi2;
     float TPC_Chi2Constrained;  // TPC-only chi2 at the primary vertex
     float TPC_Chi2TCVG;         // chi2 TPC constrained vs global

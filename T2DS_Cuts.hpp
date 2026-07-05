@@ -1,6 +1,6 @@
 #pragma once
 
-namespace R2DS::Cuts {
+namespace T2DS::Cuts {
 
 namespace Proton {
 constexpr double AbsMax_NSigmasProton = 3.;
@@ -97,4 +97,4 @@ constexpr double Max_DCAbtwDau = 0.;  // PENDING
 
 }  // namespace LambdaPair
 
-}  // namespace R2DS::Cuts
+}  // namespace T2DS::Cuts

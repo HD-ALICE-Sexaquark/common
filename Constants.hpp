@@ -3,11 +3,11 @@
 #include <cstdint>
 #include <string_view>
 
-#define E2R_VERBOSE 0
-#define E2R_MC_EXTRA 1
-#define E2R_TPC_EXTRA 1
+#define E2T_VERBOSE 0
+#define E2T_MC_EXTRA 1
+#define E2T_TPC_EXTRA 1
 
-namespace E2R {
+namespace E2T {
 static constexpr unsigned int ReactionID_Offset = 600;   // (anti)sexaquark-nucleon reactions
 static constexpr unsigned int InjectionID_Offset = 400;  // h-dibaryon injections
 
@@ -24,13 +24,12 @@ static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReac
 enum EGenerator : std::uint8_t { kHijing, kInjectedAntiNeutron, kInjectedAntiSexaquarkReaction };
 
 static constexpr std::string_view Name_OutputTree = "Events";
-}  // namespace E2R
+}  // namespace E2T
 
-namespace R2DS {
+namespace T2DS {
 static constexpr const char* Name_PackedRNT = "PackedEvents";
 static constexpr const char* Name_FoundHdibaryonRNT = "FoundHdibaryon";
-
-}  // namespace R2DS
+}  // namespace T2DS
 
 namespace Common {
 static constexpr int NCovMatrixComponents_State3 = 6;

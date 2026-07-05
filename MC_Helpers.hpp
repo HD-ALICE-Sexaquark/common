@@ -82,11 +82,11 @@ inline bool IsGen1Signal(const POD::McParticle &mc, const DB::ReactionChannels::
     // (1)) logical primary (= no mother)
     if (mc.Mother_McEntry > Common::DummyInt) return false;
     // (2) should come from the anti-sexaquark reaction generator
-    if (mc.Generator != E2R::EGenerator::kInjectedAntiSexaquarkReaction) return false;
+    if (mc.Generator != E2T::EGenerator::kInjectedAntiSexaquarkReaction) return false;
     // (3) pdg is found in reaction products?
     if (std::ranges::find(r_channel.products_pdg, mc.PdgCode) == r_channel.products_pdg.end()) return false;
     // (4) mc status has to be [600,620[
-    if (mc.StatusCode < E2R::ReactionID_Offset || mc.StatusCode >= E2R::ReactionID_Offset + E2R::NSexaReactionsPerEvent) return false;
+    if (mc.StatusCode < E2T::ReactionID_Offset || mc.StatusCode >= E2T::ReactionID_Offset + E2T::NSexaReactionsPerEvent) return false;
     return true;
 }
 
@@ -128,7 +128,7 @@ inline std::optional<std::size_t> FindCommonReactionID(const POD::Extended::McPa
     if (mc_dau1.SignalID < 0) return std::nullopt;
     if (mc_dau2.SignalID < 0) return std::nullopt;
     if (mc_dau1.SignalID != mc_dau2.SignalID) return std::nullopt;
-    return static_cast<std::size_t>(mc_dau1.SignalID) - E2R::ReactionID_Offset;
+    return static_cast<std::size_t>(mc_dau1.SignalID) - E2T::ReactionID_Offset;
 }
 
 }  // namespace SexaquarkRules

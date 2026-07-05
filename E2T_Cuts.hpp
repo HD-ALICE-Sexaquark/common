@@ -1,6 +1,6 @@
 #pragma once
 
-namespace E2R::Cuts {
+namespace E2T::Cuts {
 
 namespace Track {
 static constexpr double AbsMax_NSigmas_PID = 5.;        // PENDING: to tune!
@@ -19,4 +19,4 @@ static constexpr double AbsMax_DeltaInvariantMass = 0.1;  // (GeV/c^2) // PENDIN
 static constexpr double AbsSlope_ArmQtOverArmAlpha = 0.2;
 }  // namespace Lambda
 
-}  // namespace E2R::Cuts
+}  // namespace E2T::Cuts
