@@ -43,19 +43,16 @@ struct InjectedHdib : POD::InjectedHdib {
     [[nodiscard]] double Mass() const { return lv.M(); }
     [[nodiscard]] double Rapidity() const { return lv.Rapidity(); }
     // geometry
-    [[nodiscard]] double Decay_X() const { return dv.X(); }
-    [[nodiscard]] double Decay_Y() const { return dv.Y(); }
-    [[nodiscard]] double Decay_Z() const { return dv.Z(); }
     [[nodiscard]] double Decay_Radius2D() const { return dv.Rho(); }
     [[nodiscard]] double Decay_Radius3D() const { return dv.R(); }
     [[nodiscard]] double DecayLength() const { return (dv - pv).R(); }
     // correlations
     [[nodiscard]] double CosTheta_pp() const { return cos_theta_pp; }
     [[nodiscard]] double Theta_pp() const { return theta_pp; }
-    [[nodiscard]] double CosThetaStar_l1() const { return cos_theta_star_l1; }
-    [[nodiscard]] double CosThetaStar_l2() const { return cos_theta_star_l2; }
-    [[nodiscard]] double CosThetaStar_p1() const { return cos_theta_star_p1; }
-    [[nodiscard]] double CosThetaStar_p2() const { return cos_theta_star_p2; }
+    [[nodiscard]] double CosThetaStar_L1() const { return cos_theta_star_l1; }
+    [[nodiscard]] double CosThetaStar_L2() const { return cos_theta_star_l2; }
+    [[nodiscard]] double CosThetaStar_Pr1() const { return cos_theta_star_p1; }
+    [[nodiscard]] double CosThetaStar_Pr2() const { return cos_theta_star_p2; }
     [[nodiscard]] double Qrel() const { return q_rel; }
 
    private:

@@ -3,31 +3,15 @@
 #include <cmath>
 
 #include <Math/GenVector/Boost.h>
-#include <Math/Point3D.h>
-#include <Math/Vector3D.h>
-#include <Math/Vector4D.h>
+#include <Math/Point3Dfwd.h>
+#include <Math/Vector3Dfwd.h>
+#include <Math/Vector4Dfwd.h>
 
 #include "Constants.hpp"
 #include "Math.hpp"
 #include "POD_PreFoundLambda.hpp"
 
 namespace Cached {
-
-constexpr POD::Extended::PreFoundLambda TriviallyExtendPreFoundLambda(const POD::PreFoundLambda& non_ext_lambda, double mass_neg, double mass_pos) {
-    double energy_neg =
-        Common::Math::Hypot4(non_ext_lambda.Neg_PCAwrtV0_Px, non_ext_lambda.Neg_PCAwrtV0_Py, non_ext_lambda.Neg_PCAwrtV0_Pz, mass_neg);
-    double energy_pos =
-        Common::Math::Hypot4(non_ext_lambda.Pos_PCAwrtV0_Px, non_ext_lambda.Pos_PCAwrtV0_Py, non_ext_lambda.Pos_PCAwrtV0_Pz, mass_pos);
-    return {non_ext_lambda,
-            non_ext_lambda.Neg_PCAwrtV0_Px + non_ext_lambda.Pos_PCAwrtV0_Px,
-            non_ext_lambda.Neg_PCAwrtV0_Py + non_ext_lambda.Pos_PCAwrtV0_Py,
-            non_ext_lambda.Neg_PCAwrtV0_Pz + non_ext_lambda.Pos_PCAwrtV0_Pz,
-            static_cast<float>(energy_neg + energy_pos),
-            {},  // empty cov. matrix
-            Common::DummyFloat,
-            static_cast<float>(energy_neg),
-            static_cast<float>(energy_pos)};
-}
 
 struct PreFoundLambda : POD::Extended::PreFoundLambda {
 
@@ -44,8 +28,31 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)},
           arm_alpha{Common::Math::ArmenterosAlpha(lv.Vect(), lv_neg.Vect(), lv_pos.Vect()).value_or(Common::DummyFloat)},
           arm_qt{Common::Math::ArmenterosQt(lv.Vect(), lv_neg.Vect())} {}
-    PreFoundLambda(const POD::PreFoundLambda& non_ext_lambda, double mass_neg, double mass_pos, const ROOT::Math::XYZPoint& ref)
-        : Cached::PreFoundLambda{TriviallyExtendPreFoundLambda(non_ext_lambda, mass_neg, mass_pos), mass_neg, mass_pos, ref} {}
+
+    static PreFoundLambda CreateFromNonExtended(const POD::PreFoundLambda& non_ext_lambda, double mass_neg, double mass_pos,
+                                                const ROOT::Math::XYZPoint& ref) {
+        double energy_neg =
+            Common::Math::Hypot4(non_ext_lambda.Neg_PCAwrtV0_Px, non_ext_lambda.Neg_PCAwrtV0_Py, non_ext_lambda.Neg_PCAwrtV0_Pz, mass_neg);
+        double energy_pos =
+            Common::Math::Hypot4(non_ext_lambda.Pos_PCAwrtV0_Px, non_ext_lambda.Pos_PCAwrtV0_Py, non_ext_lambda.Pos_PCAwrtV0_Pz, mass_pos);
+        POD::Extended::PreFoundLambda ext_lambda{non_ext_lambda,
+                                                 non_ext_lambda.Neg_PCAwrtV0_Px + non_ext_lambda.Pos_PCAwrtV0_Px,
+                                                 non_ext_lambda.Neg_PCAwrtV0_Py + non_ext_lambda.Pos_PCAwrtV0_Py,
+                                                 non_ext_lambda.Neg_PCAwrtV0_Pz + non_ext_lambda.Pos_PCAwrtV0_Pz,
+                                                 static_cast<float>(energy_neg + energy_pos),
+                                                 {},  // empty cov. matrix
+                                                 Common::DummyFloat,
+                                                 Common::DummyFloat,
+                                                 Common::DummyFloat,
+                                                 Common::DummyFloat,
+                                                 static_cast<float>(energy_neg),
+                                                 Common::DummyFloat,
+                                                 Common::DummyFloat,
+                                                 Common::DummyFloat,
+                                                 static_cast<float>(energy_pos)};
+
+        return {ext_lambda, mass_neg, mass_pos, ref};
+    }
 
     // kinematics
     [[nodiscard]] double Px() const { return lv.Px(); }
@@ -58,7 +65,7 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
     [[nodiscard]] double Energy() const { return lv.E(); }
     [[nodiscard]] double Mass() const { return lv.M(); }
     [[nodiscard]] double Rapidity() const { return lv.Rapidity(); }
-    // -- armenteros-podolanski
+    // armenteros-podolanski
     [[nodiscard]] double ArmAlpha() const { return arm_alpha; }
     [[nodiscard]] double ArmQt() const { return arm_qt; }
     // correlations

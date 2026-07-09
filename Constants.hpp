@@ -8,22 +8,21 @@
 #define E2T_TPC_EXTRA 1
 
 namespace E2T {
-static constexpr unsigned int ReactionID_Offset = 600;   // (anti)sexaquark-nucleon reactions
-static constexpr unsigned int InjectionID_Offset = 400;  // h-dibaryon injections
+static constexpr const char* Name_OutputTree = "Events";
 
-// number of events per file from dedicated MC, by construction
+// number of events per file from dedicated MC (both), by construction
 static constexpr unsigned int NEventsInDedicatedMC = 10;
 
-// number of injected (anti)sexaquark-nucleon reactions per event in dedicated MC, by construction
+// (anti-sexaquark-dedicated MC only)
+static constexpr unsigned int ReactionID_Offset = 600;   // (anti)sexaquark-nucleon reactions
+static constexpr unsigned int InjectionID_Offset = 400;  // h-dibaryon injections
 static constexpr unsigned int NSexaReactionsPerEvent = 20;
-
 static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
 static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
-
-// (sexaquark-dedicated MC only)
 enum EGenerator : std::uint8_t { kHijing, kInjectedAntiNeutron, kInjectedAntiSexaquarkReaction };
 
-static constexpr std::string_view Name_OutputTree = "Events";
+// (hdibaryon-dedicated MC only)
+static constexpr std::uint8_t GeneratorIdx_InjectedHdibaryon = 6;
 }  // namespace E2T
 
 namespace T2DS {

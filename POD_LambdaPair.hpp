@@ -3,7 +3,7 @@
 namespace POD {
 
 struct LambdaPair {
-    // -- candidate info
+    // candidate info
     float Decay_X;
     float Decay_Y;
     float Decay_Z;
@@ -12,15 +12,15 @@ struct LambdaPair {
     float Pz;
     float Energy;
     float Chi2NDF;
-    bool AntiChannel;
-    // -- lambda1
+    bool IsAntiChannel;
+    // (anti)lambda 1
     float Lambda1_PCAwrtDV_X;
     float Lambda1_PCAwrtDV_Y;
     float Lambda1_PCAwrtDV_Z;
     float Lambda1_PCAwrtDV_Px;
     float Lambda1_PCAwrtDV_Py;
     float Lambda1_PCAwrtDV_Pz;
-    // -- lambda2
+    // (anti)lambda 2
     float Lambda2_PCAwrtDV_X;
     float Lambda2_PCAwrtDV_Y;
     float Lambda2_PCAwrtDV_Z;

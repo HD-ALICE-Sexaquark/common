@@ -20,6 +20,10 @@ struct InjectedSexa : POD::InjectedSexa {
     float SV_X{Common::DummyFloat};
     float SV_Y{Common::DummyFloat};
     float SV_Z{Common::DummyFloat};
+    float After_Px{Common::DummyFloat};
+    float After_Py{Common::DummyFloat};
+    float After_Pz{Common::DummyFloat};
+    float After_Energy{Common::DummyFloat};
     float Energy{Common::DummyFloat};
     float Nucleon_Energy{Common::DummyFloat};
 };

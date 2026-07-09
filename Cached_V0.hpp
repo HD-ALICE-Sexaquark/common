@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-#include <Math/Point3D.h>
-#include <Math/Vector3D.h>
-#include <Math/Vector4D.h>
+#include <Math/Point3Dfwd.h>
+#include <Math/Vector3Dfwd.h>
+#include <Math/Vector4Dfwd.h>
 
 #include "Constants.hpp"
 #include "Math.hpp"

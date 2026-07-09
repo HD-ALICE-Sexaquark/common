@@ -2,26 +2,30 @@
 
 #include <cmath>
 
-#include <Math/Point3D.h>
-#include <Math/Vector3D.h>
-#include <Math/Vector4D.h>
+#include <Math/Point3Dfwd.h>
+#include <Math/Vector3Dfwd.h>
+#include <Math/Vector4Dfwd.h>
 
 #include "Math.hpp"
 #include "POD_InjectedSexa.hpp"
 
 namespace Cached {
 
-struct InjectedSexa : POD::Extended::InjectedSexa {
+struct InjectedSexa : POD::Linked::InjectedSexa {
 
-    InjectedSexa(const POD::Extended::InjectedSexa& sexa, const ROOT::Math::PxPyPzEVector& sum_lv_daughters,
-                 const ROOT::Math::XYZPoint& ref)  //
-        : POD::Extended::InjectedSexa(sexa),
+    InjectedSexa(const POD::Linked::InjectedSexa& sexa, const ROOT::Math::XYZPoint& ref)
+        : POD::Linked::InjectedSexa(sexa),
           lv{sexa.Px, sexa.Py, sexa.Pz, sexa.Energy},
           lv_nucleon{sexa.Nucleon_Px, sexa.Nucleon_Py, sexa.Nucleon_Pz, sexa.Nucleon_Energy},
-          sum_lv_daughters{sum_lv_daughters},
+          sum_lv_daughters{sexa.After_Px, sexa.After_Py, sexa.After_Pz, sexa.After_Energy},
           pv{ref},
           sv{sexa.SV_X, sexa.SV_Y, sexa.SV_Z},
-          pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv.Vect(), sv, pv)} {}
+          pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv.Vect(), sv, pv)},
+          cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), sv, pv)} {}
+
+    static InjectedSexa CreateFromNonLinked(const POD::Extended::InjectedSexa& sexa, const ROOT::Math::XYZPoint& ref) {
+        return {{sexa, false}, ref};  // no need to worry about hybridness
+    }
 
     // kinematics
     // -- injected
@@ -56,6 +60,8 @@ struct InjectedSexa : POD::Extended::InjectedSexa {
     [[nodiscard]] double DCAxy_wrt_PV() const { return (pca_wrt_pv - pv).Rho(); }
     [[nodiscard]] double DCAz_wrt_PV() const { return std::abs((pca_wrt_pv - pv).Z()); }
     [[nodiscard]] double DCA_wrt_PV() const { return (pca_wrt_pv - pv).R(); }
+    // geometry + kinematics
+    [[nodiscard]] double CPA_wrt_PV() const { return cpa_wrt_pv; }
 
    private:
     ROOT::Math::PxPyPzEVector lv;
@@ -64,6 +70,7 @@ struct InjectedSexa : POD::Extended::InjectedSexa {
     ROOT::Math::XYZPoint pv;
     ROOT::Math::XYZPoint sv;
     ROOT::Math::XYZPoint pca_wrt_pv;
+    double cpa_wrt_pv;
 };
 
 }  // namespace Cached

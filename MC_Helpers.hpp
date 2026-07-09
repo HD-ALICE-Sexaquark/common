@@ -12,9 +12,9 @@
 #include "HD_Library.hpp"
 #include "POD_McParticle.hpp"
 
-namespace MC {
+namespace Cached {
 
-struct Cache {
+struct McExtension {
     bool IsTrue{false};
     bool IsGen1Signal{false};
     bool IsGen2Signal{false};
@@ -32,7 +32,12 @@ struct Cache {
     float Decay_Z{Common::DummyFloat};
 };
 
-inline void Apply(POD::Extended::McParticle &mc, const Cache &c) {
+}  // namespace Cached
+
+namespace MC {
+
+// Fill every variable from `POD::Extended::McParticle`, except for `IsHybrid`.
+inline void Apply(POD::Extended::McParticle &mc, const Cached::McExtension &c) {
     mc.IsTrue = c.IsTrue;
     mc.IsGen1Signal = c.IsGen1Signal;
     mc.IsGen2Signal = c.IsGen2Signal;
@@ -90,9 +95,10 @@ inline bool IsGen1Signal(const POD::McParticle &mc, const DB::ReactionChannels::
     return true;
 }
 
-inline Cache ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
-                                const DB::ReactionChannels::Definition &r_channel, int pdg_code_hypothesis, bool include_gm, bool include_dv) {
-    Cache c;
+inline Cached::McExtension ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
+                                              const DB::ReactionChannels::Definition &r_channel, int pdg_code_hypothesis, bool include_gm,
+                                              bool include_dv) {
+    Cached::McExtension c;
     c.IsTrue = mc.PdgCode == pdg_code_hypothesis;
 
     if (mc.Mother_McEntry < 0) {
@@ -135,10 +141,10 @@ inline std::optional<std::size_t> FindCommonReactionID(const POD::Extended::McPa
 
 namespace HdibaryonRules {
 
-inline Cache ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection, const HD::DecayTree &decay_pid,
-                                int pdg_code_hypothesis, bool include_dv) {
+inline Cached::McExtension ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
+                                              const HD::DecayTree &decay_pid, int pdg_code_hypothesis, bool include_dv) {
 
-    Cache c;
+    Cached::McExtension c;
     c.IsTrue = mc.PdgCode == pdg_code_hypothesis;
     c.IsGen1Signal = false;
     c.IsGen2Signal = false;

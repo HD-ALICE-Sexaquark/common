@@ -7,7 +7,7 @@ namespace POD {
 struct InjectedHdib {
     // identifiers
     int SignalID{Common::DummyInt};
-    bool AntiChannel{false};
+    bool IsAntiChannel{false};
     // properties
     float Decay_X{Common::DummyFloat};
     float Decay_Y{Common::DummyFloat};

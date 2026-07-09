@@ -45,6 +45,7 @@ struct McParticle : POD::McParticle {
     bool IsGen2Signal{false};
     bool IsTrueSignal{false};
     bool IsSecondary{false};
+    bool IsAntiChannel{false};
     bool IsHybrid{false};  // (composite only, e.g. secondary v0s + on-the-fly lambdas)
 };
 
