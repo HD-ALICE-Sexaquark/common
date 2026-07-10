@@ -140,18 +140,18 @@ inline ROOT::Math::XYZPoint MiddlePoint(const ROOT::Math::XYZPoint& p1, const RO
 }
 
 // Calculate square of the distance between two points in 3D space.
-constexpr double SquaredDistance(const ROOT::Math::XYZPoint& xyz1, const ROOT::Math::XYZPoint& xyz2) { return (xyz1 - xyz2).Mag2(); }
+inline double SquaredDistance(const ROOT::Math::XYZPoint& xyz1, const ROOT::Math::XYZPoint& xyz2) { return (xyz1 - xyz2).Mag2(); }
 
 // Calculate square of the distance between two points in 3D space.
-constexpr double SquaredDistance(const std::array<double, 3>& xyz1, const std::array<double, 3>& xyz2) {
+inline double SquaredDistance(const std::array<double, 3>& xyz1, const std::array<double, 3>& xyz2) {
     double dx = xyz2[0] - xyz1[0];
     double dy = xyz2[1] - xyz1[1];
     double dz = xyz2[2] - xyz1[2];
     return dx * dx + dy * dy + dz * dz;
 }
 
-constexpr double Distance(const ROOT::Math::XYZPoint& xyz1, const ROOT::Math::XYZPoint& xyz2) { return std::sqrt(SquaredDistance(xyz1, xyz2)); }
-constexpr double Distance(const std::array<double, 3>& xyz1, const std::array<double, 3>& xyz2) { return std::sqrt(SquaredDistance(xyz1, xyz2)); }
+inline double Distance(const ROOT::Math::XYZPoint& xyz1, const ROOT::Math::XYZPoint& xyz2) { return std::sqrt(SquaredDistance(xyz1, xyz2)); }
+inline double Distance(const std::array<double, 3>& xyz1, const std::array<double, 3>& xyz2) { return std::sqrt(SquaredDistance(xyz1, xyz2)); }
 
 inline ROOT::Math::PxPyPzEVector CreateLorentzVector(double px, double py, double pz, double mass) {
     return {px, py, pz, std::sqrt(px * px + py * py + pz * pz + mass * mass)};

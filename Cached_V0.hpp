@@ -51,7 +51,6 @@ struct V0 : POD::V0 {
     [[nodiscard]] double CPA_wrt_PV() const { return cpa_wrt_pv; }
     // negative daughter
     // -- kinematics
-    [[nodiscard]] double Neg_PCAwrtV0_Pz() const { return neg_mom.Z(); }
     [[nodiscard]] double Neg_PCAwrtV0_Pt() const { return neg_mom.Rho(); }
     [[nodiscard]] double Neg_PCAwrtV0_P() const { return neg_mom.R(); }
     [[nodiscard]] double Neg_PCAwrtV0_Eta() const { return neg_mom.Eta(); }
@@ -60,7 +59,6 @@ struct V0 : POD::V0 {
     [[nodiscard]] double Neg_DCA_wrt_V0() const { return (neg_pca_wrt_dv - dv).R(); }
     // positive daughter
     // -- kinematics
-    [[nodiscard]] double Pos_PCAwrtV0_Pz() const { return pos_mom.Z(); }
     [[nodiscard]] double Pos_PCAwrtV0_Pt() const { return pos_mom.Rho(); }
     [[nodiscard]] double Pos_PCAwrtV0_P() const { return pos_mom.R(); }
     [[nodiscard]] double Pos_PCAwrtV0_Eta() const { return pos_mom.Eta(); }

@@ -12,10 +12,10 @@ static constexpr const char* Name_OutputTree = "Events";
 
 // number of events per file from dedicated MC (both), by construction
 static constexpr unsigned int NEventsInDedicatedMC = 10;
+static constexpr unsigned int NExpectedEventsInRealData = 400'000'000;
 
 // (anti-sexaquark-dedicated MC only)
-static constexpr unsigned int ReactionID_Offset = 600;   // (anti)sexaquark-nucleon reactions
-static constexpr unsigned int InjectionID_Offset = 400;  // h-dibaryon injections
+static constexpr unsigned int ReactionID_Offset = 600;  // (anti)sexaquark-nucleon reactions
 static constexpr unsigned int NSexaReactionsPerEvent = 20;
 static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
 static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
@@ -23,6 +23,8 @@ enum EGenerator : std::uint8_t { kHijing, kInjectedAntiNeutron, kInjectedAntiSex
 
 // (hdibaryon-dedicated MC only)
 static constexpr std::uint8_t GeneratorIdx_InjectedHdibaryon = 6;
+static constexpr unsigned int InjectionID_Offset = 400;  // (anti)h-dibaryon injections
+static constexpr unsigned int NInjectedHdibaryonsPerEvent = 100;
 }  // namespace E2T
 
 namespace T2DS {

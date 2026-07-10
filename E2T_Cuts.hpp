@@ -14,9 +14,18 @@ static constexpr double AbsMin_PreDCAxy = 15.;          // (cm) // PENDING: not 
 static constexpr double AbsMin_PreDCAz = 20.;           // (cm) // PENDING: not used yet
 }  // namespace Track
 
-namespace Lambda {
-static constexpr double AbsMax_DeltaInvariantMass = 0.1;  // (GeV/c^2) // PENDING: to tune!
+namespace PreFoundLambda {
+static constexpr double AbsMax_DeltaInvariantMass = 0.005;  // (GeV/c^2)
 static constexpr double AbsSlope_ArmQtOverArmAlpha = 0.2;
-}  // namespace Lambda
+static constexpr double AbsMax_NSigmas_PID = 3.;
+static constexpr double AbsMax_Rapidity = 0.8;
+static constexpr double Max_DcaV0Daughters = 0.1;  // (cm)
+static constexpr double Min_Pt = 0.5;              // (GeV/c)
+static constexpr double Max_Pt = 3;                // (GeV/c)
+static constexpr double Max_DCA_wrt_PV = 0.15;     // (GeV/c)
+static constexpr double Min_Decay_Radius2D = 2.5;  // (cm)
+static constexpr double Min_Pt_Pion = 0.1;         // (GeV/c)
+static constexpr double Min_Pt_Proton = 0.5;       // (GeV/c)
+}  // namespace PreFoundLambda
 
 }  // namespace E2T::Cuts

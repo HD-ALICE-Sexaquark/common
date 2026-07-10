@@ -19,7 +19,7 @@ struct Sexaquark : POD::Sexaquark {
     Sexaquark(const POD::Sexaquark& sexa, const ROOT::Math::XYZPoint& ref)  //
         : POD::Sexaquark(sexa),
           lv{Px, Py, Pz, Energy},
-          lv_n{Px, Py, Pz, E_MinusNucleon},
+          lv_n{0., 0., 0., Energy - E_MinusNucleon},
           dau1_mom{Dau1_PCAwrtSV_Px, Dau1_PCAwrtSV_Py, Dau1_PCAwrtSV_Pz},
           dau2_mom{Dau2_PCAwrtSV_Px, Dau2_PCAwrtSV_Py, Dau2_PCAwrtSV_Pz},
           dau1_pca_wrt_sv{Dau1_PCAwrtSV_X, Dau1_PCAwrtSV_Y, Dau1_PCAwrtSV_Z},

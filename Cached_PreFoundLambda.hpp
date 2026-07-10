@@ -55,9 +55,6 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
     }
 
     // kinematics
-    [[nodiscard]] double Px() const { return lv.Px(); }
-    [[nodiscard]] double Py() const { return lv.Py(); }
-    [[nodiscard]] double Pz() const { return lv.Pz(); }
     [[nodiscard]] double Pt() const { return lv.Pt(); }
     [[nodiscard]] double P() const { return lv.P(); }
     [[nodiscard]] double Eta() const { return lv.Eta(); }
