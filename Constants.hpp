@@ -19,10 +19,8 @@ static constexpr unsigned int ReactionID_Offset = 600;  // (anti)sexaquark-nucle
 static constexpr unsigned int NSexaReactionsPerEvent = 20;
 static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
 static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
-enum EGenerator : std::uint8_t { kHijing, kInjectedAntiNeutron, kInjectedAntiSexaquarkReaction };
 
 // (hdibaryon-dedicated MC only)
-static constexpr std::uint8_t GeneratorIdx_InjectedHdibaryon = 6;
 static constexpr unsigned int InjectionID_Offset = 400;  // (anti)h-dibaryon injections
 static constexpr unsigned int NInjectedHdibaryonsPerEvent = 100;
 }  // namespace E2T
@@ -33,6 +31,15 @@ static constexpr const char* Name_FoundHdibaryonRNT = "FoundHdibaryon";
 }  // namespace T2DS
 
 namespace Common {
+
+enum ECustomGeneratorIdx : std::uint8_t {
+    kHijing,
+    kInjectedAntiNeutron,
+    kInjectedAntiSexaquarkReaction,
+    kInjectedAuxCharged,
+    kInjectedHdibaryon,
+};
+
 static constexpr int NCovMatrixComponents_State3 = 6;
 static constexpr int NCovMatrixComponents_State6 = 21;
 static constexpr int NCovMatrixComponents_State7 = 28;

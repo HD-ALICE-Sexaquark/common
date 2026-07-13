@@ -68,7 +68,7 @@ inline InfoCorrelation GetAngles(const ROOT::Math::PxPyPzEVector& h_lab, const R
     auto u_l2 = l2_in_h.Vect().Unit();
     // -- angle between protons
     double cos_theta_pp = p1_in_l1.Vect().Unit().Dot(p2_in_l2.Vect().Unit());
-    double theta_pp = std::acos(cos_theta_pp);  // not used here
+    double theta_pp = std::acos(cos_theta_pp);
     // -- angle between lambdas and h-dibaryon
     double cos_theta_star_l1 = u_l1.Dot(u_h);
     double cos_theta_star_l2 = u_l2.Dot(u_h);
@@ -76,7 +76,7 @@ inline InfoCorrelation GetAngles(const ROOT::Math::PxPyPzEVector& h_lab, const R
     double cos_theta_star_p1 = p1_in_l1.Vect().Unit().Dot(u_l1);
     double cos_theta_star_p2 = p2_in_l2.Vect().Unit().Dot(u_l2);
     // -- relative momentum
-    double q_rel = l1_in_h.Vect().R();  // = |l2_in_h| // not used here
+    double q_rel = l1_in_h.Vect().R();  // = |l2_in_h|
     return {cos_theta_pp, theta_pp, cos_theta_star_l1, cos_theta_star_l2, cos_theta_star_p1, cos_theta_star_p2, q_rel};
 }
 
