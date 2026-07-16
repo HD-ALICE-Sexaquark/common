@@ -87,7 +87,7 @@ inline bool IsGen1Signal(const POD::McParticle &mc, const DB::ReactionChannels::
     // (1)) logical primary (= no mother)
     if (mc.Mother_McEntry > Common::DummyInt) return false;
     // (2) should come from the anti-sexaquark reaction generator
-    if (mc.Generator != E2T::EGenerator::kInjectedAntiSexaquarkReaction) return false;
+    if (mc.Generator != Common::ECustomGeneratorIdx::kInjectedAntiSexaquarkReaction) return false;
     // (3) pdg is found in reaction products?
     if (std::ranges::find(r_channel.products_pdg, mc.PdgCode) == r_channel.products_pdg.end()) return false;
     // (4) mc status has to be [600,620[
