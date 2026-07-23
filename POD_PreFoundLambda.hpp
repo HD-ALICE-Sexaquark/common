@@ -26,6 +26,12 @@ struct PreFoundLambda {
     float Neg_PCAwrtV0_Px;  // (updated after new fit)
     float Neg_PCAwrtV0_Py;  // (updated after new fit)
     float Neg_PCAwrtV0_Pz;  // (updated after new fit)
+#if E2T_TPC_EXTRA
+    float Neg_TPC_Chi2;
+    float Neg_TPC_NCrossedRows;
+    unsigned short Neg_TPC_NClusters;
+    unsigned short Neg_TPC_NClustersFindable;
+#endif
     // positive daughter
     unsigned int Pos_EsdEntry;
     std::array<float, 6> Pos_State;                                        // from parametrization from AliESDv0
@@ -39,6 +45,12 @@ struct PreFoundLambda {
     float Pos_PCAwrtV0_Px;  // (updated after new fit)
     float Pos_PCAwrtV0_Py;  // (updated after new fit)
     float Pos_PCAwrtV0_Pz;  // (updated after new fit)
+#if E2T_TPC_EXTRA
+    float Pos_TPC_Chi2;
+    float Pos_TPC_NCrossedRows;
+    unsigned short Pos_TPC_NClusters;
+    unsigned short Pos_TPC_NClustersFindable;
+#endif
 };
 
 namespace Extended {

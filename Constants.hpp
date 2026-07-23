@@ -11,14 +11,18 @@ namespace E2T {
 static constexpr const char* Name_OutputTree = "Events";
 
 // number of events per file from dedicated MC (both), by construction
-static constexpr unsigned int NEventsInDedicatedMC = 10;
+static constexpr unsigned int NEventsInDedicatedMCFile = 10;
 static constexpr unsigned int NExpectedEventsInRealData = 400'000'000;
 
 // (anti-sexaquark-dedicated MC only)
-static constexpr unsigned int ReactionID_Offset = 600;  // (anti)sexaquark-nucleon reactions
+static constexpr unsigned int ReactionID_Offset = 600;  // anti-sexaquark+nucleon reactions
 static constexpr unsigned int NSexaReactionsPerEvent = 20;
 static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
 static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
+static constexpr double InjectedAntiSexa_MinPt = 0.;        // (GeV/c)
+static constexpr double InjectedAntiSexa_MaxPt = 5.;        // (GeV/c)
+static constexpr double InjectedAntiSexa_MinRadius = 5.;    // (cm)
+static constexpr double InjectedAntiSexa_MaxRadius = 180.;  // (cm)
 
 // (hdibaryon-dedicated MC only)
 static constexpr unsigned int InjectionID_Offset = 400;  // (anti)h-dibaryon injections
