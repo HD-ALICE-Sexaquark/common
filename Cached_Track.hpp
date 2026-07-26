@@ -29,7 +29,6 @@ struct Track : POD::Track {
     [[nodiscard]] double DCAxy() const { return (pca_wrt_pv - pv).Rho(); }
     [[nodiscard]] double DCAz() const { return std::abs((pca_wrt_pv - pv).Z()); }
     [[nodiscard]] double DCAxyz() const { return (pca_wrt_pv - pv).R(); }
-#if E2T_TPC_EXTRA
     // tpc info
     [[nodiscard]] double TPC_Chi2_NCls() const {
         return TPC_NClusters > 0 ? static_cast<double>(TPC_Chi2) / static_cast<double>(TPC_NClusters)  //
@@ -38,7 +37,6 @@ struct Track : POD::Track {
     [[nodiscard]] double TPC_NCrossedRows_NClsF() const {
         return TPC_NClustersFindable > 0 ? static_cast<double>(TPC_NCrossedRows) / static_cast<double>(TPC_NClustersFindable) : Common::DummyDouble;
     }
-#endif
 
    private:
     ROOT::Math::XYZVector mom;

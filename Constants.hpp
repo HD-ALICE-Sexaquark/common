@@ -5,7 +5,6 @@
 
 #define E2T_VERBOSE 0
 #define E2T_MC_EXTRA 1
-#define E2T_TPC_EXTRA 1
 
 namespace E2T {
 static constexpr const char* Name_OutputTree = "Events";

@@ -7,13 +7,14 @@
 namespace POD {
 
 struct PreFoundLambda {
-    // (anti)lambda info
+    // (anti)lambda info //
     unsigned int PreFoundEntry;
     float Decay_X;         // (updated after new fit)
     float Decay_Y;         // (updated after new fit)
     float Decay_Z;         // (updated after new fit)
     float DcaV0Daughters;  // (updated after new fit)
-    // negative daughter
+
+    // negative daughter //
     unsigned int Neg_EsdEntry;
     std::array<float, 6> Neg_State;                                        // from parametrization from AliESDv0
     std::array<float, Common::NCovMatrixComponents_State6> Neg_CovMatrix;  // from parametrization from AliESDv0
@@ -22,17 +23,16 @@ struct PreFoundLambda {
     float Neg_NSigmasProton;
     float Neg_NSigmasKaon;
     float Neg_NSigmasPion;
+    float Neg_TPC_NCrossedRows;
+    unsigned short Neg_TPC_NClusters;
+    unsigned short Neg_TPC_NClustersFindable;
+    float Neg_TPC_Chi2;
     // -- related to (anti)lambda
     float Neg_PCAwrtV0_Px;  // (updated after new fit)
     float Neg_PCAwrtV0_Py;  // (updated after new fit)
     float Neg_PCAwrtV0_Pz;  // (updated after new fit)
-#if E2T_TPC_EXTRA
-    float Neg_TPC_Chi2;
-    float Neg_TPC_NCrossedRows;
-    unsigned short Neg_TPC_NClusters;
-    unsigned short Neg_TPC_NClustersFindable;
-#endif
-    // positive daughter
+
+    // positive daughter //
     unsigned int Pos_EsdEntry;
     std::array<float, 6> Pos_State;                                        // from parametrization from AliESDv0
     std::array<float, Common::NCovMatrixComponents_State6> Pos_CovMatrix;  // from parametrization from AliESDv0
@@ -41,16 +41,14 @@ struct PreFoundLambda {
     float Pos_NSigmasProton;
     float Pos_NSigmasKaon;
     float Pos_NSigmasPion;
+    float Pos_TPC_NCrossedRows;
+    unsigned short Pos_TPC_NClusters;
+    unsigned short Pos_TPC_NClustersFindable;
+    float Pos_TPC_Chi2;
     // -- related to (anti)lambda
     float Pos_PCAwrtV0_Px;  // (updated after new fit)
     float Pos_PCAwrtV0_Py;  // (updated after new fit)
     float Pos_PCAwrtV0_Pz;  // (updated after new fit)
-#if E2T_TPC_EXTRA
-    float Pos_TPC_Chi2;
-    float Pos_TPC_NCrossedRows;
-    unsigned short Pos_TPC_NClusters;
-    unsigned short Pos_TPC_NClustersFindable;
-#endif
 };
 
 namespace Extended {
