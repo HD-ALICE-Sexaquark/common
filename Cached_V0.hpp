@@ -8,17 +8,14 @@
 
 #include "Constants.hpp"
 #include "Math.hpp"
-#include "POD_Track.hpp"
 #include "POD_V0.hpp"
 
 namespace Cached {
 
 struct V0 : POD::V0 {
 
-    V0(const POD::V0& v0, const POD::Track& neg, const POD::Track& pos, const ROOT::Math::XYZPoint& ref)  //
+    V0(const POD::V0& v0, const ROOT::Math::XYZPoint& ref)  //
         : POD::V0(v0),
-          Neg{&neg},
-          Pos{&pos},
           lv{Px, Py, Pz, Energy},
           neg_mom{v0.Neg_PCAwrtV0_Px, v0.Neg_PCAwrtV0_Py, v0.Neg_PCAwrtV0_Pz},
           pos_mom{v0.Pos_PCAwrtV0_Px, v0.Pos_PCAwrtV0_Py, v0.Pos_PCAwrtV0_Pz},
@@ -31,7 +28,8 @@ struct V0 : POD::V0 {
           arm_alpha{Common::Math::ArmenterosAlpha(lv.Vect(), neg_mom, pos_mom).value_or(Common::DummyDouble)},
           arm_qt{Common::Math::ArmenterosQt(lv.Vect(), neg_mom)} {}
 
-    // kinematics
+    // v0 candidate //
+    // -- kinematics
     [[nodiscard]] double Mass() const { return lv.M(); }
     [[nodiscard]] double Rapidity() const { return lv.Rapidity(); }
     [[nodiscard]] double Eta() const { return lv.Eta(); }
@@ -39,7 +37,7 @@ struct V0 : POD::V0 {
     [[nodiscard]] double P() const { return lv.P(); }
     [[nodiscard]] double ArmAlpha() const { return arm_alpha; }
     [[nodiscard]] double ArmQt() const { return arm_qt; }
-    // geometry
+    // -- geometry
     [[nodiscard]] double Decay_SquaredRadius2D() const { return dv.Perp2(); }
     [[nodiscard]] double Decay_SquaredRadius3D() const { return dv.Mag2(); }
     [[nodiscard]] double Decay_Radius2D() const { return dv.Rho(); }
@@ -47,9 +45,10 @@ struct V0 : POD::V0 {
     [[nodiscard]] double DCA_wrt_PV() const { return (pca_wrt_pv - pv).R(); }
     [[nodiscard]] double SquaredDCA_wrt_PV() const { return (pca_wrt_pv - pv).Mag2(); }
     [[nodiscard]] double DCA_btw_Daughters() const { return (neg_pca_wrt_dv - pos_pca_wrt_dv).R(); }
-    // kinematics+geometry
+    // -- kinematics+geometry
     [[nodiscard]] double CPA_wrt_PV() const { return cpa_wrt_pv; }
-    // negative daughter
+
+    // negative daughter //
     // -- kinematics
     [[nodiscard]] double Neg_PCAwrtV0_Pt() const { return neg_mom.Rho(); }
     [[nodiscard]] double Neg_PCAwrtV0_P() const { return neg_mom.R(); }
@@ -57,7 +56,8 @@ struct V0 : POD::V0 {
     // -- geometry
     [[nodiscard]] double Neg_SquaredDCA_wrt_V0() const { return (neg_pca_wrt_dv - dv).Mag2(); }
     [[nodiscard]] double Neg_DCA_wrt_V0() const { return (neg_pca_wrt_dv - dv).R(); }
-    // positive daughter
+
+    // positive daughter //
     // -- kinematics
     [[nodiscard]] double Pos_PCAwrtV0_Pt() const { return pos_mom.Rho(); }
     [[nodiscard]] double Pos_PCAwrtV0_P() const { return pos_mom.R(); }
@@ -65,9 +65,6 @@ struct V0 : POD::V0 {
     // -- geometry
     [[nodiscard]] double Pos_SquaredDCA_wrt_V0() const { return (pos_pca_wrt_dv - dv).Mag2(); }
     [[nodiscard]] double Pos_DCA_wrt_V0() const { return (pos_pca_wrt_dv - dv).R(); }
-
-    const POD::Track* Neg;
-    const POD::Track* Pos;
 
    private:
     ROOT::Math::PxPyPzEVector lv;         // lorentz vector
