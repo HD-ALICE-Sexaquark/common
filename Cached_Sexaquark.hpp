@@ -45,13 +45,6 @@ struct Sexaquark : POD::Sexaquark {
     }
 
     // anti-sexaquark candidate //
-    // -- geometry
-    [[nodiscard]] double SV_SquaredRadius2D() const { return sv.Perp2(); }
-    [[nodiscard]] double SV_SquaredRadius3D() const { return sv.Mag2(); }
-    [[nodiscard]] double SV_Radius2D() const { return sv.Rho(); }
-    [[nodiscard]] double SV_Radius3D() const { return sv.R(); }
-    [[nodiscard]] double SquaredDCA_btw_Daughters() const { return (dau1_pca_wrt_sv - dau2_pca_wrt_sv).Mag2(); }
-    [[nodiscard]] double DCA_btw_Daughters() const { return (dau1_pca_wrt_sv - dau2_pca_wrt_sv).R(); }
     // -- kinematics
     [[nodiscard]] double Pt() const { return lv.Pt(); }
     [[nodiscard]] double P() const { return lv.P(); }
@@ -59,6 +52,13 @@ struct Sexaquark : POD::Sexaquark {
     [[nodiscard]] double Eta() const { return lv.Eta(); }
     [[nodiscard]] double Rapidity() const { return lv.Rapidity(); }
     [[nodiscard]] double Phi() const { return lv.Phi(); }
+    // -- geometry
+    [[nodiscard]] double SV_SquaredRadius2D() const { return sv.Perp2(); }
+    [[nodiscard]] double SV_SquaredRadius3D() const { return sv.Mag2(); }
+    [[nodiscard]] double SV_Radius2D() const { return sv.Rho(); }
+    [[nodiscard]] double SV_Radius3D() const { return sv.R(); }
+    [[nodiscard]] double SquaredDCA_btw_Daughters() const { return (dau1_pca_wrt_sv - dau2_pca_wrt_sv).Mag2(); }
+    [[nodiscard]] double DCA_btw_Daughters() const { return (dau1_pca_wrt_sv - dau2_pca_wrt_sv).R(); }
     // -- kinematics + geometry
     [[nodiscard]] double SquaredDCA_wrt_PV() const { return (pca_wrt_pv - pv).Mag2(); }
     [[nodiscard]] double DCA_wrt_PV() const { return (pca_wrt_pv - pv).R(); }

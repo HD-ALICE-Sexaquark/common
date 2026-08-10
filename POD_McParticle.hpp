@@ -33,20 +33,20 @@ struct McParticle {
 namespace Extended {
 
 struct McParticle : POD::McParticle {
-    float Decay_X{Common::DummyFloat};     // (v0 only)
-    float Decay_Y{Common::DummyFloat};     // (v0 only)
-    float Decay_Z{Common::DummyFloat};     // (v0 only)
+    float Decay_X{Common::DummyFloat};     // (v0 + hdib only)
+    float Decay_Y{Common::DummyFloat};     // (v0 + hdib only)
+    float Decay_Z{Common::DummyFloat};     // (v0 + hdib only)
     int SignalID{Common::DummyInt};        // = "ReactionID" / "InjectionID"
     int Mother_PdgCode{Common::DummyInt};  //
-    int GM_McEntry{Common::DummyInt};      // (track only)
-    int GM_PdgCode{Common::DummyInt};      // (track only)
+    int GM_McEntry{Common::DummyInt};      // (track + hdib only)
+    int GM_PdgCode{Common::DummyInt};      // (track + hdib only)
     bool IsTrue{false};
     bool IsGen1Signal{false};
     bool IsGen2Signal{false};
     bool IsTrueSignal{false};
     bool IsSecondary{false};
     bool IsAntiChannel{false};
-    bool IsHybrid{false};  // (composite only, e.g. secondary v0s + on-the-fly lambdas)
+    bool IsHybrid{false};  // (composite only, e.g. secondary v0s + pre-found lambdas + hdib)
 };
 
 }  // namespace Extended

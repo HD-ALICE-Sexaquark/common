@@ -72,6 +72,7 @@ struct McParticle : POD::Extended::McParticle {
     [[nodiscard]] double Pt() const { return lv.Pt(); }
     [[nodiscard]] double P() const { return lv.P(); }
     [[nodiscard]] double Mass() const { return lv.M(); }
+    [[nodiscard]] double Energy() const { return lv.E(); }
     [[nodiscard]] double Eta() const { return lv.Eta(); }
     [[nodiscard]] double Rapidity() const { return lv.Rapidity(); }
     [[nodiscard]] double Phi() const { return lv.Phi(); }

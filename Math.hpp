@@ -64,6 +64,31 @@ inline std::optional<double> ArmenterosAlpha(double v0_px, double v0_py, double 
     return ArmenterosAlpha({v0_px, v0_py, v0_pz}, {neg_px, neg_py, neg_pz}, {pos_px, pos_py, pos_pz});
 }
 
+// normalised elliptic radius: == 1 exactly on the kinematic locus
+// - mass arguments are PDG values
+// - sA and sQ are scaling values
+// recommended: veto photon conversions
+// if (qt < 0.02 && std::abs(alpha) < 0.6) return kNone;
+// usage:
+// const bool onL  = std::abs(radius - 1.) < tolerance;
+// const bool onAL = std::abs(radius - 1.) < tolerance;
+// const bool onK  = std::abs(radius - 1.) < tolerance;
+inline double ArmenterosEllipticRadius(double alpha, double qt, double M, double mass_neg, double mass_pos, double pV0, double sA = 1.,
+                                       double sQ = 1.) {
+    auto p_star = [](double M, double m1, double m2) -> double {
+        const double s1 = M * M - (m1 + m2) * (m1 + m2);
+        const double s2 = M * M - (m1 - m2) * (m1 - m2);
+        return (s1 > 0.) ? std::sqrt(s1 * s2) / (2. * M) : 0.;
+    };
+    const double beta = (pV0 > 0.) ? pV0 / std::sqrt(pV0 * pV0 + M * M) : 1.;
+    const double ps = p_star(M, mass_pos, mass_neg);
+    const double alpha_0 = (mass_pos * mass_pos - mass_neg * mass_neg) / (M * M);
+    const double alpha_semi = 2. * ps / (beta * M);
+    const double dx = (alpha - alpha_0) / (alpha_semi * sA);
+    const double dy = qt / (ps * sQ);
+    return std::sqrt(dx * dx + dy * dy);
+}
+
 inline ROOT::Math::XYZPoint FastPCA_LineVertex(const ROOT::Math::XYZVector& mom_v0, const ROOT::Math::XYZPoint& pos_v0,
                                                const ROOT::Math::XYZPoint& pos_ref) {
     ROOT::Math::XYZVector delta = pos_ref - pos_v0;
