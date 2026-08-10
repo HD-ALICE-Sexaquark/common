@@ -75,10 +75,10 @@ inline std::optional<double> ArmenterosAlpha(double v0_px, double v0_py, double 
 // const bool onK  = std::abs(radius - 1.) < tolerance;
 inline double ArmenterosEllipticRadius(double alpha, double qt, double M, double mass_neg, double mass_pos, double pV0, double sA = 1.,
                                        double sQ = 1.) {
-    auto p_star = [](double M, double m1, double m2) -> double {
-        const double s1 = M * M - (m1 + m2) * (m1 + m2);
-        const double s2 = M * M - (m1 - m2) * (m1 - m2);
-        return (s1 > 0.) ? std::sqrt(s1 * s2) / (2. * M) : 0.;
+    auto p_star = [](double mass, double m1, double m2) -> double {
+        const double s1 = mass * mass - (m1 + m2) * (m1 + m2);
+        const double s2 = mass * mass - (m1 - m2) * (m1 - m2);
+        return (s1 > 0.) ? std::sqrt(s1 * s2) / (2. * mass) : 0.;
     };
     const double beta = (pV0 > 0.) ? pV0 / std::sqrt(pV0 * pV0 + M * M) : 1.;
     const double ps = p_star(M, mass_pos, mass_neg);
