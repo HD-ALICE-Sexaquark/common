@@ -38,8 +38,9 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
           anti_channel{is_anti_channel} {}
 
     static PreFoundLambda CreateFromNonExtended(const POD::PreFoundLambda& non_ext_lambda, bool is_anti_channel, const ROOT::Math::XYZPoint& ref) {
-        double mass_neg = is_anti_channel ? DB::Particles::Particle("Proton").mass : DB::Particles::Particle("Pion").mass;
-        double mass_pos = is_anti_channel ? DB::Particles::Particle("Pion").mass : DB::Particles::Particle("Proton").mass;
+        // NOTE: same hypotheses as the constructor above -- daughters are ordered by charge, so the roles swap
+        double mass_neg = is_anti_channel ? DB::Particles::Particle("AntiProton").mass : DB::Particles::Particle("PiMinus").mass;
+        double mass_pos = is_anti_channel ? DB::Particles::Particle("PiPlus").mass : DB::Particles::Particle("Proton").mass;
         double energy_neg =
             Common::Math::Hypot4(non_ext_lambda.Neg_PCAwrtV0_Px, non_ext_lambda.Neg_PCAwrtV0_Py, non_ext_lambda.Neg_PCAwrtV0_Pz, mass_neg);
         double energy_pos =
@@ -98,11 +99,11 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
     [[nodiscard]] double Pr_Pt() const { return anti_channel ? lv_neg.Pt() : lv_pos.Pt(); }
     [[nodiscard]] double Pr_P() const { return anti_channel ? lv_neg.P() : lv_pos.P(); }
     [[nodiscard]] double Pr_Eta() const { return anti_channel ? lv_neg.Eta() : lv_pos.Eta(); }
-    [[nodiscard]] double Pr_PreDCAxy() const { return anti_channel ? Neg_PreDCAxy : Pos_PreDCAxy; }
-    [[nodiscard]] double Pr_PreDCAz() const { return anti_channel ? Neg_PreDCAz : Pos_PreDCAz; }
-    [[nodiscard]] double Pr_NSigmasPion() const { return anti_channel ? Neg_NSigmasPion : Pos_NSigmasPion; }
-    [[nodiscard]] double Pr_NSigmasKaon() const { return anti_channel ? Neg_NSigmasKaon : Pos_NSigmasKaon; }
-    [[nodiscard]] double Pr_NSigmasProton() const { return anti_channel ? Neg_NSigmasProton : Pos_NSigmasProton; }
+    [[nodiscard]] double Pr_PreDCAxy() const { return static_cast<double>(anti_channel ? Neg_PreDCAxy : Pos_PreDCAxy); }
+    [[nodiscard]] double Pr_PreDCAz() const { return static_cast<double>(anti_channel ? Neg_PreDCAz : Pos_PreDCAz); }
+    [[nodiscard]] double Pr_NSigmasPion() const { return static_cast<double>(anti_channel ? Neg_NSigmasPion : Pos_NSigmasPion); }
+    [[nodiscard]] double Pr_NSigmasKaon() const { return static_cast<double>(anti_channel ? Neg_NSigmasKaon : Pos_NSigmasKaon); }
+    [[nodiscard]] double Pr_NSigmasProton() const { return static_cast<double>(anti_channel ? Neg_NSigmasProton : Pos_NSigmasProton); }
     // -- related to (anti)lambda
     [[nodiscard]] double Pr_DCA_wrt_V0() const { return anti_channel ? (v0 - neg_pca_wrt_v0).R() : (v0 - pos_pca_wrt_v0).R(); }
 
@@ -111,11 +112,11 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
     [[nodiscard]] double Pi_Pt() const { return anti_channel ? lv_pos.Pt() : lv_neg.Pt(); }
     [[nodiscard]] double Pi_P() const { return anti_channel ? lv_pos.P() : lv_neg.P(); }
     [[nodiscard]] double Pi_Eta() const { return anti_channel ? lv_pos.Eta() : lv_neg.Eta(); }
-    [[nodiscard]] double Pi_PreDCAxy() const { return anti_channel ? Pos_PreDCAxy : Neg_PreDCAxy; }
-    [[nodiscard]] double Pi_PreDCAz() const { return anti_channel ? Pos_PreDCAz : Neg_PreDCAz; }
-    [[nodiscard]] double Pi_NSigmasPion() const { return anti_channel ? Pos_NSigmasPion : Neg_NSigmasPion; }
-    [[nodiscard]] double Pi_NSigmasKaon() const { return anti_channel ? Pos_NSigmasKaon : Neg_NSigmasKaon; }
-    [[nodiscard]] double Pi_NSigmasProton() const { return anti_channel ? Pos_NSigmasProton : Neg_NSigmasProton; }
+    [[nodiscard]] double Pi_PreDCAxy() const { return static_cast<double>(anti_channel ? Pos_PreDCAxy : Neg_PreDCAxy); }
+    [[nodiscard]] double Pi_PreDCAz() const { return static_cast<double>(anti_channel ? Pos_PreDCAz : Neg_PreDCAz); }
+    [[nodiscard]] double Pi_NSigmasPion() const { return static_cast<double>(anti_channel ? Pos_NSigmasPion : Neg_NSigmasPion); }
+    [[nodiscard]] double Pi_NSigmasKaon() const { return static_cast<double>(anti_channel ? Pos_NSigmasKaon : Neg_NSigmasKaon); }
+    [[nodiscard]] double Pi_NSigmasProton() const { return static_cast<double>(anti_channel ? Pos_NSigmasProton : Neg_NSigmasProton); }
     // -- related to (anti)lambda
     [[nodiscard]] double Pi_DCA_wrt_V0() const { return anti_channel ? (v0 - pos_pca_wrt_v0).R() : (v0 - neg_pca_wrt_v0).R(); }
 

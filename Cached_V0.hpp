@@ -17,8 +17,8 @@ struct V0 : POD::V0 {
     V0(const POD::V0& v0, const ROOT::Math::XYZPoint& ref)  //
         : POD::V0(v0),
           lv{Px, Py, Pz, Energy},
-          neg_mom{v0.Neg_PCAwrtV0_Px, v0.Neg_PCAwrtV0_Py, v0.Neg_PCAwrtV0_Pz},
-          pos_mom{v0.Pos_PCAwrtV0_Px, v0.Pos_PCAwrtV0_Py, v0.Pos_PCAwrtV0_Pz},
+          neg_mom{v0.Neg_Fit_Px, v0.Neg_Fit_Py, v0.Neg_Fit_Pz},
+          pos_mom{v0.Pos_Fit_Px, v0.Pos_Fit_Py, v0.Pos_Fit_Pz},
           neg_pca_wrt_dv{v0.Neg_PCAwrtV0_X, v0.Neg_PCAwrtV0_Y, v0.Neg_PCAwrtV0_Z},
           pos_pca_wrt_dv{v0.Pos_PCAwrtV0_X, v0.Pos_PCAwrtV0_Y, v0.Pos_PCAwrtV0_Z},
           pv{ref},

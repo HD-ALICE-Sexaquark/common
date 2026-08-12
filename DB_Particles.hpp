@@ -55,28 +55,29 @@ inline constexpr std::array DB = std::to_array<Definition>({
     //
     {"XiPlus", "XP", -3312, +1, 1.3217100, 4.91, DecayProducts_XiPlus, 0, 1},
     //
-    {"AntiHdibaryon", "AH", -1020000020, 0, 2.234, 9.866349e-12, DecayProducts_AntiHdibaryon, 0, 0},  // NOTE: ctau obtained from Gamma=0.002
-    {"Hdibaryon", "H", 1020000020, 0, 2.234, 9.866349e-12, DecayProducts_Hdibaryon, 0, 0},            // NOTE: ctau obtained from Gamma=0.002
+    // NOTE: ctau obtained from Gamma=0.002; the mass is a hypothesis, so it must never be constrained
+    {"AntiHdibaryon", "AH", -1020000020, 0, 2.234, 9.866349e-12, DecayProducts_AntiHdibaryon, 0, 0},
+    {"Hdibaryon", "H", 1020000020, 0, 2.234, 9.866349e-12, DecayProducts_Hdibaryon, 0, 0},
     //
-    {"Unknown", "00", Common::DummyNNN, Common::DummyNNN, Common::DummyFloat, Common::DummyFloat, {}, 0, 0},
+    {"Unknown", "00", Common::DummyNNN, Common::DummyNNN, Common::DummyDouble, Common::DummyDouble, {}, 0, 0},
 });
 
 consteval std::size_t Index(int pdg) {
     for (std::size_t i = 0; i < DB.size(); ++i)
         if (DB[i].pdg_code == pdg) return i;
-    return DB.size() - 1;
+    throw "DB::Particles::Index: unknown pdg code";
 }
 
 consteval Definition Particle(int pdg) {
     for (const auto& i : DB)
         if (i.pdg_code == pdg) return i;
-    return DB.back();
+    throw "DB::Particles::Particle: unknown pdg code";
 }
 
 consteval Definition Particle(std::string_view name) {
     for (const auto& i : DB)
         if (i.name == name) return i;
-    return DB.back();
+    throw "DB::Particles::Particle: unknown name";
 }
 
 constexpr std::size_t FindIndex(int pdg) noexcept {
@@ -95,6 +96,15 @@ constexpr Definition FindParticle(std::string_view name) noexcept {
     for (auto const& p : DB)
         if (p.name == name) return p;
     return DB.back();
+}
+
+constexpr bool IsStable(const Definition& p) noexcept { return p.daughters_pdg.empty(); }
+
+// Sum of the masses of a particle's decay products, i.e. the lowest mass it can physically be reconstructed at.
+constexpr double SumDaughterMass(const Definition& p) noexcept {
+    double sum = 0.;
+    for (int pdg : p.daughters_pdg) sum += FindParticle(pdg).mass;
+    return sum;
 }
 
 }  // namespace DB::Particles

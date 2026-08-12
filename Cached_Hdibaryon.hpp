@@ -5,6 +5,7 @@
 #include <Math/Point3Dfwd.h>
 #include <Math/Vector4Dfwd.h>
 
+#include "DB_Particles.hpp"
 #include "HD_Library.hpp"
 #include "Math.hpp"
 #include "POD_LambdaPair.hpp"
@@ -32,12 +33,19 @@ struct Hdibaryon : POD::LambdaPair {
           // scalars
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)} {
         // auxiliary vectors
-        ROOT::Math::PxPyPzEVector lv_l1{l1.Px, l1.Py, l1.Pz, l1.Energy};
+        ROOT::Math::PxPyPzEVector lv_l1{Lambda1_Fit_Px, Lambda1_Fit_Py, Lambda1_Fit_Pz, Lambda1_Fit_Energy};
         ROOT::Math::PxPyPzEVector lv_l1_neg{l1.Neg_PCAwrtV0_Px, l1.Neg_PCAwrtV0_Py, l1.Neg_PCAwrtV0_Pz, l1.Neg_Energy};
         ROOT::Math::PxPyPzEVector lv_l1_pos{l1.Pos_PCAwrtV0_Px, l1.Pos_PCAwrtV0_Py, l1.Pos_PCAwrtV0_Pz, l1.Pos_Energy};
-        ROOT::Math::PxPyPzEVector lv_l2{l2.Px, l2.Py, l2.Pz, l2.Energy};
+        ROOT::Math::PxPyPzEVector lv_l2{Lambda2_Fit_Px, Lambda2_Fit_Py, Lambda2_Fit_Pz, Lambda2_Fit_Energy};
         ROOT::Math::PxPyPzEVector lv_l2_neg{l2.Neg_PCAwrtV0_Px, l2.Neg_PCAwrtV0_Py, l2.Neg_PCAwrtV0_Pz, l2.Neg_Energy};
         ROOT::Math::PxPyPzEVector lv_l2_pos{l2.Pos_PCAwrtV0_Px, l2.Pos_PCAwrtV0_Py, l2.Pos_PCAwrtV0_Pz, l2.Pos_Energy};
+        // reattach grand-daughters to hdib fit
+        const ROOT::Math::PxPyPzEVector lv_l1_prefit{l1.Px, l1.Py, l1.Pz, l1.Energy};
+        const ROOT::Math::PxPyPzEVector lv_l2_prefit{l2.Px, l2.Py, l2.Pz, l2.Energy};
+        const double mass_neg = hdib.IsAntiChannel ? DB::Particles::Particle("AntiProton").mass : DB::Particles::Particle("PiMinus").mass;
+        const double mass_pos = hdib.IsAntiChannel ? DB::Particles::Particle("PiPlus").mass : DB::Particles::Particle("Proton").mass;
+        Common::Math::ReattachTo(lv_l1_neg, lv_l1_pos, mass_neg, mass_pos, lv_l1_prefit, lv_l1);
+        Common::Math::ReattachTo(lv_l2_neg, lv_l2_pos, mass_neg, mass_pos, lv_l2_prefit, lv_l2);
         // (anti)lambda 1 //
         l1_cpa_wrt_dv = Common::Math::CosinePointingAngle(lv_l1.Vect(), dv_l1, dv);
         // (anti)lambda 2 //

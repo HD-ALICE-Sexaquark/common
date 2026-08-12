@@ -31,8 +31,8 @@ struct Sexaquark : POD::Sexaquark {
         : Cached::Sexaquark(sexa, ref) {
         dau1_dv = {v0a.Decay_X, v0a.Decay_Y, v0a.Decay_Z};
         dau2_dv = {v0b.Decay_X, v0b.Decay_Y, v0b.Decay_Z};
-        ROOT::Math::XYZVector dau1_mom(Dau1_PCAwrtSV_Px, Dau1_PCAwrtSV_Py, Dau1_PCAwrtSV_Pz);
-        ROOT::Math::XYZVector dau2_mom(Dau2_PCAwrtSV_Px, Dau2_PCAwrtSV_Py, Dau2_PCAwrtSV_Pz);
+        ROOT::Math::XYZVector dau1_mom(Dau1_Fit_Px, Dau1_Fit_Py, Dau1_Fit_Pz);
+        ROOT::Math::XYZVector dau2_mom(Dau2_Fit_Px, Dau2_Fit_Py, Dau2_Fit_Pz);
         dau1_cpa_wrt_sv = Common::Math::CosinePointingAngle(dau1_mom, dau1_dv.value(), sv);
         dau2_cpa_wrt_sv = Common::Math::CosinePointingAngle(dau2_mom, dau2_dv.value(), sv);
     }
@@ -40,7 +40,7 @@ struct Sexaquark : POD::Sexaquark {
     Sexaquark(const POD::Sexaquark& sexa, const POD::V0& v0, const ROOT::Math::XYZPoint& ref)  //
         : Cached::Sexaquark(sexa, ref) {
         dau1_dv = {v0.Decay_X, v0.Decay_Y, v0.Decay_Z};
-        ROOT::Math::XYZVector dau1_mom(Dau1_PCAwrtSV_Px, Dau1_PCAwrtSV_Py, Dau1_PCAwrtSV_Pz);
+        ROOT::Math::XYZVector dau1_mom(Dau1_Fit_Px, Dau1_Fit_Py, Dau1_Fit_Pz);
         dau1_cpa_wrt_sv = Common::Math::CosinePointingAngle(dau1_mom, dau1_dv.value(), sv);
     }
 

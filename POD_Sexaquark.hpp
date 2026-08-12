@@ -18,16 +18,18 @@ struct Sexaquark {
     float Dau1_PCAwrtSV_X;
     float Dau1_PCAwrtSV_Y;
     float Dau1_PCAwrtSV_Z;
-    float Dau1_PCAwrtSV_Px;
-    float Dau1_PCAwrtSV_Py;
-    float Dau1_PCAwrtSV_Pz;
+    float Dau1_Fit_Px;
+    float Dau1_Fit_Py;
+    float Dau1_Fit_Pz;
+    float Dau1_Fit_Energy;
     // daughter 2
     float Dau2_PCAwrtSV_X;
     float Dau2_PCAwrtSV_Y;
     float Dau2_PCAwrtSV_Z;
-    float Dau2_PCAwrtSV_Px;
-    float Dau2_PCAwrtSV_Py;
-    float Dau2_PCAwrtSV_Pz;
+    float Dau2_Fit_Px;
+    float Dau2_Fit_Py;
+    float Dau2_Fit_Pz;
+    float Dau2_Fit_Energy;
 };
 
 }  // namespace POD

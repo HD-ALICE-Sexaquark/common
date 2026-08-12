@@ -1,10 +1,12 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <optional>
 #include <tuple>
 #include <utility>
 
+#include <Math/GenVector/Boost.h>
 #include <Math/GenVector/VectorUtil.h>
 #include <Math/Point3D.h>
 #include <Math/Vector3D.h>
@@ -183,5 +185,19 @@ inline ROOT::Math::PxPyPzEVector CreateLorentzVector(double px, double py, doubl
 }
 
 inline double Hypot4(double a, double b, double c, double d) { return std::sqrt(a * a + b * b + c * c + d * d); }
+
+// Rebuild a two-body decay against a new mother: keep the daughters' directions as measured in the old mother's
+// rest frame (where they are exactly back-to-back, since old_mother == d1 + d2), then set the momentum to what the
+// new mother's mass demands. Both daughters land exactly on their shells and their sum is exactly `new_mother`,
+// for any change of mother mass.
+inline void ReattachTo(ROOT::Math::PxPyPzEVector& d1, ROOT::Math::PxPyPzEVector& d2, double m1, double m2,
+                       const ROOT::Math::PxPyPzEVector& old_mother, const ROOT::Math::PxPyPzEVector& new_mother) {
+    const double mm = new_mother.M();
+    const double p_star = std::sqrt(std::max(0., (mm * mm - (m1 + m2) * (m1 + m2)) * (mm * mm - (m1 - m2) * (m1 - m2)))) / (2. * mm);
+    const auto u = ROOT::Math::Boost(old_mother.BoostToCM())(d1).Vect().Unit();
+    const ROOT::Math::Boost back(-new_mother.BoostToCM());
+    d1 = back(ROOT::Math::PxPyPzEVector(p_star * u.X(), p_star * u.Y(), p_star * u.Z(), std::hypot(p_star, m1)));
+    d2 = back(ROOT::Math::PxPyPzEVector(-p_star * u.X(), -p_star * u.Y(), -p_star * u.Z(), std::hypot(p_star, m2)));
+}
 
 }  // namespace Common::Math
