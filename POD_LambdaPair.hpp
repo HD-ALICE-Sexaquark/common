@@ -7,12 +7,23 @@ struct LambdaPair {
     float Decay_X;
     float Decay_Y;
     float Decay_Z;
-    float Px;
-    float Py;
-    float Pz;
-    float Energy;
-    float Chi2NDF;
+    float Px;       // = L1_Fit_Px + L2_Fit_Px
+    float Py;       // = L1_Fit_Py + L2_Fit_Py
+    float Pz;       // = L1_Fit_Pz + L2_Fit_Pz
+    float Energy;   // = L1_Fit_Energy + L2_Fit_Energy
+    float Chi2NDF;  // NDF = 1
     bool IsAntiChannel;
+    // available with PV constraint
+    float CV_X;
+    float CV_Y;
+    float CV_Z;
+    float CV_Px;
+    float CV_Py;
+    float CV_Pz;
+    float CV_Energy;
+    float CV_DecayLength;
+    float CV_DecayLengthErr;
+    float Chi2CV;  // chi2 w.r.t pv; 2 d.o.f.
     // (anti)lambda 1
     float Lambda1_PCAwrtDV_X;
     float Lambda1_PCAwrtDV_Y;

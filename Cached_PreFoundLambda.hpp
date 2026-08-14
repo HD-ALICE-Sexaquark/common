@@ -18,8 +18,8 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
 
     PreFoundLambda(const POD::Extended::PreFoundLambda& lambda, bool is_anti_channel, const ROOT::Math::XYZPoint& ref)
         : POD::Extended::PreFoundLambda(lambda),
-          lv_neg{lambda.Neg_PCAwrtV0_Px, lambda.Neg_PCAwrtV0_Py, lambda.Neg_PCAwrtV0_Pz, lambda.Neg_Energy},
-          lv_pos{lambda.Pos_PCAwrtV0_Px, lambda.Pos_PCAwrtV0_Py, lambda.Pos_PCAwrtV0_Pz, lambda.Pos_Energy},
+          lv_neg{lambda.Neg_Fit_Px, lambda.Neg_Fit_Py, lambda.Neg_Fit_Pz, lambda.Neg_Fit_Energy},
+          lv_pos{lambda.Pos_Fit_Px, lambda.Pos_Fit_Py, lambda.Pos_Fit_Pz, lambda.Pos_Fit_Energy},
           lv{lambda.Px, lambda.Py, lambda.Pz, lambda.Energy},
           v0{lambda.Decay_X, lambda.Decay_Y, lambda.Decay_Z},
           pv{ref},
@@ -55,10 +55,16 @@ struct PreFoundLambda : POD::Extended::PreFoundLambda {
                                                  Common::DummyFloat,
                                                  Common::DummyFloat,
                                                  Common::DummyFloat,
+                                                 non_ext_lambda.Neg_PCAwrtV0_Px,
+                                                 non_ext_lambda.Neg_PCAwrtV0_Py,
+                                                 non_ext_lambda.Neg_PCAwrtV0_Pz,
                                                  static_cast<float>(energy_neg),
                                                  Common::DummyFloat,
                                                  Common::DummyFloat,
                                                  Common::DummyFloat,
+                                                 non_ext_lambda.Pos_PCAwrtV0_Px,
+                                                 non_ext_lambda.Pos_PCAwrtV0_Py,
+                                                 non_ext_lambda.Pos_PCAwrtV0_Pz,
                                                  static_cast<float>(energy_pos)};
         return {ext_lambda, is_anti_channel, ref};
     }
