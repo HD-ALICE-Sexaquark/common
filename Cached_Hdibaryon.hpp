@@ -97,7 +97,7 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double CPA_wrt_PV() const { return cpa_wrt_pv; }
 
     // available with PV constraint //
-    [[nodiscard]] bool HasCV() const { return Chi2CV > 0.; }  // a chi2 is never negative, the dummy is
+    [[nodiscard]] bool HasCV() const { return static_cast<double>(Chi2CV) > 0.; }  // a chi2 is never negative, the dummy is
     // -- kinematics
     [[nodiscard]] double CV_Pt() const { return HasCV() ? lv_cv.Pt() : Common::DummyDouble; }
     [[nodiscard]] double CV_P() const { return HasCV() ? lv_cv.P() : Common::DummyDouble; }

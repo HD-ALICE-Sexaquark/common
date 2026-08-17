@@ -109,9 +109,11 @@ struct Writer {
 
 struct Reader {
 
-    Reader(Model model, std::string_view tree_name, TFile& input_file)  //
-        : fModel{std::move(model)} {
-        fTree = input_file.Get<TTree>(std::string(tree_name).c_str());
+    Reader(Model model, std::string_view tree_name, std::string_view input_path)
+        : fModel{std::move(model)},  //
+          fFile{std::make_unique<TFile>(std::string(input_path).c_str(), "READ")} {
+        if (fFile->IsZombie()) throw std::runtime_error("Reader: cannot open file");
+        fTree = fFile->Get<TTree>(std::string(tree_name).c_str());
         if (fTree == nullptr) throw std::runtime_error("Reader: tree not found");
         for (auto& e : fModel.fEntries) e.setAddress(*fTree, e);
     }
@@ -120,6 +122,7 @@ struct Reader {
     [[nodiscard]] long long GetEntries() const { return fTree->GetEntries(); }
 
     Model fModel;
+    std::unique_ptr<TFile> fFile;
     TTree* fTree{nullptr};
 };
 

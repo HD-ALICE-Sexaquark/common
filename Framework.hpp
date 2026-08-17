@@ -58,10 +58,10 @@ struct Writer {
 
 struct Reader {
 
-    Reader(Framework::Model model, std::string_view rnt_name, TFile &input_file,
+    Reader(Framework::Model model, std::string_view rnt_name, std::string_view input_path,
            const ROOT::RNTupleReadOptions &options = ROOT::RNTupleReadOptions())  //
         : fModel{std::move(model)} {
-        fRNT_Reader = ROOT::RNTupleReader::Open(std::move(fModel.fRNT_Model), rnt_name, input_file.GetName(), options);
+        fRNT_Reader = ROOT::RNTupleReader::Open(std::move(fModel.fRNT_Model), rnt_name, input_path, options);
         fEntry = fRNT_Reader->GetModel().CreateBareEntry();
         fModel.BindAll(fEntry.get());
     }
