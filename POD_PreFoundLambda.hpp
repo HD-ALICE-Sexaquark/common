@@ -28,9 +28,9 @@ struct PreFoundLambda {
     unsigned short Neg_TPC_NClustersFindable;
     float Neg_TPC_Chi2;
     // -- related to (anti)lambda
-    float Neg_PCAwrtV0_Px;
-    float Neg_PCAwrtV0_Py;
-    float Neg_PCAwrtV0_Pz;
+    float Neg_PCAwrtV0_Px;  // (updated after new fit)
+    float Neg_PCAwrtV0_Py;  // (updated after new fit)
+    float Neg_PCAwrtV0_Pz;  // (updated after new fit)
 
     // positive daughter //
     unsigned int Pos_EsdEntry;
@@ -46,9 +46,9 @@ struct PreFoundLambda {
     unsigned short Pos_TPC_NClustersFindable;
     float Pos_TPC_Chi2;
     // -- related to (anti)lambda
-    float Pos_PCAwrtV0_Px;
-    float Pos_PCAwrtV0_Py;
-    float Pos_PCAwrtV0_Pz;
+    float Pos_PCAwrtV0_Px;  // (updated after new fit)
+    float Pos_PCAwrtV0_Py;  // (updated after new fit)
+    float Pos_PCAwrtV0_Pz;  // (updated after new fit)
 };
 
 namespace Extended {
@@ -76,6 +76,8 @@ struct PreFoundLambda : POD::PreFoundLambda {
     float Pos_Fit_Py;
     float Pos_Fit_Pz;
     float Pos_Fit_Energy;
+    // flag
+    bool IsAntiLambda;
 };
 
 }  // namespace Extended

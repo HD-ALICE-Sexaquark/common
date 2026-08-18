@@ -3,14 +3,20 @@
 #include <cmath>
 
 #include <Math/GenVector/Boost.h>
+#include <Math/GenVector/VectorUtil.h>
 #include <Math/Vector3D.h>
 #include <Math/Vector4Dfwd.h>
 
 #include "Constants.hpp"
 #include "DB_Particles.hpp"
+#include "Math.hpp"
+#include "POD_PreFoundLambda.hpp"
 
 // H-Dibaryon library.
 namespace HD {
+
+namespace RMath = ROOT::Math;
+namespace CMath = Common::Math;
 
 // Decay Tree //
 
@@ -34,34 +40,65 @@ inline constexpr DecayTree AntiChannel = {
     DB::Particles::Particle("PiPlus"),
 };
 
-constexpr const DecayTree& GetDecayTree(bool anti_channel) noexcept { return anti_channel ? AntiChannel : Channel; }
+constexpr const DecayTree& GetDecayTree(bool anti_channel) { return anti_channel ? AntiChannel : Channel; }
+
+constexpr bool IsAntiChannel(const POD::Extended::PreFoundLambda& l1, const POD::Extended::PreFoundLambda& l2) {
+    return l1.IsAntiLambda && l2.IsAntiLambda;
+}
+constexpr bool IsMixedChannel(const POD::Extended::PreFoundLambda& l1, const POD::Extended::PreFoundLambda& l2) {
+    return l1.IsAntiLambda != l2.IsAntiLambda;
+}
+
+// Duplicate Detection via entries //
+
+inline bool SameDaughterEntries(const POD::PreFoundLambda& a) {
+    // Are this lambda's legs are the same entry?
+    return a.Neg_EsdEntry == a.Pos_EsdEntry;
+}
+
+inline bool SameDaughterEntries(const POD::PreFoundLambda& a, const POD::PreFoundLambda& b) {
+    // Do these two lambdas share a leg?
+    return a.Neg_EsdEntry == b.Neg_EsdEntry || a.Neg_EsdEntry == b.Pos_EsdEntry || a.Pos_EsdEntry == b.Neg_EsdEntry ||
+           a.Pos_EsdEntry == b.Pos_EsdEntry;
+}
+
+inline bool SameLambdasEntries(const POD::PreFoundLambda& a, const POD::PreFoundLambda& b) {
+    return a.PreFoundEntry == b.PreFoundEntry || (a.Neg_EsdEntry == b.Neg_EsdEntry && a.Pos_EsdEntry == b.Pos_EsdEntry);
+}
+
+// Check whether two lambdas are the same.
+// This function must be applied at input-level. Both competing candidates may be genuine.
+inline bool SameLambda(const POD::PreFoundLambda& a, const POD::PreFoundLambda& b, double max_tracks_delta_r, double max_tracks_rel_delta_p) {
+    if (SameLambdasEntries(a, b)) return true;  // early return; small performance boost
+    return (CMath::IsSameHelix(a.Neg_State, b.Neg_State, max_tracks_delta_r, max_tracks_rel_delta_p) &&
+            CMath::IsSameHelix(a.Pos_State, b.Pos_State, max_tracks_delta_r, max_tracks_rel_delta_p));
+}
 
 // Cache Calculations //
 
 struct InfoCorrelation {
-    double cos_theta_pp{Common::DummyFloat};
-    double theta_pp{Common::DummyFloat};
-    double cos_theta_star_l1{Common::DummyFloat};
-    double cos_theta_star_l2{Common::DummyFloat};
-    double cos_theta_star_p1{Common::DummyFloat};
-    double cos_theta_star_p2{Common::DummyFloat};
-    double q_rel{Common::DummyFloat};
+    double cos_theta_pp{Common::DummyDouble};
+    double theta_pp{Common::DummyDouble};
+    double cos_theta_star_l1{Common::DummyDouble};
+    double cos_theta_star_l2{Common::DummyDouble};
+    double cos_theta_star_p1{Common::DummyDouble};
+    double cos_theta_star_p2{Common::DummyDouble};
+    double q_rel{Common::DummyDouble};
 };
 
-inline InfoCorrelation GetAngles(const ROOT::Math::PxPyPzEVector& h_lab, const ROOT::Math::PxPyPzEVector& l1_lab,
-                                 const ROOT::Math::PxPyPzEVector& l2_lab, const ROOT::Math::PxPyPzEVector& p1_lab,
-                                 const ROOT::Math::PxPyPzEVector& p2_lab) {
+inline InfoCorrelation GetAngles(const RMath::PxPyPzEVector& h_lab, const RMath::PxPyPzEVector& l1_lab, const RMath::PxPyPzEVector& l2_lab,
+                                 const RMath::PxPyPzEVector& p1_lab, const RMath::PxPyPzEVector& p2_lab) {
     // 1. boost everything to H rest frame
-    auto boost_to_h = ROOT::Math::Boost(h_lab.BoostToCM());
-    ROOT::Math::PxPyPzEVector l1_in_h = boost_to_h(l1_lab);
-    ROOT::Math::PxPyPzEVector l2_in_h = boost_to_h(l2_lab);
-    ROOT::Math::PxPyPzEVector p1_in_h = boost_to_h(p1_lab);
-    ROOT::Math::PxPyPzEVector p2_in_h = boost_to_h(p2_lab);
+    auto boost_to_h = RMath::Boost(h_lab.BoostToCM());
+    RMath::PxPyPzEVector l1_in_h = boost_to_h(l1_lab);
+    RMath::PxPyPzEVector l2_in_h = boost_to_h(l2_lab);
+    RMath::PxPyPzEVector p1_in_h = boost_to_h(p1_lab);
+    RMath::PxPyPzEVector p2_in_h = boost_to_h(p2_lab);
     // 2. boost protons to their respective lambda rest frames
-    auto boost_to_l1 = ROOT::Math::Boost(l1_in_h.BoostToCM());
-    auto boost_to_l2 = ROOT::Math::Boost(l2_in_h.BoostToCM());
-    ROOT::Math::PxPyPzEVector p1_in_l1 = boost_to_l1(p1_in_h);
-    ROOT::Math::PxPyPzEVector p2_in_l2 = boost_to_l2(p2_in_h);
+    auto boost_to_l1 = RMath::Boost(l1_in_h.BoostToCM());
+    auto boost_to_l2 = RMath::Boost(l2_in_h.BoostToCM());
+    RMath::PxPyPzEVector p1_in_l1 = boost_to_l1(p1_in_h);
+    RMath::PxPyPzEVector p2_in_l2 = boost_to_l2(p2_in_h);
     // -- cache sqrt calls
     auto u_h = h_lab.Vect().Unit();
     auto u_l1 = l1_in_h.Vect().Unit();

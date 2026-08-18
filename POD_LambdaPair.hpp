@@ -12,7 +12,6 @@ struct LambdaPair {
     float Pz;       // = L1_Fit_Pz + L2_Fit_Pz
     float Energy;   // = L1_Fit_Energy + L2_Fit_Energy
     float Chi2NDF;  // NDF = 1
-    bool IsAntiChannel;
     // available with PV constraint
     float CV_X;
     float CV_Y;

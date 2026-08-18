@@ -21,6 +21,8 @@ struct Hdibaryon : POD::LambdaPair {
         : POD::LambdaPair(hdib),
           // 4-momentum (closed tree)
           lv{static_cast<double>(hdib.Px), static_cast<double>(hdib.Py), static_cast<double>(hdib.Pz), static_cast<double>(hdib.Energy)},
+          lv_l1{Lambda1_Fit_Px, Lambda1_Fit_Py, Lambda1_Fit_Pz, Lambda1_Fit_Energy},
+          lv_l2{Lambda2_Fit_Px, Lambda2_Fit_Py, Lambda2_Fit_Pz, Lambda2_Fit_Energy},
           // 4-momentum (constrained pv)
           lv_cv{static_cast<double>(hdib.CV_Px), static_cast<double>(hdib.CV_Py), static_cast<double>(hdib.CV_Pz),
                 static_cast<double>(hdib.CV_Energy)},
@@ -36,29 +38,34 @@ struct Hdibaryon : POD::LambdaPair {
           dv_l2{l2.Decay_X, l2.Decay_Y, l2.Decay_Z},
           l2_pca_wrt_dv{Lambda2_PCAwrtDV_X, Lambda2_PCAwrtDV_Y, Lambda2_PCAwrtDV_Z},
           // scalars
-          cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)} {
+          cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)},
+          is_anti{HD::IsAntiChannel(l1, l2)},
+          is_mixed{HD::IsMixedChannel(l1, l2)} {
         // auxiliary vectors (closed tree)
-        ROOT::Math::PxPyPzEVector lv_l1{Lambda1_Fit_Px, Lambda1_Fit_Py, Lambda1_Fit_Pz, Lambda1_Fit_Energy};
         ROOT::Math::PxPyPzEVector lv_l1_neg{l1.Neg_Fit_Px, l1.Neg_Fit_Py, l1.Neg_Fit_Pz, l1.Neg_Fit_Energy};
         ROOT::Math::PxPyPzEVector lv_l1_pos{l1.Pos_Fit_Px, l1.Pos_Fit_Py, l1.Pos_Fit_Pz, l1.Pos_Fit_Energy};
-        ROOT::Math::PxPyPzEVector lv_l2{Lambda2_Fit_Px, Lambda2_Fit_Py, Lambda2_Fit_Pz, Lambda2_Fit_Energy};
         ROOT::Math::PxPyPzEVector lv_l2_neg{l2.Neg_Fit_Px, l2.Neg_Fit_Py, l2.Neg_Fit_Pz, l2.Neg_Fit_Energy};
         ROOT::Math::PxPyPzEVector lv_l2_pos{l2.Pos_Fit_Px, l2.Pos_Fit_Py, l2.Pos_Fit_Pz, l2.Pos_Fit_Energy};
         // reattach grand-daughters to (anti)h-dibaryon fit (ensure closed tree)
         const ROOT::Math::PxPyPzEVector lv_l1_prefit{l1.Px, l1.Py, l1.Pz, l1.Energy};
         const ROOT::Math::PxPyPzEVector lv_l2_prefit{l2.Px, l2.Py, l2.Pz, l2.Energy};
-        const double mass_neg = hdib.IsAntiChannel ? DB::Particles::Particle("AntiProton").mass : DB::Particles::Particle("PiMinus").mass;
-        const double mass_pos = hdib.IsAntiChannel ? DB::Particles::Particle("PiPlus").mass : DB::Particles::Particle("Proton").mass;
-        Common::Math::ReattachTo(lv_l1_neg, lv_l1_pos, mass_neg, mass_pos, lv_l1_prefit, lv_l1);
-        Common::Math::ReattachTo(lv_l2_neg, lv_l2_pos, mass_neg, mass_pos, lv_l2_prefit, lv_l2);
+        // -- the two legs only share a species in the signal channels
+        const double mass_l1_neg = l1.IsAntiLambda ? DB::Particles::Particle("AntiProton").mass : DB::Particles::Particle("PiMinus").mass;
+        const double mass_l1_pos = l1.IsAntiLambda ? DB::Particles::Particle("PiPlus").mass : DB::Particles::Particle("Proton").mass;
+        const double mass_l2_neg = l2.IsAntiLambda ? DB::Particles::Particle("AntiProton").mass : DB::Particles::Particle("PiMinus").mass;
+        const double mass_l2_pos = l2.IsAntiLambda ? DB::Particles::Particle("PiPlus").mass : DB::Particles::Particle("Proton").mass;
+        Common::Math::ReattachTo(lv_l1_neg, lv_l1_pos, mass_l1_neg, mass_l1_pos, lv_l1_prefit, lv_l1);
+        Common::Math::ReattachTo(lv_l2_neg, lv_l2_pos, mass_l2_neg, mass_l2_pos, lv_l2_prefit, lv_l2);
+        // -- lab-frame correlations (the h-dibaryon r.f. is trivial: the lambdas are back-to-back there)
+        cos_theta_ll = lv_l1.Vect().Unit().Dot(lv_l2.Vect().Unit());
         // (anti)lambda 1
         l1_cpa_wrt_dv = Common::Math::CosinePointingAngle(lv_l1.Vect(), dv_l1, dv);
         // (anti)lambda 2
         l2_cpa_wrt_dv = Common::Math::CosinePointingAngle(lv_l2.Vect(), dv_l2, dv);
         // correlations
-        HD::InfoCorrelation c_corr = HD::GetAngles(lv, lv_l1, lv_l2,                            //
-                                                   hdib.IsAntiChannel ? lv_l1_neg : lv_l1_pos,  //
-                                                   hdib.IsAntiChannel ? lv_l2_neg : lv_l2_pos);
+        HD::InfoCorrelation c_corr = HD::GetAngles(lv, lv_l1, lv_l2,                         //
+                                                   l1.IsAntiLambda ? lv_l1_neg : lv_l1_pos,  //
+                                                   l2.IsAntiLambda ? lv_l2_neg : lv_l2_pos);
         cos_theta_pp = c_corr.cos_theta_pp;
         theta_pp = c_corr.theta_pp;
         cos_theta_star_l1 = c_corr.cos_theta_star_l1;
@@ -69,6 +76,9 @@ struct Hdibaryon : POD::LambdaPair {
     }
 
     // (anti)h-dibaryon candidate //
+    // -- classification
+    [[nodiscard]] bool IsAntiChannel() const { return is_anti; }
+    [[nodiscard]] bool IsMixedChannel() const { return is_mixed; }
     // -- kinematics
     [[nodiscard]] double P() const { return lv.P(); }
     [[nodiscard]] double Mass() const { return lv.M(); }
@@ -127,6 +137,26 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double L2_CPA_wrt_DV() const { return l2_cpa_wrt_dv; }
     [[nodiscard]] double L2_DCA_wrt_DV() const { return (l2_pca_wrt_dv - dv).R(); }
 
+    // (anti)lambda pair : lab frame //
+    [[nodiscard]] double CosTheta_LL() const { return cos_theta_ll; }
+    [[nodiscard]] double Theta_LL() const { return std::acos(std::clamp(cos_theta_ll, -1., 1.)); }
+    [[nodiscard]] double DeltaEta_LL() const { return lv_l1.Eta() - lv_l2.Eta(); }
+    [[nodiscard]] double DeltaPhi_LL() const { return ROOT::Math::VectorUtil::DeltaPhi(lv_l1, lv_l2); }
+    [[nodiscard]] double DeltaR_LL() const { return std::hypot(DeltaEta_LL(), DeltaPhi_LL()); }
+    // -- momentum sharing: q* = sqrt(M^2/4 - m_lambda^2) ~ 54 MeV/c at m(H) = 2.234 GeV/c^2,
+    //    so a genuine pair splits the h-dibaryon momentum to within 2q*/M ~  5%
+    [[nodiscard]] double Asym_LL() const {
+        const double p1 = lv_l1.P();
+        const double p2 = lv_l2.P();
+        return (p1 + p2) > Common::AbsAlmostZero ? (p1 - p2) / (p1 + p2) : Common::DummyDouble;
+    }
+
+    // duplicated (anti)lambda test //
+    // -- two reconstructions of one physical (anti)lambda share a decay vertex; two genuine ones
+    //    from a single h-dibaryon fly c*tau = 7.89 cm independently
+    [[nodiscard]] double Dist_btw_LambdaDVs() const { return (dv_l1 - dv_l2).R(); }
+    [[nodiscard]] double DeltaDecayLength_LL() const { return std::abs(L1_DecayLength() - L2_DecayLength()); }
+
     // correlations //
     [[nodiscard]] double CosTheta_pp() const { return cos_theta_pp; }
     [[nodiscard]] double Theta_pp() const { return theta_pp; }
@@ -138,7 +168,9 @@ struct Hdibaryon : POD::LambdaPair {
 
    private:
     // 4-momentum
-    ROOT::Math::PxPyPzEVector lv;     // kinematically closed w.r.t. decay tree
+    ROOT::Math::PxPyPzEVector lv;  // kinematically closed w.r.t. decay tree
+    ROOT::Math::PxPyPzEVector lv_l1;
+    ROOT::Math::PxPyPzEVector lv_l2;
     ROOT::Math::PxPyPzEVector lv_cv;  // constrained to production vertex
     // coordinates
     ROOT::Math::XYZPoint dv;  // decay vertex
@@ -157,6 +189,8 @@ struct Hdibaryon : POD::LambdaPair {
     double l1_cpa_wrt_dv;
     // -- (anti)lambda 2
     double l2_cpa_wrt_dv;
+    // ??
+    double cos_theta_ll;
     // correlations
     double cos_theta_pp;
     double theta_pp;
@@ -165,6 +199,8 @@ struct Hdibaryon : POD::LambdaPair {
     double cos_theta_star_p1;
     double cos_theta_star_p2;
     double q_rel;
+    bool is_anti;
+    bool is_mixed;
 };
 
 }  // namespace Cached
