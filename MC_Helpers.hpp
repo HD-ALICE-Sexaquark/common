@@ -82,17 +82,21 @@ inline std::optional<std::size_t> FindDaughterMcEntry(const POD::McParticle &mc,
 
 namespace SexaquarkRules {
 
-// NOTE: no true hypothesis here.
-inline bool IsGen1Signal(const POD::McParticle &mc, const DB::ReactionChannels::Definition &r_channel) {
-    // (1)) logical primary (= no mother)
+inline bool IsGen1Signal_ChannelIndependent(const POD::McParticle &mc) {
+    // (1) logical primary (= no mother)
     if (mc.Mother_McEntry > Common::DummyInt) return false;
     // (2) should come from the anti-sexaquark reaction generator
     if (mc.Generator != Common::ECustomGeneratorIdx::kInjectedAntiSexaquarkReaction) return false;
-    // (3) pdg is found in reaction products?
-    if (std::ranges::find(r_channel.products_pdg, mc.PdgCode) == r_channel.products_pdg.end()) return false;
-    // (4) mc status has to be [600,620[
+    // (3) mc status has to be [600,620[
     if (mc.StatusCode < E2T::ReactionID_Offset || mc.StatusCode >= E2T::ReactionID_Offset + E2T::NSexaReactionsPerEvent) return false;
     return true;
+}
+
+// NOTE: no true hypothesis here.
+inline bool IsGen1Signal(const POD::McParticle &mc, const DB::ReactionChannels::Definition &r_channel) {
+    if (!IsGen1Signal_ChannelIndependent(mc)) return false;
+    // -- pdg is found in direct/first reaction products?
+    return std::ranges::find(r_channel.products_pdg, mc.PdgCode) != r_channel.products_pdg.end();
 }
 
 inline Cached::McExtension ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
@@ -135,6 +139,54 @@ inline std::optional<std::size_t> FindCommonReactionID(const POD::Extended::McPa
     if (mc_dau2.SignalID < 0) return std::nullopt;
     if (mc_dau1.SignalID != mc_dau2.SignalID) return std::nullopt;
     return static_cast<std::size_t>(mc_dau1.SignalID) - E2T::ReactionID_Offset;
+}
+
+// Identify the injected reaction channel of a dedicated sexaquark MC production,
+// by matching the first-gen products of a single reaction against `DB::ReactionChannels`.
+// Every reaction of a production shares the same channel, so one of them is enough;
+// This function is carried only in the first event; it's not tried again, because dedicated sexa MC have all events with injected signal.
+// NOTE: could be generalized for more channels, but this crafty profile-based version is efficient enough.
+inline DB::ReactionChannels::Definition DetectMcSignalChannel(const std::vector<POD::McParticle> &mc_particles) {
+
+    DB::ReactionChannels::Definition default_reaction_channel = DB::ReactionChannels::ReactionChannel('0');
+
+    int n_antilambda = 0;
+    int n_k0s = 0;
+    int n_kplus = 0;
+    int n_antiproton = 0;
+    int n_pi0 = 0;
+    unsigned int n_total = 0;
+
+    // collect all possible gen1 signal particles; grab their pdg codes
+    for (const auto &mc : mc_particles) {
+        if (!MC::SexaquarkRules::IsGen1Signal_ChannelIndependent(mc)) continue;
+        n_antilambda += mc.PdgCode == -3122;
+        n_k0s += mc.PdgCode == 310;
+        n_kplus += mc.PdgCode == 321;
+        n_antiproton += mc.PdgCode == -2212;
+        n_pi0 += mc.PdgCode == 111;
+        n_total++;
+    }
+    if (n_total == 0) return default_reaction_channel;  // no signal found
+
+    DB::ReactionChannels::Definition test_reaction_channel = DB::ReactionChannels::ReactionChannel('A');
+    if (n_total == test_reaction_channel.products_pdg.size() * E2T::NSexaReactionsPerEvent) {
+        if (n_antilambda == E2T::NSexaReactionsPerEvent && n_k0s == E2T::NSexaReactionsPerEvent) return test_reaction_channel;
+    }
+
+    test_reaction_channel = DB::ReactionChannels::ReactionChannel('D');
+    if (n_total == test_reaction_channel.products_pdg.size() * E2T::NSexaReactionsPerEvent) {
+        if (n_antilambda == E2T::NSexaReactionsPerEvent && n_kplus == E2T::NSexaReactionsPerEvent) return test_reaction_channel;
+    }
+
+    test_reaction_channel = DB::ReactionChannels::ReactionChannel('H');
+    if (n_total == test_reaction_channel.products_pdg.size() * E2T::NSexaReactionsPerEvent) {
+        if (n_antiproton == E2T::NSexaReactionsPerEvent && n_pi0 == E2T::NSexaReactionsPerEvent && n_kplus == 2 * E2T::NSexaReactionsPerEvent) {
+            return test_reaction_channel;
+        }
+    }
+
+    return default_reaction_channel;
 }
 
 }  // namespace SexaquarkRules

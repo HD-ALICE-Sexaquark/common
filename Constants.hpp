@@ -29,7 +29,7 @@ static constexpr unsigned int NInjectedHdibaryonsPerEvent = 100;
 }  // namespace E2T
 
 namespace T2DS {
-static constexpr const char* Name_PackedRNT = "PackedEvents";
+static constexpr const char* Name_FoundSexaquarkRNT = "FoundSexaquark";
 static constexpr const char* Name_FoundHdibaryonRNT = "FoundHdibaryon";
 }  // namespace T2DS
 

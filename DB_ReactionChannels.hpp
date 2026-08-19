@@ -38,13 +38,13 @@ inline constexpr std::array DB = std::to_array<Definition>({
 consteval std::size_t Index(char c) {
     for (std::size_t rr = 0; rr < DB.size(); ++rr)
         if (DB[rr].name == c) return rr;
-    return DB.size() - 1;
+    throw "DB::ReactionChannels::Index: unknown channel";
 }
 
 consteval Definition ReactionChannel(char c) {
     for (const auto& r : DB)
         if (r.name == c) return r;
-    return DB.back();
+    throw "DB::ReactionChannels::ReactionChannel: unknown channel";
 }
 
 constexpr std::size_t FindIndex(char c) {
