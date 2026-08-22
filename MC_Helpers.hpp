@@ -85,7 +85,7 @@ namespace SexaquarkRules {
 inline bool IsGen1Signal_ChannelIndependent(const POD::McParticle &mc) {
     // (1) logical primary (= no mother)
     if (mc.Mother_McEntry > Common::DummyInt) return false;
-    // (2) should come from the anti-sexaquark reaction generator
+    // (2) should come from the antisexaquark reaction generator
     if (mc.Generator != Common::ECustomGeneratorIdx::kInjectedAntiSexaquarkReaction) return false;
     // (3) mc status has to be [600,620[
     if (mc.StatusCode < E2T::ReactionID_Offset || mc.StatusCode >= E2T::ReactionID_Offset + E2T::NSexaReactionsPerEvent) return false;

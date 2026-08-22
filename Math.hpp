@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <optional>
 #include <tuple>
@@ -221,6 +222,20 @@ inline void ReattachTo(RMath::PxPyPzEVector& d1, RMath::PxPyPzEVector& d2, doubl
     const RMath::Boost back(-new_mother.BoostToCM());
     d1 = back(RMath::PxPyPzEVector(p_star * u.X(), p_star * u.Y(), p_star * u.Z(), std::hypot(p_star, m1)));
     d2 = back(RMath::PxPyPzEVector(-p_star * u.X(), -p_star * u.Y(), -p_star * u.Z(), std::hypot(p_star, m2)));
+}
+
+// `ReattachTo(...)` applied straight to a V0-like POD -- anything carrying `Neg_Fit_*`, `Pos_Fit_*` and its own
+// (Px,Py,Pz,Energy), i.e. `POD::V0` and `POD::Extended::PreFoundLambda`.
+// Return legs as {neg, pos}.
+template <typename V0Like>
+inline std::pair<RMath::PxPyPzEVector, RMath::PxPyPzEVector> CloseDecay(const V0Like& v0, double m_neg, double m_pos,
+                                                                        const RMath::PxPyPzEVector& new_mother) {
+    std::pair<RMath::PxPyPzEVector, RMath::PxPyPzEVector> legs{
+        {v0.Neg_Fit_Px, v0.Neg_Fit_Py, v0.Neg_Fit_Pz, v0.Neg_Fit_Energy},
+        {v0.Pos_Fit_Px, v0.Pos_Fit_Py, v0.Pos_Fit_Pz, v0.Pos_Fit_Energy},
+    };
+    ReattachTo(legs.first, legs.second, m_neg, m_pos, {v0.Px, v0.Py, v0.Pz, v0.Energy}, new_mother);
+    return legs;
 }
 
 }  // namespace Common::Math

@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-#include <Math/GenVector/Boost.h>
-#include <Math/GenVector/VectorUtil.h>
+#include <Math/Boost.h>
 #include <Math/Vector3D.h>
-#include <Math/Vector4Dfwd.h>
+#include <Math/Vector4D.h>
+#include <Math/VectorUtil.h>
 
 #include "Constants.hpp"
 #include "DB_Particles.hpp"

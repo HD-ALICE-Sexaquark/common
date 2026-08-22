@@ -1,12 +1,14 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
+#include <tuple>
 
-#include <Math/Point3Dfwd.h>
-#include <Math/Vector4Dfwd.h>
+#include <Math/Point3D.h>
+#include <Math/Vector4D.h>
+#include <Math/VectorUtil.h>
 
 #include "Constants.hpp"
-#include "DB_Particles.hpp"
 #include "HD_Library.hpp"
 #include "Math.hpp"
 #include "POD_LambdaPair.hpp"
@@ -19,53 +21,37 @@ struct Hdibaryon : POD::LambdaPair {
     Hdibaryon(const POD::LambdaPair& hdib, const POD::Extended::PreFoundLambda& l1, const POD::Extended::PreFoundLambda& l2,
               const ROOT::Math::XYZPoint& ref)
         : POD::LambdaPair(hdib),
-          // 4-momentum (closed tree)
-          lv{static_cast<double>(hdib.Px), static_cast<double>(hdib.Py), static_cast<double>(hdib.Pz), static_cast<double>(hdib.Energy)},
-          lv_l1{Lambda1_Fit_Px, Lambda1_Fit_Py, Lambda1_Fit_Pz, Lambda1_Fit_Energy},
-          lv_l2{Lambda2_Fit_Px, Lambda2_Fit_Py, Lambda2_Fit_Pz, Lambda2_Fit_Energy},
-          // 4-momentum (constrained pv)
-          lv_cv{static_cast<double>(hdib.CV_Px), static_cast<double>(hdib.CV_Py), static_cast<double>(hdib.CV_Pz),
-                static_cast<double>(hdib.CV_Energy)},
-          // coordinates
+          lv{hdib.Px, hdib.Py, hdib.Pz, hdib.Energy},
+          lv_cv{hdib.CV_Px, hdib.CV_Py, hdib.CV_Pz, hdib.CV_Energy},
+          lv_lambda1{Lambda1_Fit_Px, Lambda1_Fit_Py, Lambda1_Fit_Pz, Lambda1_Fit_Energy},
+          lv_lambda2{Lambda2_Fit_Px, Lambda2_Fit_Py, Lambda2_Fit_Pz, Lambda2_Fit_Energy},
           dv{hdib.Decay_X, hdib.Decay_Y, hdib.Decay_Z},
           cv{hdib.CV_X, hdib.CV_Y, hdib.CV_Z},
           pv{ref},
           pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv.Vect(), dv, pv)},
-          // -- (anti)lambda 1
           dv_l1{l1.Decay_X, l1.Decay_Y, l1.Decay_Z},
-          l1_pca_wrt_dv{Lambda1_PCAwrtDV_X, Lambda1_PCAwrtDV_Y, Lambda1_PCAwrtDV_Z},
-          // -- (anti)lambda 2
           dv_l2{l2.Decay_X, l2.Decay_Y, l2.Decay_Z},
+          l1_pca_wrt_dv{Lambda1_PCAwrtDV_X, Lambda1_PCAwrtDV_Y, Lambda1_PCAwrtDV_Z},
           l2_pca_wrt_dv{Lambda2_PCAwrtDV_X, Lambda2_PCAwrtDV_Y, Lambda2_PCAwrtDV_Z},
-          // scalars
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)},
+          l1_cpa_wrt_dv{Common::Math::CosinePointingAngle(lv_lambda1.Vect(), dv_l1, dv)},
+          l2_cpa_wrt_dv{Common::Math::CosinePointingAngle(lv_lambda2.Vect(), dv_l2, dv)},
+          cos_theta_ll{lv_lambda1.Vect().Unit().Dot(lv_lambda2.Vect().Unit())},
           is_anti{HD::IsAntiChannel(l1, l2)},
           is_mixed{HD::IsMixedChannel(l1, l2)} {
-        // auxiliary vectors (closed tree)
-        ROOT::Math::PxPyPzEVector lv_l1_neg{l1.Neg_Fit_Px, l1.Neg_Fit_Py, l1.Neg_Fit_Pz, l1.Neg_Fit_Energy};
-        ROOT::Math::PxPyPzEVector lv_l1_pos{l1.Pos_Fit_Px, l1.Pos_Fit_Py, l1.Pos_Fit_Pz, l1.Pos_Fit_Energy};
-        ROOT::Math::PxPyPzEVector lv_l2_neg{l2.Neg_Fit_Px, l2.Neg_Fit_Py, l2.Neg_Fit_Pz, l2.Neg_Fit_Energy};
-        ROOT::Math::PxPyPzEVector lv_l2_pos{l2.Pos_Fit_Px, l2.Pos_Fit_Py, l2.Pos_Fit_Pz, l2.Pos_Fit_Energy};
-        // reattach grand-daughters to (anti)h-dibaryon fit (ensure closed tree)
-        const ROOT::Math::PxPyPzEVector lv_l1_prefit{l1.Px, l1.Py, l1.Pz, l1.Energy};
-        const ROOT::Math::PxPyPzEVector lv_l2_prefit{l2.Px, l2.Py, l2.Pz, l2.Energy};
-        // -- the two legs only share a species in the signal channels
-        const double mass_l1_neg = l1.IsAntiLambda ? DB::Particles::Particle("AntiProton").mass : DB::Particles::Particle("PiMinus").mass;
-        const double mass_l1_pos = l1.IsAntiLambda ? DB::Particles::Particle("PiPlus").mass : DB::Particles::Particle("Proton").mass;
-        const double mass_l2_neg = l2.IsAntiLambda ? DB::Particles::Particle("AntiProton").mass : DB::Particles::Particle("PiMinus").mass;
-        const double mass_l2_pos = l2.IsAntiLambda ? DB::Particles::Particle("PiPlus").mass : DB::Particles::Particle("Proton").mass;
-        Common::Math::ReattachTo(lv_l1_neg, lv_l1_pos, mass_l1_neg, mass_l1_pos, lv_l1_prefit, lv_l1);
-        Common::Math::ReattachTo(lv_l2_neg, lv_l2_pos, mass_l2_neg, mass_l2_pos, lv_l2_prefit, lv_l2);
-        // -- lab-frame correlations (the h-dibaryon r.f. is trivial: the lambdas are back-to-back there)
-        cos_theta_ll = lv_l1.Vect().Unit().Dot(lv_l2.Vect().Unit());
-        // (anti)lambda 1
-        l1_cpa_wrt_dv = Common::Math::CosinePointingAngle(lv_l1.Vect(), dv_l1, dv);
-        // (anti)lambda 2
-        l2_cpa_wrt_dv = Common::Math::CosinePointingAngle(lv_l2.Vect(), dv_l2, dv);
+        // close decay trees
+        if (l1.IsAntiLambda) {
+            std::tie(lv_proton1, lv_pion1) = Common::Math::CloseDecay(l1, Common::PdgMass_Proton, Common::PdgMass_Pion, lv_lambda1);
+        } else {
+            std::tie(lv_pion1, lv_proton1) = Common::Math::CloseDecay(l1, Common::PdgMass_Pion, Common::PdgMass_Proton, lv_lambda1);
+        }
+        if (l2.IsAntiLambda) {
+            std::tie(lv_proton2, lv_pion2) = Common::Math::CloseDecay(l2, Common::PdgMass_Proton, Common::PdgMass_Pion, lv_lambda2);
+        } else {
+            std::tie(lv_pion2, lv_proton2) = Common::Math::CloseDecay(l2, Common::PdgMass_Pion, Common::PdgMass_Proton, lv_lambda2);
+        }
         // correlations
-        HD::InfoCorrelation c_corr = HD::GetAngles(lv, lv_l1, lv_l2,                         //
-                                                   l1.IsAntiLambda ? lv_l1_neg : lv_l1_pos,  //
-                                                   l2.IsAntiLambda ? lv_l2_neg : lv_l2_pos);
+        HD::InfoCorrelation c_corr = HD::GetAngles(lv, lv_lambda1, lv_lambda2, lv_proton1, lv_proton2);
         cos_theta_pp = c_corr.cos_theta_pp;
         theta_pp = c_corr.theta_pp;
         cos_theta_star_l1 = c_corr.cos_theta_star_l1;
@@ -106,8 +92,8 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double DCA_wrt_PV() const { return (pca_wrt_pv - pv).R(); }
     [[nodiscard]] double CPA_wrt_PV() const { return cpa_wrt_pv; }
 
-    // available with PV constraint //
-    [[nodiscard]] bool HasCV() const { return static_cast<double>(Chi2CV) > 0.; }  // a chi2 is never negative, the dummy is
+    // (anti)h-dibaryon candidate; available with PV constraint //
+    [[nodiscard]] bool HasCV() const { return static_cast<double>(Chi2CV) > 0.; }  // valid guard because chi2 is never negative, the dummy is
     // -- kinematics
     [[nodiscard]] double CV_Pt() const { return HasCV() ? lv_cv.Pt() : Common::DummyDouble; }
     [[nodiscard]] double CV_P() const { return HasCV() ? lv_cv.P() : Common::DummyDouble; }
@@ -125,37 +111,57 @@ struct Hdibaryon : POD::LambdaPair {
         return Common::DummyDouble;
     }
 
-    // (anti)lambda 1 //
-    // -- related to (anti)h-dibaryon
-    [[nodiscard]] double L1_DecayLength() const { return (dv_l1 - dv).R(); }
-    [[nodiscard]] double L1_CPA_wrt_DV() const { return l1_cpa_wrt_dv; }
-    [[nodiscard]] double L1_DCA_wrt_DV() const { return (l1_pca_wrt_dv - dv).R(); }
+    // (anti)lambda 1; related to (anti)h-dibaryon
+    [[nodiscard]] double Lambda1_DecayLength() const { return (dv_l1 - dv).R(); }
+    [[nodiscard]] double Lambda1_CPA_wrt_DV() const { return l1_cpa_wrt_dv; }
+    [[nodiscard]] double Lambda1_DCA_wrt_DV() const { return (l1_pca_wrt_dv - dv).R(); }
+    // -- (anti)proton 1
+    [[nodiscard]] double Proton1_Px() const { return lv_proton1.Px(); }
+    [[nodiscard]] double Proton1_Py() const { return lv_proton1.Py(); }
+    [[nodiscard]] double Proton1_Pz() const { return lv_proton1.Pz(); }
+    [[nodiscard]] double Proton1_Pt() const { return lv_proton1.Pt(); }
+    [[nodiscard]] double Proton1_P() const { return lv_proton1.P(); }
+    [[nodiscard]] double Proton1_Eta() const { return lv_proton1.Eta(); }
+    // -- pi(minus/plus) 1
+    [[nodiscard]] double Pion1_Px() const { return lv_pion1.Px(); }
+    [[nodiscard]] double Pion1_Py() const { return lv_pion1.Py(); }
+    [[nodiscard]] double Pion1_Pz() const { return lv_pion1.Pz(); }
+    [[nodiscard]] double Pion1_Pt() const { return lv_pion1.Pt(); }
+    [[nodiscard]] double Pion1_P() const { return lv_pion1.P(); }
+    [[nodiscard]] double Pion1_Eta() const { return lv_pion1.Eta(); }
 
-    // (anti)lambda 2 //
-    // -- related to (anti)h-dibaryon
-    [[nodiscard]] double L2_DecayLength() const { return (dv_l2 - dv).R(); }
-    [[nodiscard]] double L2_CPA_wrt_DV() const { return l2_cpa_wrt_dv; }
-    [[nodiscard]] double L2_DCA_wrt_DV() const { return (l2_pca_wrt_dv - dv).R(); }
+    // (anti)lambda 2; related to (anti)h-dibaryon
+    [[nodiscard]] double Lambda2_DecayLength() const { return (dv_l2 - dv).R(); }
+    [[nodiscard]] double Lambda2_CPA_wrt_DV() const { return l2_cpa_wrt_dv; }
+    [[nodiscard]] double Lambda2_DCA_wrt_DV() const { return (l2_pca_wrt_dv - dv).R(); }
+    // -- (anti)proton 2
+    [[nodiscard]] double Proton2_Px() const { return lv_proton2.Px(); }
+    [[nodiscard]] double Proton2_Py() const { return lv_proton2.Py(); }
+    [[nodiscard]] double Proton2_Pz() const { return lv_proton2.Pz(); }
+    [[nodiscard]] double Proton2_Pt() const { return lv_proton2.Pt(); }
+    [[nodiscard]] double Proton2_P() const { return lv_proton2.P(); }
+    [[nodiscard]] double Proton2_Eta() const { return lv_proton2.Eta(); }
+    // -- pi(minus/plus) 2
+    [[nodiscard]] double Pion2_Px() const { return lv_pion2.Px(); }
+    [[nodiscard]] double Pion2_Py() const { return lv_pion2.Py(); }
+    [[nodiscard]] double Pion2_Pz() const { return lv_pion2.Pz(); }
+    [[nodiscard]] double Pion2_Pt() const { return lv_pion2.Pt(); }
+    [[nodiscard]] double Pion2_P() const { return lv_pion2.P(); }
+    [[nodiscard]] double Pion2_Eta() const { return lv_pion2.Eta(); }
 
     // (anti)lambda pair : lab frame //
     [[nodiscard]] double CosTheta_LL() const { return cos_theta_ll; }
     [[nodiscard]] double Theta_LL() const { return std::acos(std::clamp(cos_theta_ll, -1., 1.)); }
-    [[nodiscard]] double DeltaEta_LL() const { return lv_l1.Eta() - lv_l2.Eta(); }
-    [[nodiscard]] double DeltaPhi_LL() const { return ROOT::Math::VectorUtil::DeltaPhi(lv_l1, lv_l2); }
+    [[nodiscard]] double DeltaEta_LL() const { return lv_lambda1.Eta() - lv_lambda2.Eta(); }
+    [[nodiscard]] double DeltaPhi_LL() const { return ROOT::Math::VectorUtil::DeltaPhi(lv_lambda1, lv_lambda2); }
     [[nodiscard]] double DeltaR_LL() const { return std::hypot(DeltaEta_LL(), DeltaPhi_LL()); }
     // -- momentum sharing: q* = sqrt(M^2/4 - m_lambda^2) ~ 54 MeV/c at m(H) = 2.234 GeV/c^2,
     //    so a genuine pair splits the h-dibaryon momentum to within 2q*/M ~  5%
     [[nodiscard]] double Asym_LL() const {
-        const double p1 = lv_l1.P();
-        const double p2 = lv_l2.P();
+        const double p1 = lv_lambda1.P();
+        const double p2 = lv_lambda2.P();
         return (p1 + p2) > Common::AbsAlmostZero ? (p1 - p2) / (p1 + p2) : Common::DummyDouble;
     }
-
-    // duplicated (anti)lambda test //
-    // -- two reconstructions of one physical (anti)lambda share a decay vertex; two genuine ones
-    //    from a single h-dibaryon fly c*tau = 7.89 cm independently
-    [[nodiscard]] double Dist_btw_LambdaDVs() const { return (dv_l1 - dv_l2).R(); }
-    [[nodiscard]] double DeltaDecayLength_LL() const { return std::abs(L1_DecayLength() - L2_DecayLength()); }
 
     // correlations //
     [[nodiscard]] double CosTheta_pp() const { return cos_theta_pp; }
@@ -166,32 +172,31 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double CosThetaStar_Pr2() const { return cos_theta_star_p2; }
     [[nodiscard]] double Qrel() const { return q_rel; }
 
+    // duplication tests //
+    [[nodiscard]] double Dist_btw_LambdaDVs() const { return (dv_l1 - dv_l2).R(); }
+    [[nodiscard]] double DeltaDecayLength_LL() const { return std::abs(Lambda1_DecayLength() - Lambda2_DecayLength()); }
+
    private:
-    // 4-momentum
-    ROOT::Math::PxPyPzEVector lv;  // kinematically closed w.r.t. decay tree
-    ROOT::Math::PxPyPzEVector lv_l1;
-    ROOT::Math::PxPyPzEVector lv_l2;
-    ROOT::Math::PxPyPzEVector lv_cv;  // constrained to production vertex
-    // coordinates
-    ROOT::Math::XYZPoint dv;  // decay vertex
-    ROOT::Math::XYZPoint cv;  // constrained production vertex ~ primary vertex
-    ROOT::Math::XYZPoint pv;
-    ROOT::Math::XYZPoint pca_wrt_pv;  // ~ origin
-    // -- (anti)lambda 1
+    ROOT::Math::PxPyPzEVector lv;          // lorentz vector
+    ROOT::Math::PxPyPzEVector lv_cv;       // constrained to production vertex
+    ROOT::Math::PxPyPzEVector lv_lambda1;  // lorentz vector
+    ROOT::Math::PxPyPzEVector lv_lambda2;  // lorentz vector
+    ROOT::Math::PxPyPzEVector lv_proton1;  // lorentz vector
+    ROOT::Math::PxPyPzEVector lv_proton2;  // lorentz vector
+    ROOT::Math::PxPyPzEVector lv_pion1;    // lorentz vector
+    ROOT::Math::PxPyPzEVector lv_pion2;    // lorentz vector
+    ROOT::Math::XYZPoint dv;               // reconstructed decay vertex
+    ROOT::Math::XYZPoint cv;               // constrained production vertex ~ primary vertex
+    ROOT::Math::XYZPoint pv;               // primary vertex
+    ROOT::Math::XYZPoint pca_wrt_pv;       // ~ origin
     ROOT::Math::XYZPoint dv_l1;
-    ROOT::Math::XYZPoint l1_pca_wrt_dv;
-    // -- (anti)lambda 2
     ROOT::Math::XYZPoint dv_l2;
+    ROOT::Math::XYZPoint l1_pca_wrt_dv;
     ROOT::Math::XYZPoint l2_pca_wrt_dv;
-    // scalars
     double cpa_wrt_pv;
-    // -- (anti)lambda 1
     double l1_cpa_wrt_dv;
-    // -- (anti)lambda 2
     double l2_cpa_wrt_dv;
-    // ??
     double cos_theta_ll;
-    // correlations
     double cos_theta_pp;
     double theta_pp;
     double cos_theta_star_l1;

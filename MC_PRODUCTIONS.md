@@ -2,25 +2,25 @@
 
 Study of two six-quark (uuddss) hypothetical states and their (1) production in heavy-ion collisions (namely Pb-Pb at 5
 TeV of center-of-mass energy) and (2) reconstruction in ALICE.
-1. Compactly bound anti-sexaquarks, stable within certain mass range
+1. Compactly bound antisexaquarks, stable within certain mass range
 2. Resonance-like (anti)h-dibaryons with fixed mass
 
 ## Sexaquark Simulations
 
-- 20 anti-sexaquarks injected per event, per channel, per mass
+- 20 antisexaquarks injected per event, per channel, per mass
 - background:
   - HIJING
   - +100 injected anti-neutrons per event
 - reaction channels: (each correspond to a different production cycle)
-  - A: anti-sexaquark + neutron -> anti-lambda + kaon zero short
-  - D: anti-sexaquark + proton  -> anti-lambda + positive kaon
-  - E: anti-sexaquark + proton  -> positive kaon + positive kaon + X
-- anti-sexaquark properties:
+  - A: antisexaquark + neutron -> anti-lambda + kaon zero short
+  - D: antisexaquark + proton  -> anti-lambda + positive kaon
+  - E: antisexaquark + proton  -> positive kaon + positive kaon + X
+- antisexaquark properties:
   - invariant mass: 1.73, 1.8, 1.87, 1.94, 2.01 GeV/c^2 (each correspond to a different production cycle)
   - |rapidity| < 0.8 (uniform)
   - full phi range (uniform)
   - pt < 5 GeV/c (uniform)
-- anti-sexaquark-material interaction:
+- antisexaquark-material interaction:
   - forced to always happen
   - 5 < radius < 180 cm (uniform)
   - struck nucleon with Nuclear Fermi Motion present (simple gaussian on P)

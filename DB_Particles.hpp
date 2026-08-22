@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <optional>
 #include <span>
 #include <string_view>
 
@@ -26,40 +27,40 @@ struct Definition {
     double mass;                         // (GeV/c^2)
     double ctau;                         // (cm)
     std::span<const int> daughters_pdg;  // NOTE: only detectable charged modes
-    std::size_t idx_neg_dau;
-    std::size_t idx_pos_dau;
+    std::optional<std::size_t> idx_neg_dau;
+    std::optional<std::size_t> idx_pos_dau;
 };
 
 inline constexpr std::array DB = std::to_array<Definition>({
-    {"Photon", "G", 22, 0, 0.0, 1e20, {}, 0, 0},
+    {"Photon", "G", 22, 0, 0.0, 1e20, {}, std::nullopt, std::nullopt},
     //
-    {"Electron", "EL", 11, -1, 0.00051100, 1e20, {}, 0, 0},
-    {"Positron", "PO", -11, +1, 0.00051100, 1e20, {}, 0, 0},
+    {"Electron", "EL", 11, -1, 0.00051100, 1e20, {}, std::nullopt, std::nullopt},
+    {"Positron", "PO", -11, +1, 0.00051100, 1e20, {}, std::nullopt, std::nullopt},
     //
-    {"PiMinus", "PM", -211, -1, 0.13957040, 780.45, {}, 0, 0},
-    {"PiPlus", "PP", 211, +1, 0.13957040, 780.45, {}, 0, 0},
-    {"PiZero", "P0", 111, 0, 0.13497680, 2.5e-6, DecayProducts_PiZero, 0, 0},
+    {"PiMinus", "PM", -211, -1, Common::PdgMass_Pion, 780.45, {}, std::nullopt, std::nullopt},
+    {"PiPlus", "PP", 211, +1, Common::PdgMass_Pion, 780.45, {}, std::nullopt, std::nullopt},
+    {"PiZero", "P0", 111, 0, 0.13497680, 2.5e-6, DecayProducts_PiZero, std::nullopt, std::nullopt},
     //
-    {"NegKaon", "NK", -321, -1, 0.49367700, 371.1, {}, 0, 0},
-    {"PosKaon", "PK", 321, +1, 0.49367700, 371.1, {}, 0, 0},
-    {"KaonZeroShort", "K0S", 310, 0, 0.49761100, 2.6844, DecayProducts_KaonZeroShort, 0, 1},
+    {"NegKaon", "NK", -321, -1, Common::PdgMass_Kaon, 371.1, {}, std::nullopt, std::nullopt},
+    {"PosKaon", "PK", 321, +1, Common::PdgMass_Kaon, 371.1, {}, std::nullopt, std::nullopt},
+    {"KaonZeroShort", "K0S", 310, 0, Common::PdgMass_KaonZeroShort, 2.6844, DecayProducts_KaonZeroShort, 0, 1},
     //
-    {"AntiProton", "AP", -2212, -1, 0.93827210, 1e20, {}, 0, 0},
-    {"Proton", "P", 2212, +1, 0.93827210, 1e20, {}, 0, 0},
+    {"AntiProton", "AP", -2212, -1, Common::PdgMass_Proton, 1e20, {}, std::nullopt, std::nullopt},
+    {"Proton", "P", 2212, +1, Common::PdgMass_Proton, 1e20, {}, std::nullopt, std::nullopt},
     //
-    {"AntiNeutron", "AN", -2112, 0, 0.93956540, 1e20, {}, 0, 0},
-    {"Neutron", "N", 2112, 0, 0.93956540, 1e20, {}, 0, 0},
+    {"AntiNeutron", "AN", -2112, 0, Common::PdgMass_Neutron, 1e20, {}, std::nullopt, std::nullopt},
+    {"Neutron", "N", 2112, 0, Common::PdgMass_Neutron, 1e20, {}, std::nullopt, std::nullopt},
     //
-    {"AntiLambda", "AL", -3122, 0, 1.1156830, 7.89, DecayProducts_AntiLambda, 0, 1},
-    {"Lambda", "L", 3122, 0, 1.1156830, 7.89, DecayProducts_Lambda, 1, 0},
+    {"AntiLambda", "AL", -3122, 0, Common::PdgMass_Lambda, 7.89, DecayProducts_AntiLambda, 0, 1},
+    {"Lambda", "L", 3122, 0, Common::PdgMass_Lambda, 7.89, DecayProducts_Lambda, 1, 0},
     //
-    {"XiPlus", "XP", -3312, +1, 1.3217100, 4.91, DecayProducts_XiPlus, 0, 1},
+    {"XiPlus", "XP", -3312, +1, 1.3217100, 4.91, DecayProducts_XiPlus, std::nullopt, std::nullopt},
     //
     // NOTE: ctau obtained from Gamma=0.002; the mass is a hypothesis, so it must never be constrained
-    {"AntiHdibaryon", "AH", -1020000020, 0, 2.234, 9.866349e-12, DecayProducts_AntiHdibaryon, 0, 0},
-    {"Hdibaryon", "H", 1020000020, 0, 2.234, 9.866349e-12, DecayProducts_Hdibaryon, 0, 0},
+    {"AntiHdibaryon", "AH", -1020000020, 0, 2.234, 9.866349e-12, DecayProducts_AntiHdibaryon, std::nullopt, std::nullopt},
+    {"Hdibaryon", "H", 1020000020, 0, 2.234, 9.866349e-12, DecayProducts_Hdibaryon, std::nullopt, std::nullopt},
     //
-    {"Unknown", "00", Common::DummyNNN, Common::DummyNNN, Common::DummyDouble, Common::DummyDouble, {}, 0, 0},
+    {"Unknown", "00", Common::DummyNNN, Common::DummyNNN, Common::DummyDouble, Common::DummyDouble, {}, std::nullopt, std::nullopt},
 });
 
 consteval std::size_t Index(int pdg) {

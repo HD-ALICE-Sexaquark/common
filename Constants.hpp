@@ -13,8 +13,8 @@ static constexpr const char* Name_OutputTree = "Events";
 static constexpr unsigned int NEventsInDedicatedMCFile = 10;
 static constexpr unsigned int NExpectedEventsInRealData = 400'000'000;
 
-// (anti-sexaquark-dedicated MC only)
-static constexpr unsigned int ReactionID_Offset = 600;  // anti-sexaquark+nucleon reactions
+// (antisexaquark-dedicated MC only)
+static constexpr unsigned int ReactionID_Offset = 600;  // antisexaquark+nucleon reactions
 static constexpr unsigned int NSexaReactionsPerEvent = 20;
 static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
 static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
@@ -47,15 +47,17 @@ static constexpr int NCovMatrixComponents_State3 = 6;
 static constexpr int NCovMatrixComponents_State6 = 21;
 static constexpr int NCovMatrixComponents_State7 = 28;
 static constexpr int NCovMatrixComponents_State8 = 36;
-static constexpr double PdgMass_Lambda = 1.115683;  // PDG mass of lambda (GeV/c^2)
-static constexpr double PdgMass_Proton = 0.938272;  // PDG mass of proton (GeV/c^2)
-static constexpr double PdgMass_Kaon = 0.493677;    // PDG mass of kaon (GeV/c^2)
-static constexpr double PdgMass_Pion = 0.139570;    // PDG mass of pion (GeV/c^2)
-static constexpr double Kappa = 0.000299792458;     // (GeV/c) / (kG/cm)
+static constexpr double PdgMass_Lambda = 1.115683;         // PDG mass of lambda (GeV/c^2)
+static constexpr double PdgMass_Neutron = 0.93956542;      // PDG mass of neutron (GeV/c^2)
+static constexpr double PdgMass_Proton = 0.93827208816;    // PDG mass of proton (GeV/c^2)
+static constexpr double PdgMass_Kaon = 0.493677;           // PDG mass of charged kaon (GeV/c^2)
+static constexpr double PdgMass_Pion = 0.13957039;         // PDG mass of charged pion (GeV/c^2)
+static constexpr double PdgMass_KaonZeroShort = 0.497611;  // PDG mass of kaon-zero-short (GeV/c^2)
+static constexpr double Kappa = 0.000299792458;            // (GeV/c) / (kG/cm)
 static constexpr double AbsAlmostZero = 1.E-8;
 static constexpr double BigNumber = 1.E8;
 static constexpr int DummyInt = -1;
-static constexpr char DummyChar = static_cast<char>(false);
+static constexpr char DummyChar = 0;
 static constexpr int DummyNNN = -999;
 static constexpr float DummyFloat = -999.;
 static constexpr double DummyDouble = -999.;

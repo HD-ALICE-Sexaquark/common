@@ -3,19 +3,19 @@
 namespace POD {
 
 struct Sexaquark {
-    // candidate info
+    // antisexaquark candidate info
     float SV_X;
     float SV_Y;
     float SV_Z;
-    float Px;
-    float Py;
-    float Pz;
-    float Energy;
+    float Px;      // = Dau1_Fit_Px + Dau2_Fit_Px
+    float Py;      // = Dau1_Fit_Py + Dau2_Fit_Py
+    float Pz;      // = Dau1_Fit_Pz + Dau2_Fit_Pz
+    float Energy;  // = Dau1_Fit_Energy + Dau2_Fit_Energy
     float Chi2NDF;
     float E_MinusNucleon;
     bool IsBkgChannel;
     // daughter 1
-    float Dau1_PCAwrtSV_X;
+    float Dau1_PCAwrtSV_X;  // the PCA is the seeder's
     float Dau1_PCAwrtSV_Y;
     float Dau1_PCAwrtSV_Z;
     float Dau1_Fit_Px;
