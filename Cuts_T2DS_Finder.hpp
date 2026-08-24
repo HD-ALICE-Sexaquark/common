@@ -4,6 +4,12 @@ namespace T2DS::Cuts {
 
 // -- Finder Mode -- //
 
+namespace Track {
+// tracking can split one physical particle into two ESD entries; these tell them apart
+constexpr double Max_TracksDeltaR = 0.02;     // PENDING: to tune
+constexpr double Max_TracksRelDeltaP = 0.05;  // PENDING: to tune
+}  // namespace Track
+
 namespace Proton {
 constexpr double AbsMax_NSigmasProton = 3.;  // mandatory for classification
 // constexpr double AbsMin_DCAxy = 30.;  // PENDING
@@ -52,6 +58,8 @@ constexpr double Max_DCAbtwDau = 1.;        // (cm)
 }  // namespace KaonZeroShort
 
 namespace ChannelA {
+// pre-seed cuts
+constexpr double Min_DistBtwV0sDVs = 0.01;  // distance between V0s decay vertices; PENDING: to tune
 // kinematics //
 // constexpr double Min_CPAwrtPV{0.9};
 // constexpr double Max_DCAwrtPV = 15.;  // (cm)

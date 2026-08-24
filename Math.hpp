@@ -209,6 +209,11 @@ inline bool IsSameHelix(const std::array<float, 6>& state_a, const std::array<fl
                             RMath::XYZVector{static_cast<double>(state_b[3]), static_cast<double>(state_b[4]), static_cast<double>(state_b[5])},
                             max_delta_r, max_rel_delta_p);
 }
+inline bool IsSameHelix(double px_a, double py_a, double pz_a,  //
+                        double px_b, double py_b, double pz_b,  //
+                        double max_delta_r, double max_rel_delta_p) {
+    return IsSameHelix_Impl(RMath::XYZVector{px_a, py_a, pz_a}, RMath::XYZVector{px_b, py_b, pz_b}, max_delta_r, max_rel_delta_p);
+}
 
 // Rebuild a two-body decay against a new mother: keep the daughters' directions as measured in the old mother's
 // rest frame (where they are exactly back-to-back, since old_mother == d1 + d2), then set the momentum to what the
