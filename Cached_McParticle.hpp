@@ -8,7 +8,6 @@
 
 #include "Constants.hpp"
 #include "HD_Library.hpp"
-#include "MC_Helpers.hpp"
 #include "Math.hpp"
 #include "POD_McParticle.hpp"
 
@@ -28,13 +27,6 @@ struct McParticle : POD::Extended::McParticle {
             pca_wrt_pv = Common::Math::FastPCA_LineVertex(lv.Vect(), decay, pv);
             cpa_wrt_pv = Common::Math::CosinePointingAngle(lv.Vect(), decay, pv);
         }
-    }
-
-    static McParticle CreateFromNonExtendedMc(const POD::McParticle& mc_part, const Cached::McExtension& extension, const ROOT::Math::XYZPoint& ref,
-                                              double bz) {
-        POD::Extended::McParticle ext_mc(mc_part);
-        MC::Apply(ext_mc, extension);  // don't worry about `IsHybrid`
-        return {ext_mc, ref, bz};
     }
 
     static McParticle CreateFromV0(const POD::Extended::McParticle& mc_v0, const POD::Extended::McParticle& mc_neg,

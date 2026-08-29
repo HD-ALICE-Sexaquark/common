@@ -13,7 +13,7 @@ struct Sexaquark {
     float Energy;  // = Dau1_Fit_Energy + Dau2_Fit_Energy
     float Chi2NDF;
     float E_MinusNucleon;
-    bool IsBkgChannel;
+    bool IsWrongSignChannel;
     // daughter 1
     float Dau1_PCAwrtSV_X;  // the PCA is the seeder's
     float Dau1_PCAwrtSV_Y;

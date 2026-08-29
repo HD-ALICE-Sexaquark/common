@@ -54,7 +54,7 @@ constexpr double Min_DCAwrtPV = 5.;    // (cm) // PENDING: I want 45!
 constexpr double Min_Decay_Radius2D = 25.;  // (cm)
 constexpr double Max_DCAnegV0 = 1.;         // (cm)
 constexpr double Max_DCAposV0 = 1.;         // (cm)
-constexpr double Max_DCAbtwDau = 1.;        // (cm)
+constexpr double Max_DCAbtwDau = 2.;        // (cm)
 }  // namespace KaonZeroShort
 
 namespace ChannelA {

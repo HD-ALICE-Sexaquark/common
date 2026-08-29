@@ -36,8 +36,8 @@ struct ChannelA : POD::Sexaquark {
           v0b_cpa_wrt_sv{Common::Math::CosinePointingAngle(lv_v0b.Vect(), v0b_dv, sv)},
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), sv, pv)} {
         // close decay trees
-        std::tie(lv_v0a_neg, lv_v0a_pos) = Common::Math::CloseDecay(v0a, IsBkgChannel ? Common::PdgMass_Pion : Common::PdgMass_Proton,
-                                                                    IsBkgChannel ? Common::PdgMass_Proton : Common::PdgMass_Pion, lv_v0a);
+        std::tie(lv_v0a_neg, lv_v0a_pos) = Common::Math::CloseDecay(v0a, IsWrongSignChannel ? Common::PdgMass_Pion : Common::PdgMass_Proton,
+                                                                    IsWrongSignChannel ? Common::PdgMass_Proton : Common::PdgMass_Pion, lv_v0a);
         std::tie(lv_v0b_neg, lv_v0b_pos) = Common::Math::CloseDecay(v0b, Common::PdgMass_Pion, Common::PdgMass_Pion, lv_v0b);
     }
 

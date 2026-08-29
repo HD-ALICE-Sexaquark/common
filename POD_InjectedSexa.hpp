@@ -33,7 +33,8 @@ struct InjectedSexa : POD::InjectedSexa {
 namespace Linked {
 
 struct InjectedSexa : Extended::InjectedSexa {
-    bool IsHybrid{false};
+    bool IsTrueSignal{false};  // all daughters are true products of this very reaction
+    bool IsRealBkg{false};     // no daughter descends from any injected reaction
 };
 
 }  // namespace Linked

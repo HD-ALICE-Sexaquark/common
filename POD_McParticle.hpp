@@ -33,19 +33,19 @@ struct McParticle {
 namespace Extended {
 
 struct McParticle : POD::McParticle {
-    float Decay_X{Common::DummyFloat};     // (v0 + hdib only)
-    float Decay_Y{Common::DummyFloat};     // (v0 + hdib only)
-    float Decay_Z{Common::DummyFloat};     // (v0 + hdib only)
-    int SignalID{Common::DummyInt};        // = "ReactionID" / "InjectionID"
-    int Mother_PdgCode{Common::DummyInt};  //
-    int GM_McEntry{Common::DummyInt};      // (track + hdib only)
-    int GM_PdgCode{Common::DummyInt};      // (track + hdib only)
-    bool IsTrue{false};
-    bool IsGen1Signal{false};
-    bool IsGen2Signal{false};
-    bool IsTrueSignal{false};
-    bool IsSecondary{false};
-    bool IsHybrid{false};  // (composite only, e.g. secondary v0s + pre-found lambdas + hdib)
+    int McEntry{Common::DummyInt};           // own entry in the event's mc collection
+    float Decay_X{Common::DummyFloat};       // (makes sense for decaying particles only)
+    float Decay_Y{Common::DummyFloat};       // (makes sense for decaying particles only)
+    float Decay_Z{Common::DummyFloat};       // (makes sense for decaying particles only)
+    int SignalID{Common::DummyInt};          // = "ReactionID" / "InjectionID" = status code of the injected ancestor
+    int SignalGeneration{Common::DummyInt};  // tier below the injected ancestor; see `MC::Generation` in `MC_Helpers.hpp`
+    int Mother_PdgCode{Common::DummyInt};    //
+    int GM_McEntry{Common::DummyInt};        //
+    int GM_PdgCode{Common::DummyInt};        //
+    bool IsTrue{false};                      // particle satisfies current PID hypothesis
+    bool IsTrueSignal{false};                // true member of an injection's own decay tree, under current PID hypothesis
+    bool IsSecondary{false};                 // = IsSecFromMat || IsSecFromWeak || SignalGeneration >= 1
+    bool IsRealBkg{false};                   // carries no signal at all: neither it nor any constituent descends from an injection
 };
 
 }  // namespace Extended

@@ -33,8 +33,8 @@ struct ChannelD : POD::Sexaquark {
           axis{(sv - pv).Unit()},
           v0_cpa_wrt_sv{Common::Math::CosinePointingAngle(lv_v0.Vect(), v0_dv, sv)},
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), sv, pv)} {
-        std::tie(lv_v0_neg, lv_v0_pos) = Common::Math::CloseDecay(v0, IsBkgChannel ? Common::PdgMass_Pion : Common::PdgMass_Proton,
-                                                                  IsBkgChannel ? Common::PdgMass_Proton : Common::PdgMass_Pion, lv_v0);
+        std::tie(lv_v0_neg, lv_v0_pos) = Common::Math::CloseDecay(v0, IsWrongSignChannel ? Common::PdgMass_Pion : Common::PdgMass_Proton,
+                                                                  IsWrongSignChannel ? Common::PdgMass_Proton : Common::PdgMass_Pion, lv_v0);
     }
 
     // antisexaquark candidate //

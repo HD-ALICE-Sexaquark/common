@@ -9,68 +9,57 @@
 #include "Constants.hpp"
 #include "DB_Particles.hpp"
 #include "DB_ReactionChannels.hpp"
-#include "HD_Library.hpp"
 #include "POD_McParticle.hpp"
-
-namespace Cached {
-
-struct McExtension {
-    bool IsTrue{false};
-    bool IsGen1Signal{false};
-    bool IsGen2Signal{false};
-    bool IsTrueSignal{false};
-    bool IsSecondary{false};
-    int SignalID{Common::DummyInt};
-    // -- mother info
-    int Mother_PdgCode{Common::DummyInt};
-    // -- grandmother info
-    int GM_McEntry{Common::DummyInt};
-    int GM_PdgCode{Common::DummyInt};
-    // -- daughters' info
-    float Decay_X{Common::DummyFloat};
-    float Decay_Y{Common::DummyFloat};
-    float Decay_Z{Common::DummyFloat};
-};
-
-}  // namespace Cached
 
 namespace MC {
 
-// Fill every variable from `POD::Extended::McParticle`, except for `IsHybrid`.
-inline void Apply(POD::Extended::McParticle &mc, const Cached::McExtension &c) {
-    mc.IsTrue = c.IsTrue;
-    mc.IsGen1Signal = c.IsGen1Signal;
-    mc.IsGen2Signal = c.IsGen2Signal;
-    mc.IsTrueSignal = c.IsTrueSignal;
-    mc.IsSecondary = c.IsSecondary;
-    mc.SignalID = c.SignalID;
-    mc.Mother_PdgCode = c.Mother_PdgCode;
-    mc.GM_McEntry = c.GM_McEntry;
-    mc.GM_PdgCode = c.GM_PdgCode;
-    mc.Decay_X = c.Decay_X;
-    mc.Decay_Y = c.Decay_Y;
-    mc.Decay_Z = c.Decay_Z;
+// == Signal Generation == //
+
+namespace Generation {
+inline constexpr int kNone = Common::DummyInt;  // no injected ancestor
+inline constexpr int kInjected = 0;      // the injected (anti)h-dibaryon itself (unreachable in sexaquark mc: the reaction leaves no mc record)
+inline constexpr int kFirstGen = 1;      // reaction products / the (anti)h-dibaryon's (anti)lambdas
+inline constexpr int kSecondGen = 2;     // their charged daughters, from weak decays
+inline constexpr int kGeantProgeny = 3;  // anything deeper, transported by GEANT
+}  // namespace Generation
+
+// Where a particle sits within the injection it descends from, if any.
+// PID-agnostic.
+struct Provenance {
+    int signal_id{Common::DummyInt};  // NOTE: stays dummy when unreachable, `generation` alone tells if there was an injected ancestor or not
+    int generation{Generation::kNone};
+};
+
+inline bool IsValidSignalID(int id) { return id > Common::DummyInt; }
+
+inline bool SameSignalID(int a, int b) { return IsValidSignalID(a) && a == b; }
+
+inline bool IsRelevantGeneration(int generation) { return generation >= Generation::kInjected && generation < Generation::kGeantProgeny; }
+
+// The three sets are `IsTrueSignal`, `IsRealBkg` and whatever is left; see `docs/MC_LABELS.md`.
+inline bool CarriesSignal(const POD::Extended::McParticle &mc) { return !mc.IsRealBkg; }
+
+inline bool IsHybrid(const POD::Extended::McParticle &mc) { return !mc.IsTrueSignal && !mc.IsRealBkg; }
+
+inline bool SameMcParticle(const POD::Extended::McParticle &a, const POD::Extended::McParticle &b) {
+    return a.McEntry > Common::DummyInt && a.McEntry == b.McEntry;
 }
 
-inline std::optional<std::size_t> FindCommonMotherMcEntry(const POD::McParticle &daughter1, const POD::McParticle &daughter2) {
+inline std::optional<std::size_t> FindMcEntry_CommonMother(const POD::McParticle &daughter1, const POD::McParticle &daughter2) {
     if (daughter1.Mother_McEntry < 0) return std::nullopt;
-    if (daughter2.Mother_McEntry < 0) return std::nullopt;
     if (daughter1.Mother_McEntry != daughter2.Mother_McEntry) return std::nullopt;
-    return daughter1.Mother_McEntry;
+    return static_cast<std::size_t>(daughter1.Mother_McEntry);
 }
 
-// clang-format off
-inline std::tuple<float, float, float>
-GetDecayVertex(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection) {
+inline std::tuple<float, float, float> GetDecayVertex(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection) {
     if (mc.FirstDau_McEntry < 0) return {Common::DummyFloat, Common::DummyFloat, Common::DummyFloat};
     const auto &first_dau = mc_collection[static_cast<std::size_t>(mc.FirstDau_McEntry)];
     return {first_dau.Origin_X, first_dau.Origin_Y, first_dau.Origin_Z};
 }
-// clang-format on
 
-// Find first daughter with an specific PdgCode and return its McEntry.
-inline std::optional<std::size_t> FindDaughterMcEntry(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
-                                                      int target_pdg_code) {
+// Find first daughter with an specific `PdgCode` and return its `McEntry`.
+inline std::optional<std::size_t> FindMcEntry_Daughter(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
+                                                       int target_pdg_code) {
     if (mc.N_Daughters == 0) return std::nullopt;
     if (mc.FirstDau_McEntry < 0) return std::nullopt;
     for (int entry_dau = mc.FirstDau_McEntry; entry_dau <= mc.LastDau_McEntry; ++entry_dau) {
@@ -80,71 +69,68 @@ inline std::optional<std::size_t> FindDaughterMcEntry(const POD::McParticle &mc,
     return std::nullopt;
 }
 
+// == AntiSexaquark Rules == //
+
 namespace SexaquarkRules {
 
-inline bool IsGen1Signal_ChannelIndependent(const POD::McParticle &mc) {
-    // (1) logical primary (= no mother)
-    if (mc.Mother_McEntry > Common::DummyInt) return false;
-    // (2) should come from the antisexaquark reaction generator
-    if (mc.Generator != Common::ECustomGeneratorIdx::kInjectedAntiSexaquarkReaction) return false;
-    // (3) mc status has to be [600,620[
-    if (mc.StatusCode < E2T::ReactionID_Offset || mc.StatusCode >= E2T::ReactionID_Offset + E2T::NSexaReactionsPerEvent) return false;
-    return true;
+// Does it descend from an injected antisexaquark-nucleon reaction?
+// Valid because generator index is passed downstream.
+inline bool IsFromSignalGenerator(const POD::McParticle &mc) {  //
+    return mc.Generator == Common::ECustomGeneratorIdx::kInjectedAntiSexaquarkReaction;
 }
 
-// NOTE: no true hypothesis here.
+// Quickly check if `status_code` is within [600,619]
+inline bool IsReactionID(unsigned int status_code) {
+    return status_code >= E2T::ReactionID_Offset && status_code < E2T::ReactionID_Offset + E2T::NSexaReactionsPerEvent;
+}
+
+// Subtract the reaction id offset (600) to `status code` to get index/position in injected collection.
+inline std::size_t InjectionIndex(unsigned int status_code) {  //
+    return static_cast<std::size_t>(status_code - E2T::ReactionID_Offset);
+}
+
+// The first generation of a reaction: logical primaries carrying their own reaction id.
+// NOTE: channel- and hypothesis-independent, on purpose; provenance must not depend on either.
+inline bool IsGen1Signal(const POD::McParticle &mc) {
+    return IsFromSignalGenerator(mc) && mc.Mother_McEntry <= Common::DummyInt && IsReactionID(mc.StatusCode);
+}
+
+// The first generation of a reaction: logical primaries carrying their own reaction id;
+// also demanding the pdg code to be among the channel's first gen. products.
 inline bool IsGen1Signal(const POD::McParticle &mc, const DB::ReactionChannels::Definition &r_channel) {
-    if (!IsGen1Signal_ChannelIndependent(mc)) return false;
-    // -- pdg is found in direct/first reaction products?
+    if (!IsGen1Signal(mc)) return false;
     return std::ranges::find(r_channel.products_pdg, mc.PdgCode) != r_channel.products_pdg.end();
 }
 
-inline Cached::McExtension ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
-                                              const DB::ReactionChannels::Definition &r_channel, int pdg_code_hypothesis, bool include_gm,
-                                              bool include_dv) {
-    Cached::McExtension c;
-    c.IsTrue = mc.PdgCode == pdg_code_hypothesis;
-
-    if (mc.Mother_McEntry < 0) {
-        c.IsGen1Signal = SexaquarkRules::IsGen1Signal(mc, r_channel);
-        c.IsGen2Signal = false;
-        if (c.IsGen1Signal) c.SignalID = static_cast<int>(mc.StatusCode);
-    } else {
+inline Provenance Classify(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection) {
+    // -- particle is first gen. signal
+    if (IsGen1Signal(mc)) {
+        return {static_cast<int>(mc.StatusCode), Generation::kFirstGen};
+    }
+    // -- check if particle has a mother
+    if (mc.Mother_McEntry > Common::DummyInt) {
         const auto &mother = mc_collection[static_cast<std::size_t>(mc.Mother_McEntry)];
-        c.IsGen1Signal = false;
-        c.IsGen2Signal = SexaquarkRules::IsGen1Signal(mother, r_channel);
-        if (c.IsGen2Signal) c.SignalID = static_cast<int>(mother.StatusCode);
-        c.Mother_PdgCode = mother.PdgCode;
-        if (include_gm && mother.Mother_McEntry > Common::DummyInt) {
-            c.GM_McEntry = mother.Mother_McEntry;
-            c.GM_PdgCode = mc_collection[static_cast<std::size_t>(mother.Mother_McEntry)].PdgCode;
+        // -- particle is second gen. signal
+        if (IsGen1Signal(mother)) {
+            return {static_cast<int>(mother.StatusCode), Generation::kSecondGen};
         }
     }
-
-    c.IsTrueSignal = (c.IsGen1Signal || c.IsGen2Signal) && c.IsTrue;
-    c.IsSecondary = mc.IsSecFromMat || mc.IsSecFromWeak || c.IsGen1Signal || c.IsGen2Signal;
-
-    if (include_dv && mc.FirstDau_McEntry > Common::DummyInt) {
-        const auto &first_dau = mc_collection[static_cast<std::size_t>(mc.FirstDau_McEntry)];
-        c.Decay_X = first_dau.Origin_X;
-        c.Decay_Y = first_dau.Origin_Y;
-        c.Decay_Z = first_dau.Origin_Z;
-    }
-
-    return c;
+    // -- GEANT progeny; its reaction id would take a walk up the mother chain, not worth it for now
+    return {Common::DummyInt, Generation::kGeantProgeny};
 }
 
+// Return the index/position in injected collection.
+// Non-null when there both particles have the same valid reaction id (non-dummy, within range).
 inline std::optional<std::size_t> FindCommonReactionID(const POD::Extended::McParticle &mc_dau1, const POD::Extended::McParticle &mc_dau2) {
-    if (mc_dau1.SignalID < 0) return std::nullopt;
-    if (mc_dau2.SignalID < 0) return std::nullopt;
-    if (mc_dau1.SignalID != mc_dau2.SignalID) return std::nullopt;
-    return static_cast<std::size_t>(mc_dau1.SignalID) - E2T::ReactionID_Offset;
+    if (!SameSignalID(mc_dau1.SignalID, mc_dau2.SignalID)) return std::nullopt;
+    if (!IsReactionID(static_cast<unsigned int>(mc_dau1.SignalID))) return std::nullopt;
+    return InjectionIndex(static_cast<unsigned int>(mc_dau1.SignalID));
 }
 
 // Identify the injected reaction channel of a dedicated sexaquark MC production,
 // by matching the first-gen products of a single reaction against `DB::ReactionChannels`.
 // Every reaction of a production shares the same channel, so one of them is enough;
-// This function is carried only in the first event; it's not tried again, because dedicated sexa MC have all events with injected signal.
+// This function is carried only in the first event and it's not tried again, because dedicated sexa MC have all events with injected signal.
 // NOTE: could be generalized for more channels, but this crafty profile-based version is efficient enough.
 inline DB::ReactionChannels::Definition DetectMcSignalChannel(const std::vector<POD::McParticle> &mc_particles) {
 
@@ -159,7 +145,7 @@ inline DB::ReactionChannels::Definition DetectMcSignalChannel(const std::vector<
 
     // collect all possible gen1 signal particles; grab their pdg codes
     for (const auto &mc : mc_particles) {
-        if (!MC::SexaquarkRules::IsGen1Signal_ChannelIndependent(mc)) continue;
+        if (!IsGen1Signal(mc)) continue;
         n_antilambda += mc.PdgCode == -3122;
         n_k0s += mc.PdgCode == 310;
         n_kplus += mc.PdgCode == 321;
@@ -169,21 +155,21 @@ inline DB::ReactionChannels::Definition DetectMcSignalChannel(const std::vector<
     }
     if (n_total == 0) return default_reaction_channel;  // no signal found
 
+    constexpr int n_reactions = static_cast<int>(E2T::NSexaReactionsPerEvent);
+
     DB::ReactionChannels::Definition test_reaction_channel = DB::ReactionChannels::ReactionChannel('A');
     if (n_total == test_reaction_channel.products_pdg.size() * E2T::NSexaReactionsPerEvent) {
-        if (n_antilambda == E2T::NSexaReactionsPerEvent && n_k0s == E2T::NSexaReactionsPerEvent) return test_reaction_channel;
+        if (n_antilambda == n_reactions && n_k0s == n_reactions) return test_reaction_channel;
     }
 
     test_reaction_channel = DB::ReactionChannels::ReactionChannel('D');
     if (n_total == test_reaction_channel.products_pdg.size() * E2T::NSexaReactionsPerEvent) {
-        if (n_antilambda == E2T::NSexaReactionsPerEvent && n_kplus == E2T::NSexaReactionsPerEvent) return test_reaction_channel;
+        if (n_antilambda == n_reactions && n_kplus == n_reactions) return test_reaction_channel;
     }
 
     test_reaction_channel = DB::ReactionChannels::ReactionChannel('H');
     if (n_total == test_reaction_channel.products_pdg.size() * E2T::NSexaReactionsPerEvent) {
-        if (n_antiproton == E2T::NSexaReactionsPerEvent && n_pi0 == E2T::NSexaReactionsPerEvent && n_kplus == 2 * E2T::NSexaReactionsPerEvent) {
-            return test_reaction_channel;
-        }
+        if (n_antiproton == n_reactions && n_pi0 == n_reactions && n_kplus == 2 * n_reactions) return test_reaction_channel;
     }
 
     return default_reaction_channel;
@@ -191,45 +177,139 @@ inline DB::ReactionChannels::Definition DetectMcSignalChannel(const std::vector<
 
 }  // namespace SexaquarkRules
 
+// == (Anti)H-Dibaryon rules == //
+
 namespace HdibaryonRules {
 
-inline Cached::McExtension ClassifyDownstream(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection,
-                                              const HD::DecayTree &decay_pid, int pdg_code_hypothesis, bool include_dv) {
+// Does it descend from an injected (anti)H?
+// Valid because generator index is passed downstream.
+inline bool IsFromSignalGenerator(const POD::McParticle &mc) {  //
+    return mc.Generator == Common::ECustomGeneratorIdx::kInjectedHdibaryon;
+}
 
-    Cached::McExtension c;
-    c.IsTrue = mc.PdgCode == pdg_code_hypothesis;
-    c.IsGen1Signal = false;
-    c.IsGen2Signal = false;
+// Quickly check if `status_code` is within [400,499]
+inline bool IsInjectionID(unsigned int status_code) {
+    return status_code >= E2T::InjectionID_Offset && status_code < E2T::InjectionID_Offset + E2T::NInjectedHdibaryonsPerEvent;
+}
 
-    // -- check if it's first-gen decay product
+// (1) cannot have a mother; (2) valid injection ID; (3) pdg code matches (anti)h-dib.
+// `Generator`-agnostic.
+inline bool IsInjectedHdibaryon(const POD::McParticle &mc) {
+    if (mc.Mother_McEntry > Common::DummyInt) return false;
+    if (!IsInjectionID(mc.StatusCode)) return false;
+    return mc.PdgCode == DB::Particles::Particle("Hdibaryon").pdg_code || mc.PdgCode == DB::Particles::Particle("AntiHdibaryon").pdg_code;
+}
+
+inline Provenance Classify(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection) {
+    // -- it's an injected (anti)h-dibaryon
+    if (IsInjectedHdibaryon(mc)) {
+        return {static_cast<int>(mc.StatusCode), Generation::kInjected};
+    }
+    // -- check if particle has a mother
     if (mc.Mother_McEntry > Common::DummyInt) {
         const auto &mother = mc_collection[static_cast<std::size_t>(mc.Mother_McEntry)];
-        c.Mother_PdgCode = mother.PdgCode;
-        c.IsGen1Signal = mother.PdgCode == decay_pid.hdibaryon.pdg_code;
-        if (c.IsGen1Signal) c.SignalID = static_cast<int>(mother.StatusCode);
-        // -- check if it's second-gen decay product
+        // -- (anti)lambdas; their mother is an (anti)h-dibaryon
+        if (IsInjectedHdibaryon(mother)) {
+            return {static_cast<int>(mother.StatusCode), Generation::kFirstGen};
+        }
+        // -- if not, check if particle has a grandmother
         if (mother.Mother_McEntry > Common::DummyInt) {
-            const auto &gm = mc_collection[static_cast<std::size_t>(mother.Mother_McEntry)];
-            c.GM_McEntry = mother.Mother_McEntry;
-            c.GM_PdgCode = gm.PdgCode;
-            c.IsGen2Signal = gm.PdgCode == decay_pid.hdibaryon.pdg_code;
-            if (c.IsGen2Signal) c.SignalID = static_cast<int>(gm.StatusCode);
+            const auto &grandmother = mc_collection[static_cast<std::size_t>(mother.Mother_McEntry)];
+            // -- (anti)protons and pions; their grandmother is an (anti)h-dibaryon
+            if (IsInjectedHdibaryon(grandmother)) {
+                return {static_cast<int>(grandmother.StatusCode), Generation::kSecondGen};
+            }
         }
     }
-
-    c.IsTrueSignal = (c.IsGen1Signal || c.IsGen2Signal) && c.IsTrue;
-    c.IsSecondary = mc.IsSecFromMat || mc.IsSecFromWeak || c.IsGen1Signal || c.IsGen2Signal;
-
-    if (include_dv && mc.FirstDau_McEntry > Common::DummyInt) {
-        const auto &first_dau = mc_collection[static_cast<std::size_t>(mc.FirstDau_McEntry)];
-        c.Decay_X = first_dau.Origin_X;
-        c.Decay_Y = first_dau.Origin_Y;
-        c.Decay_Z = first_dau.Origin_Z;
-    }
-
-    return c;
+    // -- GEANT progeny; its injection id would take a walk up the mother chain, not worth it for now
+    return {Common::DummyInt, Generation::kGeantProgeny};
 }
 
 }  // namespace HdibaryonRules
+
+// == Classification == //
+
+// Both dedicated productions are told apart by the generator index; see `docs/MC_PRODUCTIONS.md`.
+inline Provenance Classify(const POD::McParticle &mc, const std::vector<POD::McParticle> &mc_collection) {
+    if (SexaquarkRules::IsFromSignalGenerator(mc)) return SexaquarkRules::Classify(mc, mc_collection);
+    if (HdibaryonRules::IsFromSignalGenerator(mc)) return HdibaryonRules::Classify(mc, mc_collection);
+    // -- HIJING, injected antineutrons, auxiliary primaries, and all of their progeny
+    return {};
+}
+
+// Extend a single MC particle with everything reachable about it, under a PID hypothesis.
+inline POD::Extended::McParticle Extend(std::size_t mc_entry, const std::vector<POD::McParticle> &mc_collection, int pdg_code_hypothesis) {
+
+    const POD::McParticle &mc = mc_collection[mc_entry];
+    POD::Extended::McParticle ext_mc{mc};
+    ext_mc.McEntry = static_cast<int>(mc_entry);
+
+    std::tie(ext_mc.Decay_X, ext_mc.Decay_Y, ext_mc.Decay_Z) = GetDecayVertex(mc, mc_collection);
+
+    if (mc.Mother_McEntry > Common::DummyInt) {
+        const auto &mother = mc_collection[static_cast<std::size_t>(mc.Mother_McEntry)];
+        ext_mc.Mother_PdgCode = mother.PdgCode;
+        if (mother.Mother_McEntry > Common::DummyInt) {
+            ext_mc.GM_McEntry = mother.Mother_McEntry;
+            ext_mc.GM_PdgCode = mc_collection[static_cast<std::size_t>(mother.Mother_McEntry)].PdgCode;
+        }
+    }
+
+    const Provenance prov = Classify(mc, mc_collection);
+    ext_mc.SignalID = prov.signal_id;
+    ext_mc.SignalGeneration = prov.generation;
+
+    ext_mc.IsTrue = mc.PdgCode == pdg_code_hypothesis;
+    ext_mc.IsSecondary = mc.IsSecFromMat || mc.IsSecFromWeak || prov.generation >= Generation::kFirstGen;
+    ext_mc.IsTrueSignal = ext_mc.IsTrue && IsValidSignalID(prov.signal_id) && IsRelevantGeneration(prov.generation);
+    ext_mc.IsRealBkg = prov.generation == Generation::kNone;
+
+    return ext_mc;
+}
+
+// == Composites == //
+
+// Link two already-extended constituents into the mc record of the composite they were assumed to come from.
+inline POD::Extended::McParticle LinkComposite(const std::vector<POD::McParticle> &mc_collection, const POD::Extended::McParticle &c1,
+                                               const POD::Extended::McParticle &c2, int pdg_code_hypothesis) {
+
+    POD::Extended::McParticle composite;  // by default, initialized to dummy values: no mc particle describes this candidate
+
+    // -- a common mother only describes the candidate if the constituents really are two different mc particles;
+    //    split images of a single one do share a mother, but that mother would misdescribe the pair
+    if (!SameMcParticle(c1, c2)) {
+        if (auto entry_mother = FindMcEntry_CommonMother(c1, c2); entry_mother.has_value()) {
+            composite = Extend(entry_mother.value(), mc_collection, pdg_code_hypothesis);
+        }
+    }
+
+    // -- true signal: both constituents are true daughters of one same injection, and the mother is what the hypothesis assumed
+    composite.IsTrueSignal = composite.IsTrue && c1.IsTrueSignal && c2.IsTrueSignal && SameSignalID(c1.SignalID, c2.SignalID);
+    // -- real background: no constituent carries signal, at any depth
+    composite.IsRealBkg = c1.IsRealBkg && c2.IsRealBkg;
+
+    return composite;
+}
+
+struct LinkedV0 {
+    POD::Extended::McParticle v0;
+    POD::Extended::McParticle neg;
+    POD::Extended::McParticle pos;
+};
+
+// Extend both daughters of a V0 candidate under the hypothesis' own charged decay mode, then link them into the V0.
+inline LinkedV0 LinkV0(const std::vector<POD::McParticle> &mc_collection, std::size_t entry_neg, std::size_t entry_pos,
+                       const DB::Particles::Definition &pid_v0) {
+
+    const int pdg_neg = pid_v0.idx_neg_dau.has_value() ? pid_v0.daughters_pdg[pid_v0.idx_neg_dau.value()] : Common::DummyNNN;
+    const int pdg_pos = pid_v0.idx_pos_dau.has_value() ? pid_v0.daughters_pdg[pid_v0.idx_pos_dau.value()] : Common::DummyNNN;
+
+    LinkedV0 linked;
+    linked.neg = Extend(entry_neg, mc_collection, pdg_neg);
+    linked.pos = Extend(entry_pos, mc_collection, pdg_pos);
+    linked.v0 = LinkComposite(mc_collection, linked.neg, linked.pos, pid_v0.pdg_code);
+
+    return linked;
+}
 
 }  // namespace MC

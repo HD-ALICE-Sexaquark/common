@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-#include <Math/Point3Dfwd.h>
-#include <Math/Vector3Dfwd.h>
+#include <Math/Point3D.h>
+#include <Math/Vector3D.h>
 
 #include "Constants.hpp"
 #include "Math.hpp"
@@ -25,6 +25,10 @@ struct Track : POD::Track {
     [[nodiscard]] double Eta() const { return mom.Eta(); }
     [[nodiscard]] double AbsEta() const { return std::abs(Eta()); }
     [[nodiscard]] double Phi() const { return mom.Phi(); }
+    // PID
+    [[nodiscard]] double AbsNSigmasPion() const { return std::abs(NSigmasPion); }
+    [[nodiscard]] double AbsNSigmasKaon() const { return std::abs(NSigmasKaon); }
+    [[nodiscard]] double AbsNSigmasProton() const { return std::abs(NSigmasProton); }
     // geometry
     [[nodiscard]] double DCAxy() const { return (pca_wrt_pv - pv).Rho(); }
     [[nodiscard]] double DCAz() const { return std::abs((pca_wrt_pv - pv).Z()); }
