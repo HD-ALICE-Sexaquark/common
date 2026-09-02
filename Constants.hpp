@@ -7,31 +7,36 @@
 #define E2T_MC_EXTRA 1
 
 namespace E2T {
-static constexpr const char* Name_OutputTree = "Events";
+inline constexpr const char* Name_OutputTree = "Events";
 
 // number of events per file from dedicated MC (both), by construction
-static constexpr unsigned int NEventsInDedicatedMCFile = 10;
-static constexpr unsigned int NExpectedEventsInRealData = 400'000'000;
+inline constexpr unsigned int NEventsInDedicatedMCFile = 10;
+inline constexpr unsigned int NExpectedEventsInRealData = 400'000'000;
 
 // (antisexaquark-dedicated MC only)
-static constexpr unsigned int ReactionID_Offset = 600;  // antisexaquark+nucleon reactions
-static constexpr unsigned int NSexaReactionsPerEvent = 20;
-static constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
-static constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
-static constexpr double InjectedAntiSexa_MinPt = 0.;        // (GeV/c)
-static constexpr double InjectedAntiSexa_MaxPt = 5.;        // (GeV/c)
-static constexpr double InjectedAntiSexa_MinRadius = 5.;    // (cm)
-static constexpr double InjectedAntiSexa_MaxRadius = 180.;  // (cm)
+inline constexpr unsigned int ReactionID_Offset = 600;  // antisexaquark+nucleon reactions
+inline constexpr unsigned int NSexaReactionsPerEvent = 20;
+inline constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
+inline constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
+inline constexpr double InjectedAntiSexa_MinPt = 0.;        // (GeV/c)
+inline constexpr double InjectedAntiSexa_MaxPt = 5.;        // (GeV/c)
+inline constexpr double InjectedAntiSexa_MinRadius = 5.;    // (cm)
+inline constexpr double InjectedAntiSexa_MaxRadius = 180.;  // (cm)
 
 // (hdibaryon-dedicated MC only)
-static constexpr unsigned int InjectionID_Offset = 400;  // (anti)h-dibaryon injections
-static constexpr unsigned int NInjectedHdibaryonsPerEvent = 100;
+inline constexpr unsigned int InjectionID_Offset = 400;  // (anti)h-dibaryon injections
+inline constexpr unsigned int NInjectedHdibaryonsPerEvent = 100;
 }  // namespace E2T
 
 namespace T2DS {
-static constexpr const char* Name_FoundSexaquarkRNT = "FoundSexaquark";
-static constexpr const char* Name_FoundHdibaryonRNT = "FoundHdibaryon";
+inline constexpr std::string_view Name_FoundSexaquarkRNT = "FoundSexaquark";
+inline constexpr std::string_view Name_FoundHdibaryonRNT = "FoundHdibaryon";
 }  // namespace T2DS
+
+namespace Skimmer {
+inline constexpr std::string_view Name_CachedSexaquarkRNT = "CachedSexaquark";
+inline constexpr std::string_view Name_CachedHdibaryonRNT = "CachedHdibaryon";
+}  // namespace Skimmer
 
 namespace Common {
 
@@ -43,28 +48,28 @@ enum ECustomGeneratorIdx : std::uint8_t {
     kInjectedHdibaryon,
 };
 
-static constexpr int NCovMatrixComponents_State3 = 6;
-static constexpr int NCovMatrixComponents_State6 = 21;
-static constexpr int NCovMatrixComponents_State7 = 28;
-static constexpr int NCovMatrixComponents_State8 = 36;
-static constexpr double PdgMass_Lambda = 1.115683;         // PDG mass of lambda (GeV/c^2)
-static constexpr double PdgMass_Neutron = 0.93956542;      // PDG mass of neutron (GeV/c^2)
-static constexpr double PdgMass_Proton = 0.93827208816;    // PDG mass of proton (GeV/c^2)
-static constexpr double PdgMass_Kaon = 0.493677;           // PDG mass of charged kaon (GeV/c^2)
-static constexpr double PdgMass_Pion = 0.13957039;         // PDG mass of charged pion (GeV/c^2)
-static constexpr double PdgMass_KaonZeroShort = 0.497611;  // PDG mass of kaon-zero-short (GeV/c^2)
-static constexpr double Kappa = 0.000299792458;            // (GeV/c) / (kG/cm)
-static constexpr double AbsAlmostZero = 1.E-8;
-static constexpr double BigNumber = 1.E8;
-static constexpr int DummyInt = -1;
-static constexpr char DummyChar = 0;
-static constexpr int DummyNNN = -999;
-static constexpr float DummyFloat = -999.;
-static constexpr double DummyDouble = -999.;
-static constexpr double SpeedOfLight = 2.99792458E10;  // (cm/s)
-static constexpr double HBarC = 197.3269804;           // (eV * nm) = (MeV * fm) = (GeV * pm)
-static constexpr double Convert_eV2GeV = 1.E-9;
-static constexpr double Convert_nm2cm = 1.E-7;
+inline constexpr int NCovMatrixComponents_State3 = 6;
+inline constexpr int NCovMatrixComponents_State6 = 21;
+inline constexpr int NCovMatrixComponents_State7 = 28;
+inline constexpr int NCovMatrixComponents_State8 = 36;
+inline constexpr double PdgMass_Lambda = 1.115683;         // PDG mass of lambda (GeV/c^2)
+inline constexpr double PdgMass_Neutron = 0.93956542;      // PDG mass of neutron (GeV/c^2)
+inline constexpr double PdgMass_Proton = 0.93827208816;    // PDG mass of proton (GeV/c^2)
+inline constexpr double PdgMass_Kaon = 0.493677;           // PDG mass of charged kaon (GeV/c^2)
+inline constexpr double PdgMass_Pion = 0.13957039;         // PDG mass of charged pion (GeV/c^2)
+inline constexpr double PdgMass_KaonZeroShort = 0.497611;  // PDG mass of kaon-zero-short (GeV/c^2)
+inline constexpr double Kappa = 0.000299792458;            // (GeV/c) / (kG/cm)
+inline constexpr double AbsAlmostZero = 1.E-8;
+inline constexpr double BigNumber = 1.E8;
+inline constexpr int DummyInt = -1;
+inline constexpr char DummyChar = 0;
+inline constexpr int DummyNNN = -999;
+inline constexpr float DummyFloat = -999.;
+inline constexpr double DummyDouble = -999.;
+inline constexpr double SpeedOfLight = 2.99792458E10;  // (cm/s)
+inline constexpr double HBarC = 197.3269804;           // (eV * nm) = (MeV * fm) = (GeV * pm)
+inline constexpr double Convert_eV2GeV = 1.E-9;
+inline constexpr double Convert_nm2cm = 1.E-7;
 
 // clang-format off
 enum ESigma : std::uint8_t {
