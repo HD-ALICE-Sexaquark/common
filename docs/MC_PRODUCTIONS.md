@@ -49,9 +49,10 @@ TeV of center-of-mass energy) and (2) reconstruction in ALICE.
     - decay channels:
       - anti-h-dibaryon -> anti-lambda + anti-lambda -> anti-proton + pi plus
       - h-dibaryon -> lambda + lambda -> proton + pi minus
-  - plus enough amount of primary (anti)protons, charged kaons and charged pions to have well-defined primary vertices
-  (`AliMCParticle::GeneratorIndex == 0,1,2,3,4,5`)
-  - i.e. essentially signal-only mc
+  - plus a fixed amount of primary (anti)protons, charged kaons and charged pions; just enough with the sole purpose to
+  have well-defined primary vertices (`AliMCParticle::GeneratorIndex == 0,1,2,3,4,5`), which shouldn't be used at all in
+  background studies
+  - the idea is to use this production as signal-only mc
 - (anti)h-dibaryons properties:
   - invariant mass: 2.234 GeV/c^2
   - gamma: 0.002 GeV (attempt to have it resonance-like)

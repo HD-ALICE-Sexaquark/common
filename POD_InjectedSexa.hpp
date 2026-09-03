@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "Constants.hpp"
 
 namespace POD {
@@ -33,8 +35,9 @@ struct InjectedSexa : POD::InjectedSexa {
 namespace Linked {
 
 struct InjectedSexa : Extended::InjectedSexa {
-    bool IsTrueSignal{false};  // all daughters are true products of this very reaction
-    bool IsRealBkg{false};     // no daughter descends from any injected reaction
+    std::uint8_t GeneratorMask{Common::OriginGen::kNone};  // bitmask of generators of origin, OR-ed over the charged constituents
+    bool IsTrueSignal{false};                              // all daughters are true products of this very reaction
+    bool IsRealBkg{false};                                 // no daughter descends from any injected reaction
 };
 
 }  // namespace Linked

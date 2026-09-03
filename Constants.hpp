@@ -47,6 +47,25 @@ enum ECustomGeneratorIdx : std::uint8_t {
     kInjectedAuxCharged,
     kInjectedHdibaryon,
 };
+inline constexpr std::uint8_t NCustomGenerators = kInjectedHdibaryon + 1;
+
+// Generator of origin, as a bitmask over `ECustomGeneratorIdx`: a candidate's mask is the OR of its charged leaves'.
+// The three groups below are the ones a search cares about; `MC::Origin` (in `MC_Helpers.hpp`) is what asks about them,
+// and its `EClass` is the separate, non-interchangeable type the groups collapse into. See `docs/MC_LABELS.md`.
+namespace OriginGen {
+inline constexpr std::uint8_t kNone = 0;
+inline constexpr std::uint8_t kHijingBit = 1U << kHijing;
+inline constexpr std::uint8_t kAntiNeutronBit = 1U << kInjectedAntiNeutron;
+inline constexpr std::uint8_t kSexaReactionBit = 1U << kInjectedAntiSexaquarkReaction;
+inline constexpr std::uint8_t kAuxChargedBit = 1U << kInjectedAuxCharged;
+inline constexpr std::uint8_t kHdibaryonBit = 1U << kInjectedHdibaryon;
+// -- the underlying event (H); empty in (anti)h-dibaryon mc, which carries no HIJING at all
+inline constexpr std::uint8_t kHIJING = kHijingBit;
+// -- the injected background (N)
+inline constexpr std::uint8_t kInjectedBkg = kAntiNeutronBit | kAuxChargedBit;
+// -- the injected signal (S)
+inline constexpr std::uint8_t kSignal = kSexaReactionBit | kHdibaryonBit;
+}  // namespace OriginGen
 
 inline constexpr int NCovMatrixComponents_State3 = 6;
 inline constexpr int NCovMatrixComponents_State6 = 21;

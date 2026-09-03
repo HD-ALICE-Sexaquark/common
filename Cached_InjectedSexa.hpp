@@ -2,10 +2,12 @@
 
 #include <cmath>
 
-#include <Math/Point3Dfwd.h>
-#include <Math/Vector3Dfwd.h>
-#include <Math/Vector4Dfwd.h>
+#include <Math/Point3D.h>
+#include <Math/Vector3D.h>
+#include <Math/Vector4D.h>
 
+#include "Constants.hpp"
+#include "MC_Helpers.hpp"
 #include "Math.hpp"
 #include "POD_InjectedSexa.hpp"
 
@@ -23,8 +25,9 @@ struct InjectedSexa : POD::Linked::InjectedSexa {
           pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv.Vect(), sv, pv)},
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), sv, pv)} {}
 
-    static InjectedSexa CreateFromNonLinked(const POD::Extended::InjectedSexa& sexa, const ROOT::Math::XYZPoint& ref) {
-        return {{sexa, false}, ref};  // no need to worry about hybridness
+    // To be used when looping around total injected antisexaquarks.
+    static InjectedSexa CreateCache_FromTrueInjected(const POD::Extended::InjectedSexa& sexa, const ROOT::Math::XYZPoint& ref) {
+        return {POD::Linked::InjectedSexa{sexa, Common::OriginGen::kSexaReactionBit, true, false}, ref};
     }
 
     // kinematics
@@ -62,6 +65,14 @@ struct InjectedSexa : POD::Linked::InjectedSexa {
     [[nodiscard]] double DCA_wrt_PV() const { return (pca_wrt_pv - pv).R(); }
     // geometry + kinematics
     [[nodiscard]] double CPA_wrt_PV() const { return cpa_wrt_pv; }
+    // generator of origin
+    [[nodiscard]] bool CarriesHIJING() const { return MC::Origin::CarriesHIJING(GeneratorMask); }
+    [[nodiscard]] bool CarriesInjectedBkg() const { return MC::Origin::CarriesInjectedBkg(GeneratorMask); }
+    [[nodiscard]] bool CarriesSignal() const { return MC::Origin::CarriesSignal(GeneratorMask); }
+    [[nodiscard]] bool OnlyHIJING() const { return MC::Origin::OnlyHIJING(GeneratorMask); }
+    [[nodiscard]] bool OnlyInjectedBkg() const { return MC::Origin::OnlyInjectedBkg(GeneratorMask); }
+    [[nodiscard]] bool OnlySignal() const { return MC::Origin::OnlySignal(GeneratorMask); }
+    [[nodiscard]] MC::Origin::EClass OriginClass() const { return MC::Origin::Classes(GeneratorMask); }
 
    private:
     ROOT::Math::PxPyPzEVector lv;

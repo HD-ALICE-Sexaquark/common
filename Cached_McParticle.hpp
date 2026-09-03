@@ -8,6 +8,7 @@
 
 #include "Constants.hpp"
 #include "HD_Library.hpp"
+#include "MC_Helpers.hpp"
 #include "Math.hpp"
 #include "POD_McParticle.hpp"
 
@@ -85,6 +86,14 @@ struct McParticle : POD::Extended::McParticle {
     // aliases
     [[nodiscard]] bool IsLogicalPrimary() const { return Mother_McEntry == Common::DummyInt; }
     [[nodiscard]] int ReactionID() const { return SignalID; }
+    // generator of origin
+    [[nodiscard]] bool CarriesHIJING() const { return MC::Origin::CarriesHIJING(GeneratorMask); }
+    [[nodiscard]] bool CarriesInjectedBkg() const { return MC::Origin::CarriesInjectedBkg(GeneratorMask); }
+    [[nodiscard]] bool CarriesSignal() const { return MC::Origin::CarriesSignal(GeneratorMask); }
+    [[nodiscard]] bool OnlyHIJING() const { return MC::Origin::OnlyHIJING(GeneratorMask); }
+    [[nodiscard]] bool OnlyInjectedBkg() const { return MC::Origin::OnlyInjectedBkg(GeneratorMask); }
+    [[nodiscard]] bool OnlySignal() const { return MC::Origin::OnlySignal(GeneratorMask); }
+    [[nodiscard]] MC::Origin::EClass OriginClass() const { return MC::Origin::Classes(GeneratorMask); }
     // correlations
     [[nodiscard]] double CosTheta_pp() const { return cos_theta_pp; }
     [[nodiscard]] double Theta_pp() const { return theta_pp; }

@@ -1,8 +1,12 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
+#include <cassert>
 #include <cstddef>
+#include <cstdint>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -44,6 +48,44 @@ inline bool IsHybrid(const POD::Extended::McParticle &mc) { return !mc.IsTrueSig
 inline bool SameMcParticle(const POD::Extended::McParticle &a, const POD::Extended::McParticle &b) {
     return a.McEntry > Common::DummyInt && a.McEntry == b.McEntry;
 }
+
+// == Generator of Origin == //
+
+namespace Origin {
+
+// The compact H|N|S composition code. Its seven non-empty values are the seven possible class mixtures.
+enum class EClass : std::uint8_t {
+    kNone = 0,
+    kH = 1,
+    kN = 2,
+    kHN = 3,
+    kS = 4,
+    kHS = 5,
+    kNS = 6,
+    kHNS = 7,
+};
+inline constexpr auto Name_Class = std::to_array<std::string_view>({"None", "H", "N", "HN", "S", "HS", "NS", "HNS"});
+[[nodiscard]] constexpr std::string_view Name(EClass origin_class) { return Name_Class[static_cast<std::size_t>(origin_class)]; }
+
+[[nodiscard]] constexpr bool CarriesHIJING(std::uint8_t mask) { return (mask & Common::OriginGen::kHIJING) != 0; }
+[[nodiscard]] constexpr bool CarriesInjectedBkg(std::uint8_t mask) { return (mask & Common::OriginGen::kInjectedBkg) != 0; }
+[[nodiscard]] constexpr bool CarriesSignal(std::uint8_t mask) { return (mask & Common::OriginGen::kSignal) != 0; }
+
+[[nodiscard]] constexpr bool OnlyHIJING(std::uint8_t mask) { return mask != Common::OriginGen::kNone && (mask & ~Common::OriginGen::kHIJING) == 0; }
+[[nodiscard]] constexpr bool OnlyInjectedBkg(std::uint8_t mask) {
+    return mask != Common::OriginGen::kNone && (mask & ~Common::OriginGen::kInjectedBkg) == 0;
+}
+[[nodiscard]] constexpr bool OnlySignal(std::uint8_t mask) { return mask != Common::OriginGen::kNone && (mask & ~Common::OriginGen::kSignal) == 0; }
+
+[[nodiscard]] constexpr EClass Classes(std::uint8_t mask) {
+    unsigned int code = 0;
+    if (CarriesHIJING(mask)) code |= 1U << 0U;
+    if (CarriesInjectedBkg(mask)) code |= 1U << 1U;
+    if (CarriesSignal(mask)) code |= 1U << 2U;
+    return static_cast<EClass>(code);
+}
+
+}  // namespace Origin
 
 inline std::optional<std::size_t> FindMcEntry_CommonMother(const POD::McParticle &daughter1, const POD::McParticle &daughter2) {
     if (daughter1.Mother_McEntry < 0) return std::nullopt;
@@ -264,6 +306,10 @@ inline POD::Extended::McParticle Extend(std::size_t mc_entry, const std::vector<
     ext_mc.IsTrueSignal = ext_mc.IsTrue && IsValidSignalID(prov.signal_id) && IsRelevantGeneration(prov.generation);
     ext_mc.IsRealBkg = prov.generation == Generation::kNone;
 
+    // -- a single particle is its own only leaf, so its mask is just its own bit
+    assert(mc.Generator < Common::NCustomGenerators);
+    ext_mc.GeneratorMask = static_cast<std::uint8_t>(1U << mc.Generator);
+
     return ext_mc;
 }
 
@@ -287,6 +333,9 @@ inline POD::Extended::McParticle LinkComposite(const std::vector<POD::McParticle
     composite.IsTrueSignal = composite.IsTrue && c1.IsTrueSignal && c2.IsTrueSignal && SameSignalID(c1.SignalID, c2.SignalID);
     // -- real background: no constituent carries signal, at any depth
     composite.IsRealBkg = c1.IsRealBkg && c2.IsRealBkg;
+
+    // -- `Extend` already set the mother's own bit when there was one, and left the mask empty when there wasn't
+    composite.GeneratorMask = static_cast<std::uint8_t>(composite.GeneratorMask | c1.GeneratorMask | c2.GeneratorMask);
 
     return composite;
 }
