@@ -29,13 +29,19 @@ struct Hdibaryon : POD::LambdaPair {
           cv{hdib.CV_X, hdib.CV_Y, hdib.CV_Z},
           pv{ref},
           pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv.Vect(), dv, pv)},
-          dv_l1{l1.Decay_X, l1.Decay_Y, l1.Decay_Z},
-          dv_l2{l2.Decay_X, l2.Decay_Y, l2.Decay_Z},
+          dv_lambda1{l1.Decay_X, l1.Decay_Y, l1.Decay_Z},
+          dv_lambda2{l2.Decay_X, l2.Decay_Y, l2.Decay_Z},
+          l1_pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv_lambda1.Vect(), dv_lambda1, pv)},
           l1_pca_wrt_dv{Lambda1_PCAwrtDV_X, Lambda1_PCAwrtDV_Y, Lambda1_PCAwrtDV_Z},
+          l2_pca_wrt_pv{Common::Math::FastPCA_LineVertex(lv_lambda2.Vect(), dv_lambda2, pv)},
           l2_pca_wrt_dv{Lambda2_PCAwrtDV_X, Lambda2_PCAwrtDV_Y, Lambda2_PCAwrtDV_Z},
           cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)},
-          l1_cpa_wrt_dv{Common::Math::CosinePointingAngle(lv_lambda1.Vect(), dv_l1, dv)},
-          l2_cpa_wrt_dv{Common::Math::CosinePointingAngle(lv_lambda2.Vect(), dv_l2, dv)},
+          l1_cpa_wrt_pv{Common::Math::CosinePointingAngle(lv_lambda1.Vect(), dv_lambda1, pv)},
+          l1_cpa_wrt_dv{Common::Math::CosinePointingAngle(lv_lambda1.Vect(), dv_lambda1, dv)},
+          l1_chi2ndf{l1.Chi2NDF},
+          l2_cpa_wrt_pv{Common::Math::CosinePointingAngle(lv_lambda2.Vect(), dv_lambda2, pv)},
+          l2_cpa_wrt_dv{Common::Math::CosinePointingAngle(lv_lambda2.Vect(), dv_lambda2, dv)},
+          l2_chi2ndf{l2.Chi2NDF},
           cos_theta_ll{lv_lambda1.Vect().Unit().Dot(lv_lambda2.Vect().Unit())},
           is_anti{HD::IsAntiChannel(l1, l2)},
           is_mixed{HD::IsMixedChannel(l1, l2)} {
@@ -50,6 +56,8 @@ struct Hdibaryon : POD::LambdaPair {
         } else {
             std::tie(lv_pion2, lv_proton2) = Common::Math::CloseDecay(l2, Common::PdgMass_Pion, Common::PdgMass_Proton, lv_lambda2);
         }
+        // armenteros-podolanski vars.
+        // PENDING
         // correlations
         HD::InfoCorrelation c_corr = HD::GetAngles(lv, lv_lambda1, lv_lambda2, lv_proton1, lv_proton2);
         cos_theta_pp = c_corr.cos_theta_pp;
@@ -111,8 +119,18 @@ struct Hdibaryon : POD::LambdaPair {
         return Common::DummyDouble;
     }
 
-    // (anti)lambda 1; related to (anti)h-dibaryon
-    [[nodiscard]] double Lambda1_DecayLength() const { return (dv_l1 - dv).R(); }
+    // (anti)lambda 1
+    [[nodiscard]] double Lambda1_Px() const { return lv_lambda1.Px(); }
+    [[nodiscard]] double Lambda1_Py() const { return lv_lambda1.Py(); }
+    [[nodiscard]] double Lambda1_Pz() const { return lv_lambda1.Pz(); }
+    [[nodiscard]] double Lambda1_Pt() const { return lv_lambda1.Pt(); }
+    [[nodiscard]] double Lambda1_P() const { return lv_lambda1.P(); }
+    [[nodiscard]] double Lambda1_Rapidity() const { return lv_lambda1.Rapidity(); }
+    [[nodiscard]] double Lambda1_CPA_wrt_PV() const { return l1_cpa_wrt_pv; }
+    [[nodiscard]] double Lambda1_DCA_wrt_PV() const { return (l1_pca_wrt_pv - pv).R(); }
+    [[nodiscard]] double Lambda1_Chi2NDF() const { return l1_chi2ndf; }
+    // -- related to (anti)h-dibaryon
+    [[nodiscard]] double Lambda1_DecayLength() const { return (dv_lambda1 - dv).R(); }
     [[nodiscard]] double Lambda1_CPA_wrt_DV() const { return l1_cpa_wrt_dv; }
     [[nodiscard]] double Lambda1_DCA_wrt_DV() const { return (l1_pca_wrt_dv - dv).R(); }
     // -- (anti)proton 1
@@ -122,7 +140,7 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double Proton1_Pt() const { return lv_proton1.Pt(); }
     [[nodiscard]] double Proton1_P() const { return lv_proton1.P(); }
     [[nodiscard]] double Proton1_Eta() const { return lv_proton1.Eta(); }
-    // -- pi(minus/plus) 1
+    // -- pi (minus/plus) 1
     [[nodiscard]] double Pion1_Px() const { return lv_pion1.Px(); }
     [[nodiscard]] double Pion1_Py() const { return lv_pion1.Py(); }
     [[nodiscard]] double Pion1_Pz() const { return lv_pion1.Pz(); }
@@ -130,8 +148,18 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double Pion1_P() const { return lv_pion1.P(); }
     [[nodiscard]] double Pion1_Eta() const { return lv_pion1.Eta(); }
 
-    // (anti)lambda 2; related to (anti)h-dibaryon
-    [[nodiscard]] double Lambda2_DecayLength() const { return (dv_l2 - dv).R(); }
+    // (anti)lambda 2
+    [[nodiscard]] double Lambda2_Px() const { return lv_lambda2.Px(); }
+    [[nodiscard]] double Lambda2_Py() const { return lv_lambda2.Py(); }
+    [[nodiscard]] double Lambda2_Pz() const { return lv_lambda2.Pz(); }
+    [[nodiscard]] double Lambda2_Pt() const { return lv_lambda2.Pt(); }
+    [[nodiscard]] double Lambda2_P() const { return lv_lambda2.P(); }
+    [[nodiscard]] double Lambda2_Rapidity() const { return lv_lambda2.Rapidity(); }
+    [[nodiscard]] double Lambda2_CPA_wrt_PV() const { return l2_cpa_wrt_pv; }
+    [[nodiscard]] double Lambda2_DCA_wrt_PV() const { return (l2_pca_wrt_pv - pv).R(); }
+    [[nodiscard]] double Lambda2_Chi2NDF() const { return l2_chi2ndf; }
+    // -- related to (anti)h-dibaryon
+    [[nodiscard]] double Lambda2_DecayLength() const { return (dv_lambda2 - dv).R(); }
     [[nodiscard]] double Lambda2_CPA_wrt_DV() const { return l2_cpa_wrt_dv; }
     [[nodiscard]] double Lambda2_DCA_wrt_DV() const { return (l2_pca_wrt_dv - dv).R(); }
     // -- (anti)proton 2
@@ -141,7 +169,7 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double Proton2_Pt() const { return lv_proton2.Pt(); }
     [[nodiscard]] double Proton2_P() const { return lv_proton2.P(); }
     [[nodiscard]] double Proton2_Eta() const { return lv_proton2.Eta(); }
-    // -- pi(minus/plus) 2
+    // -- pi (minus/plus) 2
     [[nodiscard]] double Pion2_Px() const { return lv_pion2.Px(); }
     [[nodiscard]] double Pion2_Py() const { return lv_pion2.Py(); }
     [[nodiscard]] double Pion2_Pz() const { return lv_pion2.Pz(); }
@@ -173,7 +201,7 @@ struct Hdibaryon : POD::LambdaPair {
     [[nodiscard]] double Qrel() const { return q_rel; }
 
     // duplication tests //
-    [[nodiscard]] double Dist_btw_LambdaDVs() const { return (dv_l1 - dv_l2).R(); }
+    [[nodiscard]] double Dist_btw_LambdaDVs() const { return (dv_lambda1 - dv_lambda2).R(); }
     [[nodiscard]] double DeltaDecayLength_LL() const { return std::abs(Lambda1_DecayLength() - Lambda2_DecayLength()); }
 
    private:
@@ -189,13 +217,19 @@ struct Hdibaryon : POD::LambdaPair {
     ROOT::Math::XYZPoint cv;               // constrained production vertex ~ primary vertex
     ROOT::Math::XYZPoint pv;               // primary vertex
     ROOT::Math::XYZPoint pca_wrt_pv;       // ~ origin
-    ROOT::Math::XYZPoint dv_l1;
-    ROOT::Math::XYZPoint dv_l2;
+    ROOT::Math::XYZPoint dv_lambda1;
+    ROOT::Math::XYZPoint dv_lambda2;
+    ROOT::Math::XYZPoint l1_pca_wrt_pv;
     ROOT::Math::XYZPoint l1_pca_wrt_dv;
+    ROOT::Math::XYZPoint l2_pca_wrt_pv;
     ROOT::Math::XYZPoint l2_pca_wrt_dv;
     double cpa_wrt_pv;
+    double l1_cpa_wrt_pv;
     double l1_cpa_wrt_dv;
+    double l1_chi2ndf;
+    double l2_cpa_wrt_pv;
     double l2_cpa_wrt_dv;
+    double l2_chi2ndf;
     double cos_theta_ll;
     double cos_theta_pp;
     double theta_pp;

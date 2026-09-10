@@ -34,8 +34,11 @@ inline constexpr std::string_view Name_FoundHdibaryonRNT = "FoundHdibaryon";
 }  // namespace T2DS
 
 namespace Skimmer {
+inline constexpr std::string_view Name_EventSummaryRNT = "EventSummary";
 inline constexpr std::string_view Name_CachedSexaquarkRNT = "CachedSexaquark";
 inline constexpr std::string_view Name_CachedHdibaryonRNT = "CachedHdibaryon";
+inline constexpr std::string_view Name_InjectedSexaquarkRNT = "InjectedSexaquark";
+inline constexpr std::string_view Name_InjectedHdibaryonRNT = "InjectedHdibaryon";
 }  // namespace Skimmer
 
 namespace Common {
