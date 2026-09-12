@@ -9,10 +9,10 @@ namespace POD {
 struct PreFoundLambda {
     // (anti)lambda info //
     unsigned int PreFoundEntry;
-    float Decay_X;         // (updated after new fit)
-    float Decay_Y;         // (updated after new fit)
-    float Decay_Z;         // (updated after new fit)
-    float DcaV0Daughters;  // (updated after new fit)
+    float Decay_X;
+    float Decay_Y;
+    float Decay_Z;
+    float DcaV0Daughters;
 
     // negative daughter //
     unsigned int Neg_EsdEntry;
@@ -28,9 +28,9 @@ struct PreFoundLambda {
     unsigned short Neg_TPC_NClustersFindable;
     float Neg_TPC_Chi2;
     // -- related to (anti)lambda
-    float Neg_PCAwrtV0_Px;  // (updated after new fit)
-    float Neg_PCAwrtV0_Py;  // (updated after new fit)
-    float Neg_PCAwrtV0_Pz;  // (updated after new fit)
+    float Neg_PCAwrtV0_Px;
+    float Neg_PCAwrtV0_Py;
+    float Neg_PCAwrtV0_Pz;
 
     // positive daughter //
     unsigned int Pos_EsdEntry;
@@ -46,40 +46,9 @@ struct PreFoundLambda {
     unsigned short Pos_TPC_NClustersFindable;
     float Pos_TPC_Chi2;
     // -- related to (anti)lambda
-    float Pos_PCAwrtV0_Px;  // (updated after new fit)
-    float Pos_PCAwrtV0_Py;  // (updated after new fit)
-    float Pos_PCAwrtV0_Pz;  // (updated after new fit)
+    float Pos_PCAwrtV0_Px;
+    float Pos_PCAwrtV0_Py;
+    float Pos_PCAwrtV0_Pz;
 };
-
-namespace Extended {
-
-struct PreFoundLambda : POD::PreFoundLambda {
-    float Px;
-    float Py;
-    float Pz;
-    float Energy;
-    std::array<float, Common::NCovMatrixComponents_State7> CovMatrix;
-    float Chi2NDF;
-    // negative daughter
-    float Neg_PCAwrtV0_X;
-    float Neg_PCAwrtV0_Y;
-    float Neg_PCAwrtV0_Z;
-    float Neg_Fit_Px;
-    float Neg_Fit_Py;
-    float Neg_Fit_Pz;
-    float Neg_Fit_Energy;
-    // positive daughter
-    float Pos_PCAwrtV0_X;
-    float Pos_PCAwrtV0_Y;
-    float Pos_PCAwrtV0_Z;
-    float Pos_Fit_Px;
-    float Pos_Fit_Py;
-    float Pos_Fit_Pz;
-    float Pos_Fit_Energy;
-    // flag
-    bool IsAntiLambda;
-};
-
-}  // namespace Extended
 
 }  // namespace POD

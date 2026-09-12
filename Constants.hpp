@@ -70,10 +70,32 @@ inline constexpr std::uint8_t kInjectedBkg = kAntiNeutronBit | kAuxChargedBit;
 inline constexpr std::uint8_t kSignal = kSexaReactionBit | kHdibaryonBit;
 }  // namespace OriginGen
 
+// Per-candidate record of the fit policy and of which pins actually fired, as a bitmask stored in `POD::*::FitFlags`.
+// The `*Requested` bits mirror `KF::FitPolicy` (constant across a file, they compress to nothing); the outcome bits say
+// what happened to this candidate. A requested pin without its outcome bit is a pin that bailed out.
+namespace FitFlag {
+inline constexpr std::uint8_t kDaughterPinsRequested = 1U << 0U;  // `FitPolicy::pin_daughters`
+inline constexpr std::uint8_t kDau1Pinned = 1U << 1U;             // `PinDaughterToMassShell` fired on daughter 1
+inline constexpr std::uint8_t kDau2Pinned = 1U << 2U;             // idem, daughter 2
+inline constexpr std::uint8_t kMotherPinRequested = 1U << 3U;     // `FitPolicy::mother_mass` set
+inline constexpr std::uint8_t kMotherPinned = 1U << 4U;  // `PinMotherMass` fired: NDF += 1, `Fit_MassPull` is the pin's own and Chi2 includes pull^2
+inline constexpr std::uint8_t kProdVertexRequested = 1U << 5U;  // `FitPolicy::prod_vertex` set
+inline constexpr std::uint8_t kAtProdVertex = 1U << 6U;         // `AtProductionVertex` ran, `PVC_*` valid
+}  // namespace FitFlag
+
+// Degrees of freedom of each constraint.
+namespace NDF {
+inline constexpr int kVertex = 1;            // two-body vertex, `zeta' S^-1 zeta`
+inline constexpr int kMassPin = 1;           // `PinMotherMass`; `Fit_MassPull^2`
+inline constexpr int kProdVertex = 2;        // `AtProductionVertex`; transverse only, the longitudinal d.o.f. comes back as `S`
+inline constexpr int kPointCoincidence = 3;  // post-processing `dv == pv`, `Common::Math::Chi2_PointCoincidence`
+}  // namespace NDF
+
 inline constexpr int NCovMatrixComponents_State3 = 6;
 inline constexpr int NCovMatrixComponents_State6 = 21;
 inline constexpr int NCovMatrixComponents_State7 = 28;
 inline constexpr int NCovMatrixComponents_State8 = 36;
+inline constexpr double PdgMass_Electron = 0.000510999;    // PDG mass of electron (GeV/c^2)
 inline constexpr double PdgMass_Lambda = 1.115683;         // PDG mass of lambda (GeV/c^2)
 inline constexpr double PdgMass_Neutron = 0.93956542;      // PDG mass of neutron (GeV/c^2)
 inline constexpr double PdgMass_Proton = 0.93827208816;    // PDG mass of proton (GeV/c^2)

@@ -5,7 +5,7 @@
 #include <Math/Point3D.h>
 #include <Math/Vector4D.h>
 
-#include "HD_Library.hpp"
+#include "Cached_Unit.hpp"
 #include "Math.hpp"
 #include "POD_InjectedHdib.hpp"
 
@@ -26,7 +26,8 @@ struct InjectedHdib : POD::InjectedHdib {
           dv_l1{Lambda1_Decay_X, Lambda1_Decay_Y, Lambda1_Decay_Z},
           dv_l2{Lambda2_Decay_X, Lambda2_Decay_Y, Lambda2_Decay_Z},
           pv{ref},
-          cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)} {
+          cpa_wrt_pv{Common::Math::CosinePointingAngle(lv.Vect(), dv, pv)},
+          corr{lv, lv_l1, lv_l2, lv_pr1, lv_pr2} {
         // (anti)lambda 1 //
         const auto& lv_neg1 = IsAntiChannel ? lv_pr1 : lv_pi1;
         const auto& lv_pos1 = IsAntiChannel ? lv_pi1 : lv_pr1;
@@ -41,15 +42,6 @@ struct InjectedHdib : POD::InjectedHdib {
         cpa_wrt_dv_l2 = Common::Math::CosinePointingAngle(lv_l2.Vect(), dv_l2, dv);
         arm_qt_l2 = Common::Math::ArmenterosQt(lv_l2.Vect(), lv_neg2.Vect());
         arm_alpha_l2 = Common::Math::ArmenterosAlpha(lv_l2.Vect(), lv_neg2.Vect(), lv_pos2.Vect()).value_or(Common::DummyDouble);
-        // correlations //
-        HD::InfoCorrelation c_corr = HD::GetAngles(lv, lv_l1, lv_l2, lv_pr1, lv_pr2);
-        cos_theta_pp = c_corr.cos_theta_pp;
-        theta_pp = c_corr.theta_pp;
-        cos_theta_star_l1 = c_corr.cos_theta_star_l1;
-        cos_theta_star_l2 = c_corr.cos_theta_star_l2;
-        cos_theta_star_p1 = c_corr.cos_theta_star_p1;
-        cos_theta_star_p2 = c_corr.cos_theta_star_p2;
-        q_rel = c_corr.q_rel;
     }
 
     // (anti)h-dibaryon //
@@ -113,13 +105,13 @@ struct InjectedHdib : POD::InjectedHdib {
     [[nodiscard]] double Pion2_Eta() const { return lv_pi2.Eta(); }
 
     // correlations //
-    [[nodiscard]] double CosTheta_pp() const { return cos_theta_pp; }
-    [[nodiscard]] double Theta_pp() const { return theta_pp; }
-    [[nodiscard]] double CosThetaStar_L1() const { return cos_theta_star_l1; }
-    [[nodiscard]] double CosThetaStar_L2() const { return cos_theta_star_l2; }
-    [[nodiscard]] double CosThetaStar_Pr1() const { return cos_theta_star_p1; }
-    [[nodiscard]] double CosThetaStar_Pr2() const { return cos_theta_star_p2; }
-    [[nodiscard]] double Qrel() const { return q_rel; }
+    [[nodiscard]] double CosTheta_pp() const { return corr.CosTheta_pp(); }
+    [[nodiscard]] double Theta_pp() const { return corr.Theta_pp(); }
+    [[nodiscard]] double CosThetaStar_L1() const { return corr.CosThetaStar_L1(); }
+    [[nodiscard]] double CosThetaStar_L2() const { return corr.CosThetaStar_L2(); }
+    [[nodiscard]] double CosThetaStar_Pr1() const { return corr.CosThetaStar_P1(); }
+    [[nodiscard]] double CosThetaStar_Pr2() const { return corr.CosThetaStar_P2(); }
+    [[nodiscard]] double Qrel() const { return corr.Qrel(); }
 
    private:
     ROOT::Math::PxPyPzEVector lv;
@@ -142,13 +134,7 @@ struct InjectedHdib : POD::InjectedHdib {
     double arm_alpha_l1;
     double arm_qt_l2;
     double arm_alpha_l2;
-    double cos_theta_pp;
-    double theta_pp;
-    double cos_theta_star_l1;
-    double cos_theta_star_l2;
-    double cos_theta_star_p1;
-    double cos_theta_star_p2;
-    double q_rel;
+    Unit::Correlations corr;
 };
 
 }  // namespace Cached

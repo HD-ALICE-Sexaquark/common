@@ -17,9 +17,9 @@
 #pragma link C++ class  std::vector<POD::InjectedSexa>+;
 #pragma link C++ class  std::vector<POD::Extended::InjectedSexa>+;
 #pragma link C++ class  std::vector<POD::Linked::InjectedSexa>+;
-// `POD_LambdaPair.hpp`
-#pragma link C++ struct POD::LambdaPair+;
-#pragma link C++ class  std::vector<POD::LambdaPair>+;
+// `POD_Hdibaryon.hpp`
+#pragma link C++ struct POD::Hdibaryon+;
+#pragma link C++ class  std::vector<POD::Hdibaryon>+;
 // `POD_McParticle.hpp`
 #pragma link C++ struct POD::McParticle+;
 #pragma link C++ struct POD::Extended::McParticle+;
@@ -27,9 +27,7 @@
 #pragma link C++ class  std::vector<POD::Extended::McParticle>+;
 // `POD_PreFoundLambda.hpp`
 #pragma link C++ struct POD::PreFoundLambda+;
-#pragma link C++ struct POD::Extended::PreFoundLambda+;
 #pragma link C++ class  std::vector<POD::PreFoundLambda>+;
-#pragma link C++ class  std::vector<POD::Extended::PreFoundLambda>+;
 // `POD_Sexaquark.hpp`
 #pragma link C++ struct POD::Sexaquark+;
 #pragma link C++ class  std::vector<POD::Sexaquark>+;

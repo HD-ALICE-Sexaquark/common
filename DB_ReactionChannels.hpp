@@ -5,6 +5,7 @@
 #include <span>
 
 #include "Constants.hpp"
+#include "DB_Particles.hpp"
 
 namespace DB::ReactionChannels {
 
@@ -57,6 +58,11 @@ constexpr Definition FindReactionChannel(char c) {
     for (const auto& r : DB)
         if (r.name == c) return r;
     return DB.back();
+}
+
+// PDG mass of the nucleon struck in reaction channel `channel` ('A'..'H'): a neutron in A, a proton in D and H.
+consteval double StruckNucleonMass(char channel) {  //
+    return DB::Particles::Particle(DB::ReactionChannels::ReactionChannel(channel).nucleon_pdg).mass;
 }
 
 }  // namespace DB::ReactionChannels
