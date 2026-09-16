@@ -341,7 +341,6 @@ inline RMath::PxPyPzEVector NucleonAlongAxis(const RMath::PxPyPzEVector& lv_tot,
 // the nucleon momentum this candidate needs to be an antisexaquark of mass `m_s`. For signal it follows the Fermi
 // distribution, for background it is arbitrary; it is a mass window that scales with `p_S` (the Fermi smearing of
 // `M` does), unlike a fixed MeV window. `Dummy` when no real root exists.
-// PENDING: could be useful... not checked yet...
 inline double RequiredNucleonMomentum(const RMath::PxPyPzEVector& lv_tot, const RMath::XYZVector& axis, double m_nucleon, double m_s) {
     const double e_tot = lv_tot.E();
     const double ql = lv_tot.Vect().Dot(axis);

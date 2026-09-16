@@ -60,8 +60,8 @@ struct Hdibaryon : POD::Hdibaryon {
     [[nodiscard]] double DV_Radius2D() const { return fit.Radius2D(); }
     [[nodiscard]] double DV_Radius3D() const { return fit.Radius3D(); }
     // -- kinematics
-    [[nodiscard]] double Fit_Pt() const { return fit.Pt(); }
     [[nodiscard]] double Fit_Pz() const { return fit.Pz(); }
+    [[nodiscard]] double Fit_Pt() const { return fit.Pt(); }
     [[nodiscard]] double Fit_P() const { return fit.P(); }
     [[nodiscard]] double Fit_Mass() const { return fit.Mass(); }
     [[nodiscard]] double Fit_Rapidity() const { return fit.Rapidity(); }
@@ -80,7 +80,6 @@ struct Hdibaryon : POD::Hdibaryon {
     [[nodiscard]] double FlightLength_DivByErr_WithRespectToPV() const { return fit.FlightLength_DivByErr_WithRespectTo(pv, pv_cov); }
     [[nodiscard]] double DCA_WithRespectToPV() const { return fit.DCA_WithRespectTo(pv); }
     [[nodiscard]] double CPA_WithRespectToPV() const { return fit.CPA_WithRespectTo(pv); }
-    [[nodiscard]] double Chi2Prompt() const { return fit.Chi2PointCoincidence_WithRespectTo(pv, pv_cov); }
     // -- fit bookkeeping
     [[nodiscard]] bool IsProductionVertexPinned() const { return (FitFlags & Common::FitFlag::kAtProdVertex) != 0; }
     [[nodiscard]] bool AreDaughtersPinned() const {
@@ -89,15 +88,17 @@ struct Hdibaryon : POD::Hdibaryon {
     }
     [[nodiscard]] int NDF() const { return Common::NDF::kVertex + (IsProductionVertexPinned() ? Common::NDF::kProdVertex : 0); }
     [[nodiscard]] double Chi2Vtx() const { return static_cast<double>(Chi2); }
-    [[nodiscard]] double Chi2PVC() const { return IsProductionVertexPinned() ? static_cast<double>(PVC_Chi2) : Common::DummyDouble; }
     [[nodiscard]] double Chi2NDF() const {  // joint: vertex, plus the production-vertex constraint when it fired
         const double chi2 = IsProductionVertexPinned() ? static_cast<double>(Chi2) + static_cast<double>(PVC_Chi2) : static_cast<double>(Chi2);
         return chi2 / static_cast<double>(NDF());
     }
+    //  > production-vertex-constrained fit
+    [[nodiscard]] double Chi2PVC() const { return IsProductionVertexPinned() ? static_cast<double>(PVC_Chi2) : Common::DummyDouble; }
     [[nodiscard]] double PVC_DecayLength_DivByErr() const {  // signed; a pull for a prompt candidate
         return IsProductionVertexPinned() ? CMath::DivByErr(static_cast<double>(PVC_DecayLength), static_cast<double>(PVC_DecayLengthErr))
                                           : Common::DummyDouble;
     }
+    [[nodiscard]] double Chi2Prompt() const { return fit.Chi2PointCoincidence_WithRespectTo(pv, pv_cov); }
 
     // correlations //
     [[nodiscard]] double CosTheta_pp() const { return corr.CosTheta_pp(); }

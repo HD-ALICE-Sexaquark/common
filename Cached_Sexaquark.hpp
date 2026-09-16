@@ -10,21 +10,18 @@
 
 #include "Cached_Unit.hpp"
 #include "Constants.hpp"
+#include "DB_SexaquarkMasses.hpp"
 #include "Math.hpp"
 #include "POD_Sexaquark.hpp"
 
 namespace Cached {
 
-// The antisexaquark + struck nucleon reaction, common to every channel: the fitted candidate is the sum of the reaction
-// products, `P_tot = P_S + P_N`, with the nucleon's Fermi momentum unknown (`|p_N| <~ 250 MeV/c`). What is measured
-// exactly is the geometry: the antisexaquark flew from the PV to the SV, so `axis = (sv - pv)/|sv - pv|` is its
-// direction and `Qt = |P_tot x axis| = |p_N,perp|` is the transverse Fermi momentum -- bounded for signal, unbounded
-// for background. `{FlightLength, Qt, Ql}` is the complete non-redundant set replacing `{L, DCA, CPA}`. The mass is
-// Fermi-smeared in every estimator by `-2 |p_S| p_N,par` (~150 MeV at 2 GeV/c), see `Common::Math`. The channels derive
-// from this and add their legs.
+namespace RMath = ROOT::Math;
+namespace CMath = Common::Math;
+
 struct Sexaquark : POD::Sexaquark {
 
-    Sexaquark(const POD::Sexaquark& sexa, double m_nucleon, const ROOT::Math::XYZPoint& ref,
+    Sexaquark(const POD::Sexaquark& sexa, double nucleon_mass, const RMath::XYZPoint& ref,
               const std::array<float, Common::NCovMatrixComponents_State3>& ref_cov)
         : POD::Sexaquark(sexa),
           seed{Seed_Dau1_X, Seed_Dau1_Y, Seed_Dau1_Z, Seed_Dau1_Px, Seed_Dau1_Py, Seed_Dau1_Pz, Seed_Dau1_Energy,  //
@@ -35,8 +32,9 @@ struct Sexaquark : POD::Sexaquark {
           pv{ref},
           pv_cov{ref_cov},
           axis{(fit.vtx - pv).Unit()},
-          lv_nar{Common::Math::NucleonAtRest(fit.lv, m_nucleon)},
-          lv_naa{Common::Math::NucleonAlongAxis(fit.lv, axis, m_nucleon)} {}
+          m_nucleon{nucleon_mass},
+          lv_nar{CMath::NucleonAtRest(fit.lv, m_nucleon)},
+          lv_naa{CMath::NucleonAlongAxis(fit.lv, axis, m_nucleon)} {}
 
     // post-seed/pre-fit //
     // -- geometry
@@ -75,6 +73,8 @@ struct Sexaquark : POD::Sexaquark {
     // -- kinematics + geometry
     [[nodiscard]] double Ql_WithRespectToPV() const { return fit.lv.Vect().Dot(axis); }        // products' total momentum along flight direction
     [[nodiscard]] double Qt_WithRespectToPV() const { return fit.lv.Vect().Cross(axis).R(); }  // products' total momentum across flight direction
+    [[nodiscard]] double DCA_WithRespectToPV() const { return fit.DCA_WithRespectTo(pv); }     // = FlightLength * Qt / Fit_P
+    [[nodiscard]] double CPA_WithRespectToPV() const { return fit.CPA_WithRespectTo(pv); }     // = Ql / Fit_P
     // -- kinematics assuming a struck-nucleon at rest
     [[nodiscard]] double NucleonAtRest_Mass() const { return lv_nar.M(); }
     [[nodiscard]] double NucleonAtRest_Pt() const { return lv_nar.Pt(); }
@@ -83,6 +83,30 @@ struct Sexaquark : POD::Sexaquark {
     [[nodiscard]] double NucleonAlongAxis_Mass() const { return lv_naa.M(); }
     [[nodiscard]] double NucleonAlongAxis_Pt() const { return lv_naa.Pt(); }
     [[nodiscard]] double NucleonAlongAxis_Rapidity() const { return lv_naa.Rapidity(); }
+    // -- the missing nucleon momentum this candidate needs to be a projectile of mass `m` annihilating on the struck
+    //    nucleon (`Dummy` below threshold): Fermi-bounded for signal, arbitrary for background; a mass window that
+    //    scales with `p_S`
+    [[nodiscard]] double RequiredNucleonMomentum_1730MeV() const {
+        return CMath::RequiredNucleonMomentum(fit.lv, axis, m_nucleon, DB::SexaquarkMasses::Value[0]);
+    }
+    [[nodiscard]] double RequiredNucleonMomentum_1800MeV() const {
+        return CMath::RequiredNucleonMomentum(fit.lv, axis, m_nucleon, DB::SexaquarkMasses::Value[1]);
+    }
+    [[nodiscard]] double RequiredNucleonMomentum_1870MeV() const {
+        return CMath::RequiredNucleonMomentum(fit.lv, axis, m_nucleon, DB::SexaquarkMasses::Value[2]);
+    }
+    [[nodiscard]] double RequiredNucleonMomentum_1940MeV() const {
+        return CMath::RequiredNucleonMomentum(fit.lv, axis, m_nucleon, DB::SexaquarkMasses::Value[3]);
+    }
+    [[nodiscard]] double RequiredNucleonMomentum_2010MeV() const {
+        return CMath::RequiredNucleonMomentum(fit.lv, axis, m_nucleon, DB::SexaquarkMasses::Value[4]);
+    }
+    [[nodiscard]] double RequiredNucleonMomentum_AsAntiNeutron() const {
+        return CMath::RequiredNucleonMomentum(fit.lv, axis, m_nucleon, Common::PdgMass_Neutron);
+    }
+    [[nodiscard]] double RequiredNucleonMomentum_AsAntiDeuteron() const {
+        return CMath::RequiredNucleonMomentum(fit.lv, axis, m_nucleon, Common::PdgMass_Deuteron);
+    }
     // -- fit bookkeeping
     [[nodiscard]] bool AreDaughtersPinned() const {
         constexpr std::uint8_t both = Common::FitFlag::kDau1Pinned | Common::FitFlag::kDau2Pinned;
@@ -99,11 +123,12 @@ struct Sexaquark : POD::Sexaquark {
    protected:
     Unit::PostSeed seed;
     Unit::PostFit fit;
-    ROOT::Math::XYZPoint pv;                                        // primary vertex
+    RMath::XYZPoint pv;                                             // primary vertex
     std::array<float, Common::NCovMatrixComponents_State3> pv_cov;  // its position covariance
-    ROOT::Math::XYZVector axis;                                     // unit vector along the flight direction, primary -> secondary vertex
-    ROOT::Math::PxPyPzEVector lv_nar;                               // antisexaquark if the struck nucleon was at rest
-    ROOT::Math::PxPyPzEVector lv_naa;                               // antisexaquark if the struck nucleon carried the transverse momentum
+    RMath::XYZVector axis;                                          // unit vector along the flight direction, primary -> secondary vertex
+    double m_nucleon;                                               // mass of the struck nucleon, set by the channel
+    RMath::PxPyPzEVector lv_nar;                                    // antisexaquark if the struck nucleon was at rest
+    RMath::PxPyPzEVector lv_naa;                                    // antisexaquark if the struck nucleon carried the transverse momentum
 };
 
 }  // namespace Cached

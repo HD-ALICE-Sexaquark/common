@@ -95,6 +95,7 @@ inline constexpr int NCovMatrixComponents_State3 = 6;
 inline constexpr int NCovMatrixComponents_State6 = 21;
 inline constexpr int NCovMatrixComponents_State7 = 28;
 inline constexpr int NCovMatrixComponents_State8 = 36;
+inline constexpr double PdgMass_Deuteron = 1.875612945;    // PDG mass of deuteron (GeV/c^2)
 inline constexpr double PdgMass_Electron = 0.000510999;    // PDG mass of electron (GeV/c^2)
 inline constexpr double PdgMass_Lambda = 1.115683;         // PDG mass of lambda (GeV/c^2)
 inline constexpr double PdgMass_Neutron = 0.93956542;      // PDG mass of neutron (GeV/c^2)

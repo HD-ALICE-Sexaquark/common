@@ -55,7 +55,7 @@ struct Hdibaryon {
     float PVC_DecayLengthErr;
     float PVC_Chi2;
     float Fit_MassErr;
-    float Fit_MassPull;  // against 2.234 GeV (the injected mass); m^2 units
+    float Fit_MassPull;  // against 2.234 GeV (the injected mass); pull of m^2
     float Chi2;
     std::uint8_t FitFlags;  // `Common::FitFlag` mask
     bool Lambda1_IsAntiLambda;

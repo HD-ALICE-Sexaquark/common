@@ -46,6 +46,8 @@ struct InjectedSexa : POD::Linked::InjectedSexa {
     [[nodiscard]] double Nucleon_Eta() const { return lv_nucleon.Eta(); }
     [[nodiscard]] double Nucleon_Rapidity() const { return lv_nucleon.Rapidity(); }
     [[nodiscard]] double Nucleon_Phi() const { return lv_nucleon.Phi(); }
+    [[nodiscard]] double Nucleon_Qt() const { return lv_nucleon.Vect().Cross(lv.Vect().Unit()).R(); }
+    [[nodiscard]] double Nucleon_Ql() const { return lv_nucleon.Vect().Dot(lv.Vect().Unit()); }
     // -- after reaction ~ sum of all reaction products
     [[nodiscard]] double After_Px() const { return sum_lv_daughters.Px(); }
     [[nodiscard]] double After_Py() const { return sum_lv_daughters.Py(); }

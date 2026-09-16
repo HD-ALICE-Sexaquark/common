@@ -32,6 +32,16 @@ struct PostSeed {
           pca_dau2{dau2_x, dau2_y, dau2_z},
           midpoint{CMath::MiddlePoint(pca_dau2, pca_dau1)} {}
 
+    // From the seeder's PCAs, before any fit: the momenta at the PCAs plus the mass hypothesis of each daughter.
+    PostSeed(const std::array<double, 3>& dau1_xyz, const std::array<double, 3>& dau1_mom, double dau1_mass,  //
+             const std::array<double, 3>& dau2_xyz, const std::array<double, 3>& dau2_mom, double dau2_mass)
+        : lv_dau1{dau1_mom[0], dau1_mom[1], dau1_mom[2], CMath::Hypot4(dau1_mom[0], dau1_mom[1], dau1_mom[2], dau1_mass)},
+          lv_dau2{dau2_mom[0], dau2_mom[1], dau2_mom[2], CMath::Hypot4(dau2_mom[0], dau2_mom[1], dau2_mom[2], dau2_mass)},
+          lv{lv_dau1 + lv_dau2},
+          pca_dau1{dau1_xyz[0], dau1_xyz[1], dau1_xyz[2]},
+          pca_dau2{dau2_xyz[0], dau2_xyz[1], dau2_xyz[2]},
+          midpoint{CMath::MiddlePoint(pca_dau2, pca_dau1)} {}
+
     [[nodiscard]] double Px() const { return lv.Px(); }
     [[nodiscard]] double Py() const { return lv.Py(); }
     [[nodiscard]] double Pz() const { return lv.Pz(); }
@@ -47,6 +57,13 @@ struct PostSeed {
     [[nodiscard]] double ArmQt() const {  //
         return CMath::ArmenterosQt(lv.Vect(), lv_dau1.Vect());
     }
+    [[nodiscard]] double Dau1_Pt() const { return lv_dau1.Pt(); }
+    [[nodiscard]] double Dau1_Pz() const { return lv_dau1.Pz(); }
+    [[nodiscard]] double Dau1_Eta() const { return lv_dau1.Eta(); }
+
+    [[nodiscard]] double Dau2_Pt() const { return lv_dau2.Pt(); }
+    [[nodiscard]] double Dau2_Pz() const { return lv_dau2.Pz(); }
+    [[nodiscard]] double Dau2_Eta() const { return lv_dau2.Eta(); }
 
     [[nodiscard]] double DCA_Between() const { return (pca_dau2 - pca_dau1).R(); }
     [[nodiscard]] double DCA_Between_Squared() const { return (pca_dau2 - pca_dau1).Mag2(); }
@@ -104,17 +121,52 @@ struct PostFit {
     [[nodiscard]] double Eta() const { return lv.Eta(); }
     [[nodiscard]] double Phi() const { return lv.Phi(); }
 
+    // == Armenteros-Podolanski == //
+
     [[nodiscard]] double ArmAlpha() const {  //
         return CMath::ArmenterosAlpha(lv.Vect(), lv_dau1.Vect(), lv_dau2.Vect()).value_or(Common::DummyDouble);
     }
     [[nodiscard]] double ArmQt() const {  //
         return CMath::ArmenterosQt(lv.Vect(), lv_dau1.Vect());
     }
+    [[nodiscard]] double ArmQtOverAlpha() const {
+        const double arm_alpha = ArmAlpha();
+        if (arm_alpha == Common::DummyDouble || std::abs(arm_alpha) < Common::AbsAlmostZero) return Common::DummyDouble;
+        return ArmQt() / arm_alpha;
+    }
+    // Normalised distance to the (alpha, qt) locus of a two-body hypothesis; == 1 exactly on it, `Dummy` when alpha is
+    // degenerate.
+    [[nodiscard]] double ArmRadius_As(double mass, double mass_neg, double mass_pos) const {
+        const double alpha = ArmAlpha();
+        if (alpha == Common::DummyDouble) return Common::DummyDouble;
+        return CMath::ArmenterosEllipticRadius(alpha, ArmQt(), mass, mass_neg, mass_pos, P());
+    }
+    [[nodiscard]] double ArmRadius_AsK0S() const { return ArmRadius_As(Common::PdgMass_KaonZeroShort, Common::PdgMass_Pion, Common::PdgMass_Pion); }
+    [[nodiscard]] double ArmRadius_AsLambda() const { return ArmRadius_As(Common::PdgMass_Lambda, Common::PdgMass_Pion, Common::PdgMass_Proton); }
+    [[nodiscard]] double ArmRadius_AsAntiLambda() const { return ArmRadius_As(Common::PdgMass_Lambda, Common::PdgMass_Proton, Common::PdgMass_Pion); }
+
     [[nodiscard]] double CosTheta_BetweenDaughters() const {  //
         return RMath::VectorUtil::CosTheta(lv_dau1.Vect(), lv_dau2.Vect());
     }
     [[nodiscard]] double Theta_BetweenDaughters() const {  //
         return std::acos(std::clamp(CosTheta_BetweenDaughters(), -1., 1.));
+    }
+
+    [[nodiscard]] double Mass_AsK0S() const {
+        return Common::Math::InvariantMass(lv_dau1.Px(), lv_dau1.Py(), lv_dau1.Pz(), Common::PdgMass_Pion,  //
+                                           lv_dau2.Px(), lv_dau2.Py(), lv_dau2.Pz(), Common::PdgMass_Pion);
+    }
+    [[nodiscard]] double Mass_AsLambda() const {
+        return Common::Math::InvariantMass(lv_dau1.Px(), lv_dau1.Py(), lv_dau1.Pz(), Common::PdgMass_Pion,  //
+                                           lv_dau2.Px(), lv_dau2.Py(), lv_dau2.Pz(), Common::PdgMass_Proton);
+    }
+    [[nodiscard]] double Mass_AsAntiLambda() const {
+        return Common::Math::InvariantMass(lv_dau1.Px(), lv_dau1.Py(), lv_dau1.Pz(), Common::PdgMass_Proton,  //
+                                           lv_dau2.Px(), lv_dau2.Py(), lv_dau2.Pz(), Common::PdgMass_Pion);
+    }
+    [[nodiscard]] double Mass_AsPhoton() const {
+        return Common::Math::InvariantMass(lv_dau1.Px(), lv_dau1.Py(), lv_dau1.Pz(), Common::PdgMass_Electron,  //
+                                           lv_dau2.Px(), lv_dau2.Py(), lv_dau2.Pz(), Common::PdgMass_Electron);
     }
 
     [[nodiscard]] double Dau1_Pt() const { return lv_dau1.Pt(); }

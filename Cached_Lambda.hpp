@@ -27,14 +27,22 @@ struct Lambda : Cached::V0 {
 
     [[nodiscard]] bool IsAntiLambda() const { return is_anti_lambda; }
 
-    // (anti)proton: the negative leg of an antilambda, the positive one of a lambda
-    [[nodiscard]] double Proton_Fit_Pt() const { return is_anti_lambda ? fit.Dau1_Pt() : fit.Dau2_Pt(); }
-    [[nodiscard]] double Proton_Fit_Pz() const { return is_anti_lambda ? fit.Dau1_Pz() : fit.Dau2_Pz(); }
+    // (anti)proton
+    [[nodiscard]] double Seed_Proton_Pz() const { return is_anti_lambda ? seed.Dau1_Pz() : seed.Dau2_Pz(); }
+    [[nodiscard]] double Seed_Proton_Pt() const { return is_anti_lambda ? seed.Dau1_Pt() : seed.Dau2_Pt(); }
+    [[nodiscard]] double Seed_Proton_Eta() const { return is_anti_lambda ? seed.Dau1_Eta() : seed.Dau2_Eta(); }
+    [[nodiscard]] double Fit_Proton_Pz() const { return is_anti_lambda ? fit.Dau1_Pz() : fit.Dau2_Pz(); }
+    [[nodiscard]] double Fit_Proton_Pt() const { return is_anti_lambda ? fit.Dau1_Pt() : fit.Dau2_Pt(); }
+    [[nodiscard]] double Fit_Proton_Eta() const { return is_anti_lambda ? fit.Dau1_Eta() : fit.Dau2_Eta(); }
     [[nodiscard]] double Proton_CosThetaStar() const { return proton_cos_theta_star; }  // helicity angle w.r.t. the (anti)lambda's lab direction
 
-    // pi(plus/minus): the other leg
-    [[nodiscard]] double Pion_Fit_Pt() const { return is_anti_lambda ? fit.Dau2_Pt() : fit.Dau1_Pt(); }
-    [[nodiscard]] double Pion_Fit_Pz() const { return is_anti_lambda ? fit.Dau2_Pz() : fit.Dau1_Pz(); }
+    // pi(plus/minus)
+    [[nodiscard]] double Seed_Pion_Pz() const { return is_anti_lambda ? seed.Dau2_Pz() : seed.Dau1_Pz(); }
+    [[nodiscard]] double Seed_Pion_Pt() const { return is_anti_lambda ? seed.Dau2_Pt() : seed.Dau1_Pt(); }
+    [[nodiscard]] double Seed_Pion_Eta() const { return is_anti_lambda ? seed.Dau2_Eta() : seed.Dau1_Eta(); }
+    [[nodiscard]] double Fit_Pion_Pz() const { return is_anti_lambda ? fit.Dau2_Pz() : fit.Dau1_Pz(); }
+    [[nodiscard]] double Fit_Pion_Pt() const { return is_anti_lambda ? fit.Dau2_Pt() : fit.Dau1_Pt(); }
+    [[nodiscard]] double Fit_Pion_Eta() const { return is_anti_lambda ? fit.Dau2_Eta() : fit.Dau1_Eta(); }
 
    private:
     double proton_cos_theta_star;

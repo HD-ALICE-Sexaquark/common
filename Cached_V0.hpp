@@ -59,7 +59,15 @@ struct V0 : POD::V0 {
     [[nodiscard]] double Fit_Mass() const { return fit.Mass(); }  // a delta when `IsMotherPinned()`
     [[nodiscard]] double Fit_Rapidity() const { return fit.Rapidity(); }
     [[nodiscard]] double Fit_ArmAlpha() const { return fit.ArmAlpha(); }
-    [[nodiscard]] double Fit_ArmQt() const { return fit.ArmQt(); }  // not constraint-free when `IsMotherPinned()`
+    [[nodiscard]] double Fit_ArmQt() const { return fit.ArmQt(); }
+    [[nodiscard]] double Fit_ArmQtOverAlpha() const { return fit.ArmQtOverAlpha(); }
+    [[nodiscard]] double Fit_ArmRadius_AsK0S() const { return fit.ArmRadius_AsK0S(); }
+    [[nodiscard]] double Fit_ArmRadius_AsLambda() const { return fit.ArmRadius_AsLambda(); }  // restated `Fit_MassPull`, without its weighting
+    [[nodiscard]] double Fit_ArmRadius_AsAntiLambda() const { return fit.ArmRadius_AsAntiLambda(); }  // idem
+    [[nodiscard]] double Fit_Mass_AsK0S() const { return fit.Mass_AsK0S(); }
+    [[nodiscard]] double Fit_Mass_AsLambda() const { return fit.Mass_AsLambda(); }
+    [[nodiscard]] double Fit_Mass_AsAntiLambda() const { return fit.Mass_AsAntiLambda(); }
+    [[nodiscard]] double Fit_Mass_AsPhoton() const { return fit.Mass_AsPhoton(); }
     [[nodiscard]] double Fit_UnpinnedMass() const {
         if (!IsMotherPinned()) return Fit_Mass();
         if (Fit_MassErr <= 0.F) return Common::DummyDouble;
