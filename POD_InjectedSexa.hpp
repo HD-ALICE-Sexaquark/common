@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #include "Constants.hpp"
 
 namespace POD {
@@ -15,31 +13,5 @@ struct InjectedSexa {
     float Nucleon_Py{Common::DummyFloat};
     float Nucleon_Pz{Common::DummyFloat};
 };
-
-namespace Extended {
-
-struct InjectedSexa : POD::InjectedSexa {
-    float SV_X{Common::DummyFloat};
-    float SV_Y{Common::DummyFloat};
-    float SV_Z{Common::DummyFloat};
-    float After_Px{Common::DummyFloat};
-    float After_Py{Common::DummyFloat};
-    float After_Pz{Common::DummyFloat};
-    float After_Energy{Common::DummyFloat};
-    float Energy{Common::DummyFloat};
-    float Nucleon_Energy{Common::DummyFloat};
-};
-
-}  // namespace Extended
-
-namespace Linked {
-
-struct InjectedSexa : Extended::InjectedSexa {
-    std::uint8_t GeneratorMask{Common::OriginGen::kNone};  // bitmask of generators of origin, OR-ed over the charged constituents
-    bool IsTrueSignal{false};                              // all daughters are true products of this very reaction
-    bool IsRealBkg{false};                                 // no daughter descends from any injected reaction
-};
-
-}  // namespace Linked
 
 }  // namespace POD

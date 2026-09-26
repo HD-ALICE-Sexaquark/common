@@ -2,6 +2,8 @@
 
 #include <array>
 
+#include "Constants.hpp"
+
 namespace POD {
 
 struct Event {
@@ -13,7 +15,7 @@ struct Event {
     float PV_X;
     float PV_Y;
     float PV_Z;
-    std::array<float, 6> PV_CovMatrix;
+    std::array<float, Common::NCovMatrixComponents_State3> PV_CovMatrix;
     float Centrality;
     bool IsINT7;
     bool IsCentral;

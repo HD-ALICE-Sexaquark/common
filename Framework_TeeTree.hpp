@@ -19,13 +19,10 @@ template <typename T>
 constexpr const char* LeafCodeFor() {
     // doesn't accept long/unsigned long (whose width is platform-dependent)
     static_assert(std::is_arithmetic_v<T>, "LeafCodeFor: T must be arithmetic");
-    // order matters: handle char/int8_t aliases explicitly.
     if      constexpr (std::is_same_v<T, bool>)               return "O";
-    else if constexpr (std::is_same_v<T, char>)               return "B";  // signed by ROOT convention
-    else if constexpr (std::is_same_v<T, signed char>)        return "B";
+    else if constexpr (std::is_same_v<T, char> ||
+                       std::is_same_v<T, signed char>)        return "B";
     else if constexpr (std::is_same_v<T, unsigned char>)      return "b";
-    else if constexpr (std::is_same_v<T, std::int8_t>)        return "B";
-    else if constexpr (std::is_same_v<T, std::uint8_t>)       return "b";
     else if constexpr (std::is_same_v<T, std::int16_t>)       return "S";
     else if constexpr (std::is_same_v<T, std::uint16_t>)      return "s";
     else if constexpr (std::is_same_v<T, std::int32_t>)       return "I";
@@ -66,7 +63,7 @@ struct Model {
                 return t.Branch(en.name.c_str(), static_cast<K*>(en.address));
             };
             // for stl/class branches, SetBranchAddress requires a T**
-            auto pp = std::make_shared<K*>(static_cast<K*>(address));
+            auto pp = std::make_shared<K*>(address);
             e.pptr = pp;
             K** raw = pp.get();
             e.setAddress = [raw](TTree& t, const Entry& en) {  //
@@ -86,7 +83,7 @@ struct Writer {
         : fModel{std::move(model)} {
         if (dir == nullptr) throw std::runtime_error("Writer: null directory");
         dir->cd();
-        fTree = new TTree(std::string(tree_name).c_str(), "");
+        fTree = new TTree(std::string(tree_name).c_str(), "");  // NOLINT(cppcoreguidelines-owning-memory): owned by `dir`
         fTree->SetAutoSave(0);
         for (auto& e : fModel.fEntries) e.makeBranch(*fTree, e);
     }
