@@ -1,10 +1,12 @@
 #pragma once
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
