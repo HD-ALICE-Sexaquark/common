@@ -19,16 +19,15 @@ static constexpr double Max_TPC_Chi2_NClusters = 4.;
 namespace PreFoundLambda {
 static constexpr double AbsMax_DeltaInvariantMass = 0.025;  // (GeV/c^2)
 static constexpr double AbsSlope_ArmQtOverArmAlpha = 0.2;
-static constexpr double AbsMax_NSigmas_PID = 3.;
-static constexpr double Max_DcaV0Daughters = 1.;  // (cm)
-static constexpr double Min_Pt = 0.5;             // (GeV/c)
-static constexpr double Max_Pt = 5.;              // (GeV/c)
-static constexpr double Max_DCA_wrt_PV = 0.5;     // (cm)
-static constexpr double Min_CPA_wrt_PV = 0.;
-static constexpr double Min_Decay_Radius2D = 3.;  // (cm)
-static constexpr double Min_Pt_Daughters = 0.1;   // (GeV/c)
-static constexpr double Max_Pt_Daughters = 4.;    // (GeV/c)
+static constexpr double AbsMax_NSigmas_PID = 5.;
+static constexpr double Max_DcaV0Daughters = 1.5;  // (cm)
+static constexpr double Max_DCA_wrt_PV = 0.5;      // (cm)
+static constexpr double Min_CPA_wrt_PV = 0.9;
+static constexpr double Min_Decay_Radius2D = 0.9;  // (cm)
 static constexpr double AbsMax_Eta_Daughters = 1.;
+static constexpr double Min_TPC_NCrossedRows_Daughters = 60.;
+static constexpr double Min_TPC_NCrossedRows_NClsF_Daughters = 0.6;
+static constexpr double Max_TPC_Chi2_NCls_Daughters = 4.;
 }  // namespace PreFoundLambda
 
 }  // namespace E2T::Cuts
