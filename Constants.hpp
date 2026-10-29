@@ -3,7 +3,6 @@
 #include <cstdint>
 
 #define E2T_VERBOSE 0
-#define E2T_MC_EXTRA 1
 
 namespace E2T {
 
