@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <string_view>
 
 #define E2T_VERBOSE 0
 #define E2T_MC_EXTRA 1
@@ -9,14 +8,6 @@
 namespace E2T {
 
 inline constexpr const char* Name_OutputTree = "Events";
-
-// (both dedicated MC)
-inline constexpr unsigned int NEventsInDedicatedMCFile = 10;
-
-// (antisexaquark-dedicated MC)
-inline constexpr unsigned int NSexaReactionsPerEvent = 20;
-inline constexpr std::string_view SimLog_EventHeader = "I-AliGenCocktail::Generate: Generator 3: AliGenSexaquarkReaction";
-inline constexpr std::string_view SimLog_ReactionMarker = "I-AliGenSexaquarkReaction::GenerateN:";
 
 }  // namespace E2T
 
