@@ -23,9 +23,11 @@ struct Events {
 
     POD::MC::Event MC_Event;
     std::vector<POD::McParticle> McParticle;
-    std::vector<int> Track_McEntry;  // equivalent to `AliESDtrack::GetLabel()`, signed: negative for a fake track
-    std::vector<int> PreFoundLambda_Neg_McEntry;
-    std::vector<int> PreFoundLambda_Pos_McEntry;
+    // NOTE: frozen as in E2T `f1ba831`, whose antisexaquark MC trees stand in for general-purpose MC: `|AliESDtrack::GetLabel()|`,
+    //       so a fake track isn't flagged
+    std::vector<unsigned int> Track_McEntry;
+    std::vector<unsigned int> PreFoundLambda_Neg_McEntry;
+    std::vector<unsigned int> PreFoundLambda_Pos_McEntry;
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
     Framework::Model CreateModel(bool is_mc) {
@@ -36,9 +38,9 @@ struct Events {
         if (is_mc) {
             model.RegisterField<POD::MC::Event>(&MC_Event, "MC_Event");
             model.RegisterField<std::vector<POD::McParticle>>(&McParticle, "McParticle");
-            model.RegisterField<std::vector<int>>(&Track_McEntry, "Track_McEntry");
-            model.RegisterField<std::vector<int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
-            model.RegisterField<std::vector<int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
+            model.RegisterField<std::vector<unsigned int>>(&Track_McEntry, "Track_McEntry");
+            model.RegisterField<std::vector<unsigned int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
+            model.RegisterField<std::vector<unsigned int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
         }
         return model;
     }
@@ -52,9 +54,9 @@ struct Events {
         if (is_mc) {
             model.RegisterBranch<POD::MC::Event>(&MC_Event, "MC_Event");
             model.RegisterBranch<std::vector<POD::McParticle>>(&McParticle, "McParticle");
-            model.RegisterBranch<std::vector<int>>(&Track_McEntry, "Track_McEntry");
-            model.RegisterBranch<std::vector<int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
-            model.RegisterBranch<std::vector<int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
+            model.RegisterBranch<std::vector<unsigned int>>(&Track_McEntry, "Track_McEntry");
+            model.RegisterBranch<std::vector<unsigned int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
+            model.RegisterBranch<std::vector<unsigned int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
         }
         return model;
     }
