@@ -40,7 +40,7 @@ inline constexpr double PdgMass_Pion = 0.13957039;         // PDG mass of charge
 inline constexpr double PdgMass_KaonZeroShort = 0.497611;  // PDG mass of kaon-zero-short (GeV/c^2)
 
 // the dedicated MC's injections, as recorded in the mc stack (`docs/MC_LABELS.md`)
-// -- both productions
+// -- both productions, as AliStack records them: E2T rewrites it to the injection's id (`McTruth::RelabelInjections`)
 inline constexpr unsigned int GeneratorDecay_StatusCode = 1;  // the generator's own decay products; GEANT3's progeny carries 0
 // -- antisexaquark (LHC23l1ab4)
 inline constexpr unsigned int ReactionID_Offset = 600;      // antisexaquark+nucleon reactions
