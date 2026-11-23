@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <vector>
 
 #include <ROOT/RVersion.hxx>
@@ -29,12 +28,6 @@ struct Events {
     std::vector<unsigned int> Track_McEntry;
     std::vector<unsigned int> PreFoundLambda_Neg_McEntry;
     std::vector<unsigned int> PreFoundLambda_Pos_McEntry;
-    // NOTE: parallel to `McParticle`, the furthest bookkeeping bin + 1 that any of its ESD tracks (|label|) or pre-found V0s
-    //       (made of two of its daughters) reached, 0 for none; bit 7 set if only fake ones (label < 0) reached it.
-    //       `McParticle_TrackStage` filled with the tracks, `McParticle_PreFoundLambdaStage` for the h-dibaryon MC only;
-    //       otherwise written empty
-    std::vector<std::uint8_t> McParticle_TrackStage;
-    std::vector<std::uint8_t> McParticle_PreFoundLambdaStage;
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(6, 40, 0)
     Framework::Model CreateModel(bool is_mc) {
@@ -48,8 +41,6 @@ struct Events {
             model.RegisterField<std::vector<unsigned int>>(&Track_McEntry, "Track_McEntry");
             model.RegisterField<std::vector<unsigned int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
             model.RegisterField<std::vector<unsigned int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
-            model.RegisterField<std::vector<std::uint8_t>>(&McParticle_TrackStage, "McParticle_TrackStage");
-            model.RegisterField<std::vector<std::uint8_t>>(&McParticle_PreFoundLambdaStage, "McParticle_PreFoundLambdaStage");
         }
         return model;
     }
@@ -66,8 +57,6 @@ struct Events {
             model.RegisterBranch<std::vector<unsigned int>>(&Track_McEntry, "Track_McEntry");
             model.RegisterBranch<std::vector<unsigned int>>(&PreFoundLambda_Neg_McEntry, "PreFoundLambda_Neg_McEntry");
             model.RegisterBranch<std::vector<unsigned int>>(&PreFoundLambda_Pos_McEntry, "PreFoundLambda_Pos_McEntry");
-            model.RegisterBranch<std::vector<std::uint8_t>>(&McParticle_TrackStage, "McParticle_TrackStage");
-            model.RegisterBranch<std::vector<std::uint8_t>>(&McParticle_PreFoundLambdaStage, "McParticle_PreFoundLambdaStage");
         }
         return model;
     }
@@ -80,8 +69,6 @@ struct Events {
             Track_McEntry.clear();
             PreFoundLambda_Neg_McEntry.clear();
             PreFoundLambda_Pos_McEntry.clear();
-            McParticle_TrackStage.clear();
-            McParticle_PreFoundLambdaStage.clear();
         }
     }
 };

@@ -8,11 +8,6 @@ namespace E2T {
 
 inline constexpr const char* Name_OutputTree = "Events";
 
-// the stage bytes `Schema::Events::McParticle_{Track,PreFoundLambda}Stage`: the furthest bookkeeping bin + 1 (0 for none),
-// and a flag set when only fake tracks, or v0s with a fake daughter (label < 0), reached it
-inline constexpr std::uint8_t StageByte_Bins = 0x7F;
-inline constexpr std::uint8_t StageByte_OnlyFakes = 0x80;
-
 }  // namespace E2T
 
 namespace Common {
