@@ -2,6 +2,10 @@
 
 namespace E2T::Cuts {
 
+namespace Event {
+static constexpr double AbsMax_PV_Z = 10.;  // (cm), the window of `AliEventCuts`
+}  // namespace Event
+
 namespace Track {
 static constexpr double AbsMax_NSigmas_PID = 3.;
 static constexpr double Min_Pt = 0.15;   // (GeV/c)
